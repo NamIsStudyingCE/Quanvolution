@@ -1,0 +1,34 @@
+# Byte-compiled / optimized / ambient files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Cextensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Datasets (Tránh push dữ liệu nặng lên GitHub)
+data/
+*.npz
+*.csv
+*.pt
+*.pth
+
+# Results & Artifacts nặng (trừ hình ảnh demo)
+results/checkpoints/
+results/logs/
+
+# IDE / Editor config
+.vscode/
+.idea/
+*.swp
