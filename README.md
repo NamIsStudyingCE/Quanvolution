@@ -14,6 +14,26 @@ Dự án tập trung vào việc áp dụng kiến trúc **Quanvolutional Neural
 
 ---
 
+## Phase 1: Training & Evaluation
+
+Implemented reproducible 10-seed experiment pipeline with perfectly fair classical baseline.
+
+### How to Run
+
+1. Open terminal in `d:\KhoaLuanTotNghiep`.
+2. Run BreastMNIST (binary, 780 samples):
+   ```bash
+   python src/train.py --dataset breastmnist --epochs 30
+   ```
+3. Run OCTMNIST (multi-class, subset 5000 samples):
+   ```bash
+   python src/train.py --dataset octmnist --max_samples 5000 --epochs 30
+   ```
+
+Script auto-precomputes quantum features first (multiprocessing enabled), saves deterministic splits, then trains 10 fixed seeds. Results save to `results/` folder.
+
+---
+
 ## 📂 2. Cấu trúc Thư mục Dự án
 
 ```text
