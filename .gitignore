@@ -18,7 +18,7 @@ venv.bak/
 .ipynb_checkpoints
 
 # Datasets (Tránh push dữ liệu nặng lên GitHub)
-data/
+/data/
 *.npz
 *.csv
 *.pt
