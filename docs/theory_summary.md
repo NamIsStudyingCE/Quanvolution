@@ -20,21 +20,33 @@ Kiến trúc **Quanvolutional Neural Network (Quanvolution)** do *Henderson et a
 
 ### 2.1. Mạch lượng tử quét trên vùng ảnh cục bộ (Local Patches)
 Thay vì nạp toàn bộ ảnh vào máy tính lượng tử, lớp tích chập lượng tử chỉ áp dụng một **mạch lượng tử nhỏ (ví dụ 4 qubits)** quét qua từng cửa sổ không gian nhỏ (ví dụ kích thước $2 \times 2$ pixel) với một bước nhảy cố định (stride).
-* **Ưu điểm vượt trội:** Không cần QRAM, số lượng qubit cần dùng rất nhỏ ($N = n \times n$, với $n=2 \to 4\text{ qubits}$), mạch nông (shallow depth), cực kỳ thích hợp cho các thiết bị NISQ.
+* **Ưu điểm vượt trội:** Không cần QRAM, số lượng qubit cần dùng rất nhỏ ($N = n \times n$, với $n=2 \rightarrow 4$ qubits), mạch nông (shallow depth), cực kỳ thích hợp cho các thiết bị NISQ.
 
 ### 2.2. Mã hóa dữ liệu (Data Encoding / Embedding)
 Mỗi giá trị pixel $x_j \in [0, 1]$ trong patch được ánh xạ thành trạng thái lượng tử của qubit thứ $j$. Trong đề tài này, ta sử dụng phương pháp **Mã hóa góc (Angle Encoding)** thông qua cổng xoay Pauli-Y:
-$$|\psi_{\text{in}}\rangle = \bigotimes_{j=0}^{3} R_Y(\pi \cdot x_j)|0\rangle$$
-*Cổng $R_Y(\theta) = \exp(-i \frac{\theta}{2} Y)$ ánh xạ giá trị thực của pixel sang góc quay trên hình cầu Bloch một cách trực quan và liên tục.*
+
+$$
+|\psi_{\text{in}}\rangle = \bigotimes_{j=0}^{3} R_Y(\pi \cdot x_j)|0\rangle
+$$
+
+Cổng $R_Y(\theta) = \exp\left(-i \frac{\theta}{2} Y\right)$ ánh xạ giá trị thực của pixel sang góc quay trên hình cầu Bloch một cách trực quan và liên tục.
 
 ### 2.3. Lớp biến đổi & Vướng víu lượng tử (Quantum Entanglement)
 Sau khi mã hóa, trạng thái lượng tử đi qua một chuỗi các cổng lượng tử $U$ (bao gồm các cổng quay 1-qubit và cổng tương tác 2-qubit như CNOT, CZ):
-$$|\psi_{\text{out}}\rangle = U |\psi_{\text{in}}\rangle$$
+
+$$
+|\psi_{\text{out}}\rangle = U |\psi_{\text{in}}\rangle
+$$
+
 Lớp này tạo ra hiện tượng **vướng víu lượng tử (entanglement)** và tương quan phi tuyến giữa các pixel lân cận trong patch, ánh xạ dữ liệu vào không gian trạng thái Hilbert đa chiều mà các bộ lọc tuyến tính cổ điển khó mô phỏng hiệu quả.
 
 ### 2.4. Phép đo tạo Feature Maps (Measurement & Decoding)
 Tại mỗi vị trí kernel, ta thực hiện đo giá trị kỳ vọng của toán tử Pauli-Z trên từng qubit $j$:
-$$f_j = \langle \psi_{\text{out}} | Z_j | \psi_{\text{out}} \rangle \in [-1, 1]$$
+
+$$
+f_j = \langle \psi_{\text{out}} | Z_j | \psi_{\text{out}} \rangle \in [-1, 1]
+$$
+
 Kết quả của phép đo trên 4 qubits tạo thành một vector 4 chiều. Khi kernel trượt qua toàn bộ ảnh $28 \times 28$ với stride $= 2$, ta thu được **4 kênh bản đồ đặc trưng lượng tử (Quantum Feature Maps)** kích thước $14 \times 14$.
 
 ---
@@ -69,7 +81,7 @@ Kết quả của phép đo trên 4 qubits tạo thành một vector 4 chiều. 
 | Tiêu chí | **Quanvolutional NN** (Henderson 2019) | **QCNN thật** (Cong 2019) |
 | :--- | :--- | :--- |
 | **Kiến trúc** | Mạng lai (Hybrid): Quantum Filter + Classical Head. | Mạng lượng tử thuần / biến phân (Fully Quantum). |
-| **Xử lý không gian** | Dùng mạch nhỏ trượt trên ảnh cổ điển 2D. | Mạch phân cấp (MERA/QEC) rút gọn qubit $N \to 1$. |
+| **Xử lý không gian** | Dùng mạch nhỏ trượt trên ảnh cổ điển 2D. | Mạch phân cấp (MERA/QEC) rút gọn qubit $N \rightarrow 1$. |
 | **Mục đích sử dụng** | Trích xuất đặc trưng cho dữ liệu ảnh cổ điển (như MedMNIST). | Nhận diện pha lượng tử (QPR) hoặc mã sửa lỗi (QEC). |
 | **Ứng dụng đề tài** | **Đây là mô hình chính của Luận văn**. | Dùng để đối chứng lý thuyết, tránh nhầm lẫn thuật ngữ. |
 
@@ -83,7 +95,7 @@ Kết quả của phép đo trên 4 qubits tạo thành một vector 4 chiều. 
 ## 5. Đánh giá Khách quan & Tính Trung thực Học thuật
 Dựa trên bài báo gốc của Henderson (2019) và nhận xét của Giảng viên hướng dẫn:
 1. **Không ngộ nhận "Quantum luôn thắng":** Việc thêm các phép biến đổi ngẫu nhiên lượng tử giúp tăng tính phi tuyến của đặc trưng, nhưng cần đối chứng công bằng với các mạng Classical CNN được tối ưu nghiêm túc.
-2. **Đánh giá trên Dữ liệu Y tế Mất cân bằng:** Với MedMNIST, không dùng đơn độc chỉ số Accuracy mà bắt buộc phải báo cáo: *Balanced Accuracy, F1-Score, MCC, ROC-AUC, PR-AUC* và đo trên đa seed ($\ge 5$ seeds) kèm kiểm định thống kê *Wilcoxon*.
+2. **Đánh giá trên Dữ liệu Y tế Mất cân bằng:** Với MedMNIST, không dùng đơn độc chỉ số Accuracy mà bắt buộc phải báo cáo: *Balanced Accuracy, F1-Score, MCC, ROC-AUC, PR-AUC* và đo trên đa seed ($\geq 5$ seeds) kèm kiểm định thống kê *Wilcoxon*.
 
 ---
 *Tài liệu tham khảo chính:*

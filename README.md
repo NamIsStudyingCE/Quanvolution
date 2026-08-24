@@ -10,7 +10,7 @@ Dự án tập trung vào việc áp dụng kiến trúc **Quanvolutional Neural
 ### Các nguyên tắc nghiên cứu cốt lõi:
 1. **Tính tái lập (Reproducibility):** Cố định hạt giống ngẫu nhiên (seed), quy trình thực nghiệm rõ ràng, đảm bảo cùng code cùng seed ra cùng kết quả.
 2. **So sánh công bằng (Fair Comparison):** Mô hình cổ điển (Classical Baseline) được tối ưu hóa và huấn luyện nghiêm ngặt tương đương để đối chứng.
-3. **Đánh giá đa chiều (Multi-metric Evaluation):** Đánh giá trên dữ liệu mất cân bằng với đầy đủ các chỉ số: *Accuracy, Balanced Accuracy, F1-Score, MCC, ROC-AUC, PR-AUC* và kiểm định thống kê qua đa seed ($\ge 5$ seeds).
+3. **Đánh giá đa chiều (Multi-metric Evaluation):** Đánh giá trên dữ liệu mất cân bằng với đầy đủ các chỉ số: *Accuracy, Balanced Accuracy, F1-Score, MCC, ROC-AUC, PR-AUC* và kiểm định thống kê qua đa seed ($\geq 5$ seeds).
 
 ---
 
@@ -21,14 +21,19 @@ Implemented reproducible 10-seed experiment pipeline with perfectly fair classic
 ### How to Run
 
 1. Open terminal in `d:\KhoaLuanTotNghiep`.
-2. Run BreastMNIST (binary, 780 samples):
+2. Run all experiments automatically:
    ```bash
-   python src/train.py --dataset breastmnist --epochs 30
+   python run_all.py
    ```
-3. Run OCTMNIST (multi-class, subset 5000 samples):
-   ```bash
-   python src/train.py --dataset octmnist --max_samples 5000 --epochs 30
-   ```
+3. Or run individually:
+   - BreastMNIST (binary, 780 samples):
+     ```bash
+     python src/train.py --dataset breastmnist --epochs 30
+     ```
+   - OCTMNIST (multi-class, subset 5000 samples):
+     ```bash
+     python src/train.py --dataset octmnist --max_samples 5000 --epochs 30
+     ```
 
 Script auto-precomputes quantum features first (multiprocessing enabled), saves deterministic splits, then trains 10 fixed seeds. Results save to `results/` folder.
 
@@ -81,7 +86,7 @@ Sau khi chạy xong, ảnh so sánh đặc trưng lượng tử sẽ được l�
 
 ## 📊 4. Lộ trình Thực hiện (13 Tuần)
 - [x] **GĐ0 (T1-T2):** Nền tảng, môi trường, demo Quanvolution (Mốc M1 - 24/08).
-- [ ] **GĐ1 (T3-T4):** Pipeline MedMNIST & Baseline CNN công bằng đa seed (Mốc M2 - 07/09).
+- [x] **GĐ1 (T3-T4):** Pipeline MedMNIST & Baseline CNN công bằng đa seed (Mốc M2 - 07/09).
 - [ ] **GĐ2 (T5-T7):** Cài đặt Quanvolution lõi & trích xuất đặc trưng (Mốc M3 - 28/09).
 - [ ] **GĐ3 (T8-T10):** Thực nghiệm mở rộng, Ablation study & Kiểm định thống kê (Mốc M4 - 19/10).
 - [ ] **GĐ4 (T11-T13):** Hoàn thiện Luận văn, Demo nghiệm thu & Bảo vệ (09/11).
