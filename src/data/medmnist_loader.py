@@ -74,12 +74,12 @@ def prepare_data(dataset_name="breastmnist", max_train=None, max_val=None, max_t
         transforms.ToTensor()
     ])
 
-    if dataset_name == "breastmnist":
+    if "breastmnist" in dataset_name.lower():
         dataset_class = BreastMNIST
-    elif dataset_name == "octmnist":
+    elif "octmnist" in dataset_name.lower():
         dataset_class = OCTMNIST
     else:
-        raise ValueError("Unsupported dataset")
+        raise ValueError(f"Unsupported dataset: {dataset_name}")
 
     # Classical datasets (normalized images for CNN)
     c_train = load_and_subset_medmnist(dataset_class, 'train', classical_transform, max_train, seed)
