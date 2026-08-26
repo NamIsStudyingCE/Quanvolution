@@ -6,6 +6,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
 import numpy as np
+from scipy import stats
 
 # Ensure UTF-8 console output
 if hasattr(sys.stdout, 'reconfigure'):
@@ -168,3 +169,41 @@ def run_trainable_poc_experiment(data_splits, num_classes, epochs=20, seeds=[0, 
             print(f"     [Seed {seed} Done] Test AUC: {test_m['auc']:.4f} | PR-AUC: {test_m['pr_auc']:.4f} | Acc: {test_m['acc']:.4f}")
 
     return results
+
+def compute_trainable_statistical_tests(results):
+    """
+    Computes pairwise statistical significance (Paired t-test and Wilcoxon signed-rank test)
+    between all 3 model pairs across all 6 classification metrics.
+    """
+    metrics = ['acc', 'bacc', 'f1', 'mcc', 'auc', 'pr_auc']
+    pairs = [
+        ('trainable_quanv', 'fixed_quanv', 'trainable_vs_fixed'),
+        ('trainable_quanv', 'classical_cnn', 'trainable_vs_classical'),
+        ('classical_cnn', 'fixed_quanv', 'classical_vs_fixed')
+    ]
+    
+    stat_report = {}
+    
+    for m1, m2, key in pairs:
+        stat_report[key] = {}
+        for m in metrics:
+            v1 = [r[m] for r in results[m1]['test_metrics']]
+            v2 = [r[m] for r in results[m2]['test_metrics']]
+            delta = float(np.mean(v1) - np.mean(v2))
+            t_stat, p_val = stats.ttest_rel(v1, v2)
+            try:
+                w_stat, w_pval = stats.wilcoxon([a - b for a, b in zip(v1, v2)])
+            except Exception:
+                w_stat, w_pval = 0.0, 1.0
+                
+            stat_report[key][m] = {
+                'delta': delta,
+                'mean_' + m1: float(np.mean(v1)),
+                'mean_' + m2: float(np.mean(v2)),
+                't_stat': float(t_stat),
+                'p_value_ttest': float(p_val),
+                'wilcoxon_p_value': float(w_pval)
+            }
+            
+    return stat_report
+

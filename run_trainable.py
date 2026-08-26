@@ -12,7 +12,7 @@ if hasattr(sys.stdout, 'reconfigure'):
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
 
 from data.medmnist_loader import prepare_data
-from experiments.trainable_experiment import run_trainable_poc_experiment
+from experiments.trainable_experiment import run_trainable_poc_experiment, compute_trainable_statistical_tests
 from visual.plot_trainable import plot_training_curves, plot_metrics_bar_comparison
 
 def print_trainable_summary_table(results):
@@ -42,8 +42,28 @@ def print_trainable_summary_table(results):
             'trainable_quanv': t_str
         }
         print(f"{m_name:<14} | {c_str:<20} | {f_str:<20} | {t_str:<20}")
+    print("="*85)
+    
+    # Statistical tests
+    stat_report = compute_trainable_statistical_tests(results)
+    
+    print("\n" + "-"*85)
+    print(" STATISTICAL SIGNIFICANCE TESTS (PAIRED T-TEST & WILCOXON SIGNED-RANK)")
+    print("-"*85)
+    print(">>> 1. Trainable Quanvolution vs Fixed Quanvolution:")
+    for m, m_name in zip(metrics, metric_names):
+        s = stat_report['trainable_vs_fixed'][m]
+        sig = "***" if s['p_value_ttest'] < 0.001 else "**" if s['p_value_ttest'] < 0.01 else "*" if s['p_value_ttest'] < 0.05 else "ns"
+        print(f"  {m_name:<14}: Delta = {s['delta']:+.4f} | t-stat = {s['t_stat']:+.4f} | t-test p = {s['p_value_ttest']:.4f} ({sig:<3}) | Wilcoxon p = {s['wilcoxon_p_value']:.4f}")
+        
+    print("\n>>> 2. Trainable Quanvolution vs Classical CNN:")
+    for m, m_name in zip(metrics, metric_names):
+        s = stat_report['trainable_vs_classical'][m]
+        sig = "***" if s['p_value_ttest'] < 0.001 else "**" if s['p_value_ttest'] < 0.01 else "*" if s['p_value_ttest'] < 0.05 else "ns"
+        print(f"  {m_name:<14}: Delta = {s['delta']:+.4f} | t-stat = {s['t_stat']:+.4f} | t-test p = {s['p_value_ttest']:.4f} ({sig:<3}) | Wilcoxon p = {s['wilcoxon_p_value']:.4f}")
     print("="*85 + "\n")
-    return summary_export
+    
+    return summary_export, stat_report
 
 def main():
     print("=======================================================")
@@ -83,7 +103,7 @@ def main():
     plot_metrics_bar_comparison(results)
     
     # Print formatted table
-    summary_export = print_trainable_summary_table(results)
+    summary_export, stat_report = print_trainable_summary_table(results)
     
     # Save results to JSON
     os.makedirs("results", exist_ok=True)
@@ -94,6 +114,7 @@ def main():
         "num_epochs": 20,
         "seeds": [0, 42, 100],
         "summary_table": summary_export,
+        "statistical_tests": stat_report,
         "raw_results": {
             k: {
                 "test_metrics": results[k]["test_metrics"],

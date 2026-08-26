@@ -9,7 +9,8 @@ try:
 except ImportError:
     dev = qml.device("default.qubit", wires=n_qubits)
 
-# Fixed seed for deterministic weight generation across all ansatzes
+# Fixed seed strictly used for deterministic initialization of static ansatz weight tensors below.
+# Runtime experiment runs explicitly re-seed all generators via set_seed() per trial.
 np.random.seed(42)
 
 # Weight parameters for different ansatzes

@@ -743,5 +743,157 @@
                 }
             ]
         }
+    },
+    "statistical_tests": {
+        "trainable_vs_fixed": {
+            "acc": {
+                "delta": 0.03333333333333338,
+                "mean_trainable_quanv": 0.38000000000000006,
+                "mean_fixed_quanv": 0.3466666666666667,
+                "t_stat": 2.773500981126147,
+                "p_value_ttest": 0.10912919362525195,
+                "wilcoxon_p_value": 0.25
+            },
+            "bacc": {
+                "delta": 0.00661251791686579,
+                "mean_trainable_quanv": 0.38000000000000006,
+                "mean_fixed_quanv": 0.37338748208313427,
+                "t_stat": 0.5283267721783861,
+                "p_value_ttest": 0.6500402094766438,
+                "wilcoxon_p_value": 0.75
+            },
+            "f1": {
+                "delta": 0.017693169065946535,
+                "mean_trainable_quanv": 0.2850190039420695,
+                "mean_fixed_quanv": 0.267325834876123,
+                "t_stat": 1.2633385908423034,
+                "p_value_ttest": 0.33379414075538916,
+                "wilcoxon_p_value": 0.25
+            },
+            "mcc": {
+                "delta": 0.05606821045793603,
+                "mean_trainable_quanv": 0.23539691493223477,
+                "mean_fixed_quanv": 0.17932870447429874,
+                "t_stat": 3.605579668570059,
+                "p_value_ttest": 0.06904968628294869,
+                "wilcoxon_p_value": 0.25
+            },
+            "auc": {
+                "delta": 0.07816570576679271,
+                "mean_trainable_quanv": 0.6629333333333334,
+                "mean_fixed_quanv": 0.5847676275665407,
+                "t_stat": 5.432385469687212,
+                "p_value_ttest": 0.03225534271364924,
+                "wilcoxon_p_value": 0.25
+            },
+            "pr_auc": {
+                "delta": 0.057408117190172636,
+                "mean_trainable_quanv": 0.4390923657562311,
+                "mean_fixed_quanv": 0.3816842485660585,
+                "t_stat": 4.941072478680772,
+                "p_value_ttest": 0.038603545452387145,
+                "wilcoxon_p_value": 0.25
+            }
+        },
+        "trainable_vs_classical": {
+            "acc": {
+                "delta": -0.036666666666666625,
+                "mean_trainable_quanv": 0.38000000000000006,
+                "mean_classical_cnn": 0.4166666666666667,
+                "t_stat": -1.2874526191574356,
+                "p_value_ttest": 0.32681093250168514,
+                "wilcoxon_p_value": 0.5
+            },
+            "bacc": {
+                "delta": -0.036666666666666625,
+                "mean_trainable_quanv": 0.38000000000000006,
+                "mean_classical_cnn": 0.4166666666666667,
+                "t_stat": -1.2874526191574356,
+                "p_value_ttest": 0.32681093250168514,
+                "wilcoxon_p_value": 0.5
+            },
+            "f1": {
+                "delta": -0.02725464951402501,
+                "mean_trainable_quanv": 0.2850190039420695,
+                "mean_classical_cnn": 0.31227365345609454,
+                "t_stat": -1.8238389491644738,
+                "p_value_ttest": 0.20973988104956717,
+                "wilcoxon_p_value": 0.5
+            },
+            "mcc": {
+                "delta": -0.033839273868264824,
+                "mean_trainable_quanv": 0.23539691493223477,
+                "mean_classical_cnn": 0.2692361888004996,
+                "t_stat": -0.7968673495706915,
+                "p_value_ttest": 0.509096732426906,
+                "wilcoxon_p_value": 0.5
+            },
+            "auc": {
+                "delta": -0.01244444444444437,
+                "mean_trainable_quanv": 0.6629333333333334,
+                "mean_classical_cnn": 0.6753777777777777,
+                "t_stat": -2.9165084402490664,
+                "p_value_ttest": 0.10020392301833216,
+                "wilcoxon_p_value": 0.25
+            },
+            "pr_auc": {
+                "delta": -0.025175005296339537,
+                "mean_trainable_quanv": 0.4390923657562311,
+                "mean_classical_cnn": 0.46426737105257065,
+                "t_stat": -1.7217723003368854,
+                "p_value_ttest": 0.2272518651067138,
+                "wilcoxon_p_value": 0.25
+            }
+        },
+        "classical_vs_fixed": {
+            "acc": {
+                "delta": 0.07,
+                "mean_classical_cnn": 0.4166666666666667,
+                "mean_fixed_quanv": 0.3466666666666667,
+                "t_stat": 2.6457513110645894,
+                "p_value_ttest": 0.11808289631180321,
+                "wilcoxon_p_value": 0.25
+            },
+            "bacc": {
+                "delta": 0.043279184583532415,
+                "mean_classical_cnn": 0.4166666666666667,
+                "mean_fixed_quanv": 0.37338748208313427,
+                "t_stat": 1.702186541434859,
+                "p_value_ttest": 0.23082947457642825,
+                "wilcoxon_p_value": 0.5
+            },
+            "f1": {
+                "delta": 0.044947818579971544,
+                "mean_classical_cnn": 0.31227365345609454,
+                "mean_fixed_quanv": 0.267325834876123,
+                "t_stat": 1.884931717262406,
+                "p_value_ttest": 0.20010486878280465,
+                "wilcoxon_p_value": 0.25
+            },
+            "mcc": {
+                "delta": 0.08990748432620085,
+                "mean_classical_cnn": 0.2692361888004996,
+                "mean_fixed_quanv": 0.17932870447429874,
+                "t_stat": 2.171686179413949,
+                "p_value_ttest": 0.16201820684543886,
+                "wilcoxon_p_value": 0.25
+            },
+            "auc": {
+                "delta": 0.09061015021123708,
+                "mean_classical_cnn": 0.6753777777777777,
+                "mean_fixed_quanv": 0.5847676275665407,
+                "t_stat": 5.565828077907438,
+                "p_value_ttest": 0.03079706893728355,
+                "wilcoxon_p_value": 0.25
+            },
+            "pr_auc": {
+                "delta": 0.08258312248651217,
+                "mean_classical_cnn": 0.46426737105257065,
+                "mean_fixed_quanv": 0.3816842485660585,
+                "t_stat": 3.155838096439662,
+                "p_value_ttest": 0.08743968482153909,
+                "wilcoxon_p_value": 0.25
+            }
+        }
     }
 }
