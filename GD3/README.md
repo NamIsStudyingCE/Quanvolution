@@ -33,19 +33,20 @@
 | Mô hình | ROC-AUC | PR-AUC | BAcc |
 | :--- | :---: | :---: | :---: |
 | Classical CNN | 0.8336 | 0.9041 | 0.6875 |
+| **Fixed Basic L2** *(Mạch tĩnh mạnh nhất)* | **0.8521** | 0.9110 | 0.6816 |
 | Fixed Strongly L2 | 0.8139 | 0.9182 | 0.6602 |
-| **Trainable Strongly L2** *(Winner)* | **0.8306** | **0.9167** | **0.6945** ✅ |
+| **Trainable Strongly L2** *(Thắng mạch cùng họ)* | 0.8306 | **0.9167** | **0.6945** |
 
-*→ Trainable Strongly thắng toàn diện Fixed Strongly và vượt Classical CNN về BAcc & PR-AUC.*
+*👉 Kết luận trung thực: Khả năng tự học (Trainability) giúp mạch 3 trục đánh bại phiên bản tĩnh của chính nó (Fixed Strongly) và vượt Classical CNN về BAcc/PR-AUC. Tuy nhiên, nếu xét toàn diện, mạch tĩnh `Fixed Basic L2` vẫn đạt ROC-AUC cao nhất (0.8521).*
 
-### OCTMNIST (5 seeds)
+### OCTMNIST (10 seeds)
 | Mô hình | ROC-AUC |
 | :--- | :---: |
-| Classical CNN | 0.7532 |
-| Fixed Champion GĐ2 (`random_L1`) | 0.6922 |
-| **Trainable Strongly L1** *(Winner Tầng 3)* | **0.6829** |
+| **Classical CNN** *(Dẫn đầu)* | **0.7532** |
+| Fixed Champion GĐ2 (`random_L1`) | 0.6922 (5-seed cũ) |
+| Trainable Strongly L1 | 0.6829 (5-seed cũ) |
 
-*→ Xác định Boundary Condition: QNN mạnh ở dữ liệu nhỏ/nhị phân, gặp giới hạn biểu diễn ở dữ liệu lớn/đa lớp.*
+*👉 Xác định Boundary Condition: QNN thể hiện ưu thế ở dữ liệu nhỏ (tính ổn định cao, 0 tham số ở tầng đặc trưng), nhưng gặp giới hạn biểu diễn ở dữ liệu lớn/đa lớp so với Classical.*
 
 ---
 

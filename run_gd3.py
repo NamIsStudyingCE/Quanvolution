@@ -134,37 +134,37 @@ def main():
     print(' [PART 1/2]: FULL BREASTMNIST 3-TIER EXPERIMENT (780 SAMPLES, 10 SEEDS, L=2)')
     print('#' * 90)
     
-    breast_splits = prepare_data(
-        dataset_name="breastmnist",
-        seed=42
-    )
-    
-    breast_seeds = [0, 42, 100, 2023, 777, 999, 1234, 5678, 1111, 2222]
-    breast_results, breast_stats = run_full_dataset_experiment(
-        dataset_name="breastmnist",
-        data_splits=breast_splits,
-        num_classes=2,
-        num_epochs=20,
-        batch_size=32,
-        seeds=breast_seeds,
-        n_quantum_layers=2,
-        save_json_path="results/full_trainable_breastmnist.json"
-    )
-    
-    # Generate Visualizations for BreastMNIST
-    print('\n>>> Generating Visualizations for BreastMNIST...')
-    plot_gd3_training_curves(breast_results, "BreastMNIST", save_path="results/figures/gd3_breastmnist_curves.png")
-    plot_gd3_theta_trajectories(breast_results, target_model="trainable_strongly", save_path="results/figures/gd3_breastmnist_theta_trajectories.png")
-    plot_gd3_gradient_norms(breast_results, target_model="trainable_strongly", save_path="results/figures/gd3_breastmnist_gradient_norms.png")
-    plot_gd3_benchmark_summary(breast_results, "BreastMNIST", save_path="results/figures/gd3_breastmnist_benchmark.png")
-    
-    print_3tier_benchmark_report("BreastMNIST (Full 780 Samples - 10 Seeds)", breast_results, breast_stats)
+    # breast_splits = prepare_data(
+    #     dataset_name="breastmnist",
+    #     seed=42
+    # )
+    # 
+    # breast_seeds = [0, 42, 100, 2023, 777, 999, 1234, 5678, 1111, 2222]
+    # breast_results, breast_stats = run_full_dataset_experiment(
+    #     dataset_name="breastmnist",
+    #     data_splits=breast_splits,
+    #     num_classes=2,
+    #     num_epochs=20,
+    #     batch_size=32,
+    #     seeds=breast_seeds,
+    #     n_quantum_layers=2,
+    #     save_json_path="results/full_trainable_breastmnist.json"
+    # )
+    # 
+    # # Generate Visualizations for BreastMNIST
+    # print('\n>>> Generating Visualizations for BreastMNIST...')
+    # plot_gd3_training_curves(breast_results, "BreastMNIST", save_path="results/figures/gd3_breastmnist_curves.png")
+    # plot_gd3_theta_trajectories(breast_results, target_model="trainable_strongly", save_path="results/figures/gd3_breastmnist_theta_trajectories.png")
+    # plot_gd3_gradient_norms(breast_results, target_model="trainable_strongly", save_path="results/figures/gd3_breastmnist_gradient_norms.png")
+    # plot_gd3_benchmark_summary(breast_results, "BreastMNIST", save_path="results/figures/gd3_breastmnist_benchmark.png")
+    # 
+    # print_3tier_benchmark_report("BreastMNIST (Full 780 Samples - 10 Seeds)", breast_results, breast_stats)
     
     # ---------------------------------------------------------
     # PART 2: OCTMNIST (5,000 samples, 5 seeds, L=1)
     # ---------------------------------------------------------
     print('\n' + '#' * 90)
-    print(' [PART 2/2]: FULL OCTMNIST 3-TIER EXPERIMENT (5,000 SAMPLES, 5 SEEDS, L=1)')
+    print(' [PART 2/2]: FULL OCTMNIST 3-TIER EXPERIMENT (5,000 SAMPLES, 10 SEEDS, L=1)')
     print('#' * 90)
     
     oct_splits = prepare_data(
@@ -172,7 +172,7 @@ def main():
         seed=42
     )
     
-    oct_seeds = [0, 42, 100, 2023, 777]
+    oct_seeds = [0, 42, 100, 2023, 777, 999, 1234, 5678, 1111, 2222]
     oct_results, oct_stats = run_full_dataset_experiment(
         dataset_name="octmnist",
         data_splits=oct_splits,

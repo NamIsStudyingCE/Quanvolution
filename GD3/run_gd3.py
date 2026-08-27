@@ -164,7 +164,7 @@ def main():
     # PART 2: OCTMNIST (5,000 samples, 5 seeds, L=1)
     # ---------------------------------------------------------
     print('\n' + '#' * 90)
-    print(' [PART 2/2]: FULL OCTMNIST 3-TIER EXPERIMENT (5,000 SAMPLES, 5 SEEDS, L=1)')
+    print(' [PART 2/2]: FULL OCTMNIST 3-TIER EXPERIMENT (5,000 SAMPLES, 10 SEEDS, L=1)')
     print('#' * 90)
     
     oct_splits = prepare_data(
@@ -172,7 +172,7 @@ def main():
         seed=42
     )
     
-    oct_seeds = [0, 42, 100, 2023, 777]
+    oct_seeds = [0, 42, 100, 2023, 777, 999, 1234, 5678, 1111, 2222]
     oct_results, oct_stats = run_full_dataset_experiment(
         dataset_name="octmnist",
         data_splits=oct_splits,
