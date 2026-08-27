@@ -11,9 +11,10 @@
 | STT | Nhiệm vụ | Sản phẩm Bàn giao | Trạng thái |
 | :---: | :--- | :--- | :---: |
 | 1 | Kiến trúc QNN khả vi hoàn toàn (`backprop` trên PennyLane + PyTorch Autograd) | `src/models/trainable_quanv.py` | ✅ Hoàn thành |
-| 2 | Ma trận Đối sánh 3 Tầng (80 lượt train) | `src/experiments/trainable_experiment.py` | ✅ Hoàn thành |
-| 3 | Phân tích Gradient Dynamics & chứng minh ≠ Barren Plateaus | `src/visual/plot_gd3_dynamics.py` | ✅ Hoàn thành |
-| 4 | Xác định Winner Tầng 3 & đối sánh với Classical CNN | `run_gd3.py` | ✅ Hoàn thành |
+| 2 | Ma trận Đối sánh 3 Tầng (110 lượt train trên 10 seeds đồng nhất) | `src/experiments/trainable_experiment.py` | ✅ Hoàn thành |
+| 3 | Phân tích Gradient Dynamics & Sanity Check (≠ Barren Plateaus) | `src/visual/plot_gd3_dynamics.py` | ✅ Hoàn thành |
+| 4 | Đo lường Tham số & Chi phí Phần cứng (Độ trễ suy luận CPU) | `measure_params_cost.py` | ✅ Hoàn thành |
+| 5 | Báo cáo Nghiệm thu chuẩn hóa IMRaD (Giải quyết 5 điểm phản biện) | `GD3/BAO_CAO_GIAI_DOAN_3.md` | ✅ Hoàn thành |
 
 ---
 
@@ -21,51 +22,55 @@
 
 | Tầng | Mục đích | Cặp đấu |
 | :---: | :--- | :--- |
-| **Tầng 1** | Cô lập biến "Trainability" (giữ nguyên kiến trúc) | Fixed Basic L2 vs Trainable Basic L2 |
-| **Tầng 2** | Stress-test Quán quân GĐ2 | Trainable Basic vs Fixed Champion (`random_L1`) |
-| **Tầng 3** | Full-Expressive Showdown → Winner vs Classical CNN | Fixed Strongly L2 vs Trainable Strongly L2 |
+| **Tầng 1** | Cô lập biến "Trainability" (giữ nguyên kiến trúc) | Fixed Basic vs Trainable Basic |
+| **Tầng 2** | Stress-test Quán quân GĐ2 | Trainable Basic vs Fixed Champion (`random_L1` / `basic_L2`) |
+| **Tầng 3** | Full-Expressive Showdown → Winner vs Classical CNN | Fixed Strongly vs Trainable Strongly (3-Axis) |
 
 ---
 
-## 📊 Kết quả Chính (Winner Tầng 3: Trainable Strongly)
+## 📊 Kết quả Chính (10 Seeds Độc lập, 20 Epochs Đồng nhất)
 
-### BreastMNIST (10 seeds)
-| Mô hình | ROC-AUC | PR-AUC | BAcc |
+### BreastMNIST (10 seeds, L=2)
+| Mô hình | ROC-AUC | PR-AUC | Balanced Acc |
 | :--- | :---: | :---: | :---: |
-| Classical CNN | 0.8336 | 0.9041 | 0.6875 |
-| **Fixed Basic L2** *(Mạch tĩnh mạnh nhất)* | **0.8521** | 0.9110 | 0.6816 |
-| Fixed Strongly L2 | 0.8139 | 0.9182 | 0.6602 |
-| **Trainable Strongly L2** *(Thắng mạch cùng họ)* | 0.8306 | **0.9167** | **0.6945** |
+| Classical CNN | 0.8336 ± 0.0246 | 0.9041 ± 0.0095 | 0.6875 ± 0.0448 |
+| **Fixed Basic L2** *(Quán quân ROC-AUC)* | **0.8521 ± 0.0090** | 0.9110 ± 0.0049 | 0.6816 ± 0.0490 |
+| Trainable Basic L2 | 0.8406 ± 0.0239 | 0.9173 ± 0.0184 | 0.6732 ± 0.0382 |
+| **Fixed Strongly L2** *(Quán quân PR-AUC)* | 0.8139 ± 0.0142 | **0.9182 ± 0.0067** | 0.6602 ± 0.0202 |
+| Trainable Strongly L2 *(Thắng mạch cùng họ)* | 0.8306 ± 0.0279 | 0.9167 ± 0.0157 | **0.6945 ± 0.0428** |
 
-*👉 Kết luận trung thực: Khả năng tự học (Trainability) giúp mạch 3 trục đánh bại phiên bản tĩnh của chính nó (Fixed Strongly) và vượt Classical CNN về BAcc/PR-AUC. Tuy nhiên, nếu xét toàn diện, mạch tĩnh `Fixed Basic L2` vẫn đạt ROC-AUC cao nhất (0.8521).*
+*👉 Kết luận trung thực: Khả năng tự học (Trainability) giúp mạch 3 trục đánh bại phiên bản tĩnh của chính nó (Fixed Strongly). Mạch tĩnh `Fixed Basic L2` và `Fixed Strongly L2` đạt hiệu năng hàng đầu về ROC-AUC và PR-AUC với chi phí 0 tham số kernel.*
 
-### OCTMNIST (10 seeds)
-| Mô hình | ROC-AUC |
-| :--- | :---: |
-| **Classical CNN** *(Dẫn đầu)* | **0.7532** |
-| Fixed Champion GĐ2 (`random_L1`) | 0.6922 (5-seed cũ) |
-| Trainable Strongly L1 | 0.6829 (5-seed cũ) |
+### OCTMNIST (10 seeds, L=1)
+| Mô hình | ROC-AUC | PR-AUC | Balanced Acc |
+| :--- | :---: | :---: | :---: |
+| **Classical CNN** *(Dẫn đầu áp đảo)* | **0.7505 ± 0.0227** | **0.4991 ± 0.0282** | **0.4433 ± 0.0128** |
+| Fixed Basic L1 | 0.6711 ± 0.0040 | 0.4186 ± 0.0070 | 0.4075 ± 0.0040 |
+| Trainable Basic L1 | 0.6704 ± 0.0101 | 0.4102 ± 0.0124 | 0.3955 ± 0.0152 |
+| Fixed Champion GĐ2 (`random_L1`) | 0.6912 ± 0.0067 | 0.4443 ± 0.0084 | 0.4048 ± 0.0123 |
+| Fixed Strongly L1 | 0.6690 ± 0.0052 | 0.4175 ± 0.0044 | 0.4034 ± 0.0044 |
+| Trainable Strongly L1 *(Thắng mạch cùng họ)* | 0.6922 ± 0.0189 | 0.4365 ± 0.0274 | 0.4020 ± 0.0141 |
 
-*👉 Xác định Boundary Condition: QNN thể hiện ưu thế ở dữ liệu nhỏ (tính ổn định cao, 0 tham số ở tầng đặc trưng), nhưng gặp giới hạn biểu diễn ở dữ liệu lớn/đa lớp so với Classical.*
+*👉 Xác định Ranh giới Lợi thế Lượng tử (Quantum Boundary): QNN thể hiện ưu thế ở dữ liệu nhỏ/lệch lớp (tính ổn định cao ~3x, 0 tham số ở tầng đặc trưng), nhưng bộc lộ giới hạn dung lượng trước Classical CNN ở dữ liệu lớn/đa lớp.*
 
 ---
 
-## 🔬 Gradient Dynamics
+## 🔬 Gradient Dynamics & Chi Phí Phần Cứng
 
-- Gradient norm: $\|\nabla_\theta \mathcal{L}\|_2 \in [0.05, 0.25]$ — Không có Barren Plateaus.
+- Gradient norm: $\|\nabla_\theta \mathcal{L}\|_2 \in [0.05, 0.25]$ — Xác nhận không có hiện tượng triệt tiêu gradient.
 - $\theta(t)$ hội tụ sau 12–15 epochs trên cả 2 datasets.
-- Sai lệch `backprop` vs `parameter-shift`: $|\Delta| < 4.1 \times 10^{-8}$ (đẳng trị về toán học).
+- Độ trễ suy luận trên CPU: Classical CNN = $0.310\text{ ms/ảnh}$; Quanvolution = $220.22\text{ ms/ảnh}$ (~710x chậm hơn).
+- Hiệu quả tham số: Tầng đặc trưng lượng tử tĩnh dùng đúng **0 tham số học** (tiết kiệm 20 tham số conv).
 
 ---
 
 ## 🚀 Cách Chạy lại Thực nghiệm
 
 ```bash
-# Từ thư mục GD3/
-python run_gd3.py
+# Từ thư mục gốc repo:
+python run_gd3.py              # Master runner 3-Tier Tournament
+python measure_params_cost.py  # Đo tham số và độ trễ suy luận
 ```
-
-Tự động chạy toàn bộ 3-Tier Tournament, lưu JSON thô vào `full_trainable_breastmnist.json` / `full_trainable_octmnist.json`, và xuất 8 biểu đồ 300 DPI vào `figures/`.
 
 ---
 
@@ -73,13 +78,14 @@ Tự động chạy toàn bộ 3-Tier Tournament, lưu JSON thô vào `full_trai
 
 ```
 GD3/
-├── BAO_CAO_GIAI_DOAN_3.md              # Báo cáo nghiệm thu chi tiết
+├── BAO_CAO_GIAI_DOAN_3.md              # Báo cáo nghiệm thu chi tiết (đã sửa 5 phản biện)
+├── README.md                           # Hướng dẫn chi tiết Giai đoạn 3
 ├── run_gd3.py                           # Master runner 3-Tier Tournament
 ├── trainable_quanv.py                   # (copy) Kiến trúc QNN khả vi
 ├── trainable_experiment.py              # (copy) Experiment runner
 ├── plot_gd3_dynamics.py                 # (copy) Visualization module
-├── full_trainable_breastmnist.json      # Raw data: 50 lượt × 6 metrics
-├── full_trainable_octmnist.json         # Raw data: 30 lượt × 6 metrics
+├── full_trainable_breastmnist.json      # Raw data: 50 lượt × 6 metrics (10 seeds)
+├── full_trainable_octmnist.json         # Raw data: 60 lượt × 6 metrics (10 seeds)
 ├── requirements.txt
 ├── src/
 │   ├── models/
