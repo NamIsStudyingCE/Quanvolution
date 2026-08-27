@@ -84,9 +84,16 @@ Sau khi chạy xong, ảnh so sánh đặc trưng lượng tử sẽ được l�
 
 ---
 
-## 📊 4. Lộ trình Thực hiện (13 Tuần)
-- [x] **GĐ0 (T1-T2):** Nền tảng, môi trường, demo Quanvolution (Mốc M1 - 24/08).
-- [x] **GĐ1 (T3-T4):** Pipeline MedMNIST & Baseline CNN công bằng đa seed (Mốc M2 - 07/09).
-- [ ] **GĐ2 (T5-T7):** Cài đặt Quanvolution lõi & trích xuất đặc trưng (Mốc M3 - 28/09).
-- [ ] **GĐ3 (T8-T10):** Thực nghiệm mở rộng, Ablation study & Kiểm định thống kê (Mốc M4 - 19/10).
-- [ ] **GĐ4 (T11-T13):** Hoàn thiện Luận văn, Demo nghiệm thu & Bảo vệ (09/11).
+## 📊 4. Lộ trình Thực hiện & Báo cáo Nghiệm thu từng Giai đoạn (13 Tuần)
+
+Dự án được triển khai và đóng gói độc lập qua từng mốc (milestone), có đầy đủ mã nguồn, dữ liệu JSON thô, biểu đồ và báo cáo nghiệm thu chi tiết:
+
+- [x] **GĐ0 (Tuần 1 - Tuần 2 | Mốc M1 - 24/08):** Nền tảng toán học, môi trường QML & Demo Quanvolution trích xuất đặc trưng.
+  - 📄 **Báo cáo chi tiết:** [`GD0/BAO_CAO_GIAI_DOAN_0.md`](GD0/BAO_CAO_GIAI_DOAN_0.md)
+- [x] **GĐ1 (Tuần 3 - Tuần 4 | Mốc M2 - 07/09):** Xây dựng Pipeline MedMNIST & Huấn luyện Classical Baseline CNN đối chứng công bằng qua 10 seeds.
+  - 📄 **Báo cáo chi tiết:** [`GD1/BAO_CAO_GIAI_DOAN_1.md`](GD1/BAO_CAO_GIAI_DOAN_1.md)
+- [x] **GĐ2 (Tuần 5 - Tuần 7 | Mốc M3 - 28/09):** Khảo sát 6 kiến trúc mạch lượng tử tĩnh (Circuit Ablation Study) & Xác định Quán quân lượng tử (`basic_L2` trên BreastMNIST, `random_L1` trên OCTMNIST).
+  - 📄 **Báo cáo chi tiết:** [`GD2/BAO_CAO_GIAI_DOAN_2.md`](GD2/BAO_CAO_GIAI_DOAN_2.md)
+- [x] **GĐ3 (Tuần 8 - Tuần 10 | Mốc M4 - 19/10):** Tích chập Lượng tử Tự học (Trainable Quanvolution) qua Ma trận Đối sánh 3 Tầng & Phân tích Động học Gradient chống Barren Plateaus.
+  - 📄 **Báo cáo chi tiết:** [`GD3/BAO_CAO_GIAI_DOAN_3.md`](GD3/BAO_CAO_GIAI_DOAN_3.md)
+- [ ] **GĐ4 (Tuần 11 - Tuần 13 | Mốc M5 - 09/11):** Soạn thảo hoàn thiện Luận văn Tốt nghiệp, Slide báo cáo & Bảo vệ trước Hội đồng.
