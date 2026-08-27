@@ -1,92 +1,83 @@
-# Quanvolutional Neural Networks for Medical Image Classification
+# GĐ1 — Pipeline Dữ liệu & Classical Baseline (Mốc M2 — 07/09)
 
 > **Đề tài Luận văn Tốt nghiệp:** Nghiên cứu và ứng dụng lớp tích chập lượng tử (Quanvolutional Layer) trong bài toán phân loại ảnh y tế (MedMNIST), so sánh công bằng với các kiến trúc cổ điển (Classical CNN).
 
----
-
-## 📌 1. Giới thiệu Đề tài
-Dự án tập trung vào việc áp dụng kiến trúc **Quanvolutional Neural Network (Quanvolution)** dựa trên nghiên cứu của *Henderson et al. (2019)*. Mạng sử dụng một mạch lượng tử nhỏ (Quantum Circuit) hoạt động như một bộ lọc không gian (Kernel Filter) trượt qua các vùng ảnh để trích xuất các đặc trưng phi tuyến lượng tử (*Quantum Feature Maps*), sau đó kết hợp với các mạng nơ-ron cổ điển để phân loại.
-
-### Các nguyên tắc nghiên cứu cốt lõi:
-1. **Tính tái lập (Reproducibility):** Cố định hạt giống ngẫu nhiên (seed), quy trình thực nghiệm rõ ràng, đảm bảo cùng code cùng seed ra cùng kết quả.
-2. **So sánh công bằng (Fair Comparison):** Mô hình cổ điển (Classical Baseline) được tối ưu hóa và huấn luyện nghiêm ngặt tương đương để đối chứng.
-3. **Đánh giá đa chiều (Multi-metric Evaluation):** Đánh giá trên dữ liệu mất cân bằng với đầy đủ các chỉ số: *Accuracy, Balanced Accuracy, F1-Score, MCC, ROC-AUC, PR-AUC* và kiểm định thống kê qua đa seed ($\geq 5$ seeds).
+**Mục tiêu giai đoạn:** Xây dựng pipeline dữ liệu chuẩn, chống data leakage, và huấn luyện Classical CNN baseline công bằng qua 10 seeds độc lập trên 2 bộ dữ liệu MedMNIST.
 
 ---
 
-## Phase 1: Training & Evaluation
+## 📌 Nhiệm vụ Giai đoạn 1 (Tuần 3 - Tuần 4)
 
-Implemented reproducible 10-seed experiment pipeline with perfectly fair classical baseline.
-
-### How to Run
-
-1. Open terminal in `d:\KhoaLuanTotNghiep`.
-2. Run all experiments automatically:
-   ```bash
-   python run_all.py
-   ```
-3. Or run individually:
-   - BreastMNIST (binary, 780 samples):
-     ```bash
-     python src/train.py --dataset breastmnist --epochs 30
-     ```
-   - OCTMNIST (multi-class, subset 5000 samples):
-     ```bash
-     python src/train.py --dataset octmnist --max_samples 5000 --epochs 30
-     ```
-
-Script auto-precomputes quantum features first (multiprocessing enabled), saves deterministic splits, then trains 10 fixed seeds. Results save to `results/` folder.
+| STT | Nhiệm vụ | Sản phẩm Bàn giao | Trạng thái |
+| :---: | :--- | :--- | :---: |
+| 1 | Pipeline nạp MedMNIST chuẩn & chống Leakage | `src/data/medmnist_loader.py` | ✅ Hoàn thành |
+| 2 | Precompute Quantum Features (đa tiến trình) | `src/data/precompute_features.py` | ✅ Hoàn thành |
+| 3 | Classical Baseline công bằng (Symmetrical Minimum CNN) | `src/models/classical_cnn.py` | ✅ Hoàn thành |
+| 4 | Module đánh giá 6 Metric Y tế | `src/utils/metrics.py` | ✅ Hoàn thành |
+| 5 | Thực nghiệm 10 Seed cố định, lưu JSON tự động | `src/train.py`, `run_all.py` | ✅ Hoàn thành |
+| 6 | Biểu đồ trực quan hóa kết quả | `src/visual/plot_results.py` | ✅ Hoàn thành |
 
 ---
 
-## 📂 2. Cấu trúc Thư mục Dự án
+## 📊 Kết quả Thực nghiệm (Mean ± Std, 10 Seeds)
 
-```text
-├── docs/                        # Tài liệu nghiên cứu, tóm tắt lý thuyết (Tuần 1 - M1)
-├── notebooks/                   # Jupyter Notebooks chạy thử nghiệm và trực quan hóa
-│   └── 00_quanvolution_demo.ipynb
-├── src/                         # Mã nguồn chính (Modules tái sử dụng)
-│   ├── data/                    # Pipeline nạp và xử lý MedMNIST
-│   ├── models/                  # Định nghĩa Quantum Circuit & Classical CNN
-│   ├── utils/                   # Hàm seed, metric y tế, kiểm định thống kê
-│   └── visual/                  # Trực quan hóa feature maps và biểu đồ
-├── results/                     # Kết quả đầu ra (Figures, CSV tables, Checkpoints)
-│   └── figures/
-├── quanvolution_demo.py         # Script demo ban đầu (Giai đoạn 0)
-├── requirements.txt             # Danh sách thư viện phụ thuộc
-├── .gitignore                   # Cấu hình bỏ qua các file tạm / dữ liệu nặng
-└── README.md                    # Hướng dẫn dự án
-```
+### BreastMNIST (Nhị phân — 780 mẫu)
+| Metric | Classical CNN | Quantum (Fixed) | Δ |
+| :--- | :---: | :---: | :---: |
+| ROC-AUC | 0.8307 ± 0.0210 | **0.8376 ± 0.0076** | +0.0069 |
+| PR-AUC | 0.9057 ± 0.0084 | **0.9167 ± 0.0045** | **+0.0110** *(p=0.007)* |
+| Balanced Acc | 0.6909 ± 0.0361 | **0.7014 ± 0.0270** | +0.0105 |
+
+### OCTMNIST (Đa lớp — 5.000 mẫu)
+| Metric | Classical CNN | Quantum (Fixed) | Δ |
+| :--- | :---: | :---: | :---: |
+| ROC-AUC | **0.7490 ± 0.0238** | 0.6914 ± 0.0050 | -0.0576 *(p<0.001)* |
+| Accuracy | **0.4492 ± 0.0184** | 0.4036 ± 0.0071 | -0.0456 |
+
+*→ Luận điểm: Fixed Quantum vượt trội trên dữ liệu nhỏ (PR-AUC), thua trên dữ liệu lớn đa lớp → tiền đề cho Trainable Quanvolution ở GĐ3.*
 
 ---
 
-## 🚀 3. Hướng dẫn Cài đặt & Chạy Thực nghiệm
+## 🚀 Cách Chạy lại Thực nghiệm
 
-### Bước 1: Khởi tạo Môi trường Python
-Khuyến nghị sử dụng môi trường ảo (`venv` hoặc `conda`):
 ```bash
-python -m venv venv
-# Kích hoạt trên Windows:
-.\venv\Scripts\activate
+# Từ thư mục GD1/
+python run_all.py
 ```
 
-### Bước 2: Cài đặt Thư viện
-```bash
-pip install -r requirements.txt
-```
-
-### Bước 3: Chạy Demo Giai đoạn 0
-Chạy script demo Quanvolution trên tập MNIST:
-```bash
-python quanvolution_demo.py
-```
-Sau khi chạy xong, ảnh so sánh đặc trưng lượng tử sẽ được lưu tại: `results/figures/quanvolution_features.png` (hoặc ngay thư mục gốc).
+Kết quả JSON lưu tại `results/`, biểu đồ tại `results/figures/`.
 
 ---
 
-## 📊 4. Lộ trình Thực hiện (13 Tuần)
-- [x] **GĐ0 (T1-T2):** Nền tảng, môi trường, demo Quanvolution (Mốc M1 - 24/08).
-- [x] **GĐ1 (T3-T4):** Pipeline MedMNIST & Baseline CNN công bằng đa seed (Mốc M2 - 07/09).
-- [ ] **GĐ2 (T5-T7):** Cài đặt Quanvolution lõi & trích xuất đặc trưng (Mốc M3 - 28/09).
-- [ ] **GĐ3 (T8-T10):** Thực nghiệm mở rộng, Ablation study & Kiểm định thống kê (Mốc M4 - 19/10).
-- [ ] **GĐ4 (T11-T13):** Hoàn thiện Luận văn, Demo nghiệm thu & Bảo vệ (09/11).
+## 📂 Cấu trúc Thư mục GD1
+
+```
+GD1/
+├── BAO_CAO_GIAI_DOAN_1.md      # Báo cáo nghiệm thu chi tiết
+├── run_all.py                   # Master runner (1 lệnh chạy toàn bộ)
+├── requirements.txt
+├── src/
+│   ├── train.py                 # Training loop 10 seeds
+│   ├── data/
+│   │   ├── medmnist_loader.py   # Pipeline nạp & chia tập
+│   │   └── precompute_features.py
+│   ├── models/
+│   │   ├── classical_cnn.py     # Symmetrical Minimum CNN
+│   │   └── quantum_model.py     # Fixed Quanvolution Classifier
+│   ├── utils/
+│   │   └── metrics.py           # 6 Medical Metrics
+│   └── visual/
+│       └── plot_results.py
+└── results/
+    ├── breastmnist_classical_latest.json
+    ├── breastmnist_quantum_latest.json
+    ├── octmnist_classical_latest.json
+    ├── octmnist_quantum_latest.json
+    └── figures/
+        ├── breastmnist_benchmark_chart.png
+        └── octmnist_benchmark_chart.png
+```
+
+---
+
+*← Quay lại [GĐ0](../GD0/BAO_CAO_GIAI_DOAN_0.md) | Tiếp theo [GĐ2](../GD2/BAO_CAO_GIAI_DOAN_2.md) →*

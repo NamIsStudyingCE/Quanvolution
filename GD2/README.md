@@ -1,92 +1,88 @@
-# Quanvolutional Neural Networks for Medical Image Classification
+# GĐ2 — Khảo sát Mạch Lượng tử Tĩnh & Xác định Quán quân (Mốc M3 — 28/09)
 
 > **Đề tài Luận văn Tốt nghiệp:** Nghiên cứu và ứng dụng lớp tích chập lượng tử (Quanvolutional Layer) trong bài toán phân loại ảnh y tế (MedMNIST), so sánh công bằng với các kiến trúc cổ điển (Classical CNN).
 
----
-
-## 📌 1. Giới thiệu Đề tài
-Dự án tập trung vào việc áp dụng kiến trúc **Quanvolutional Neural Network (Quanvolution)** dựa trên nghiên cứu của *Henderson et al. (2019)*. Mạng sử dụng một mạch lượng tử nhỏ (Quantum Circuit) hoạt động như một bộ lọc không gian (Kernel Filter) trượt qua các vùng ảnh để trích xuất các đặc trưng phi tuyến lượng tử (*Quantum Feature Maps*), sau đó kết hợp với các mạng nơ-ron cổ điển để phân loại.
-
-### Các nguyên tắc nghiên cứu cốt lõi:
-1. **Tính tái lập (Reproducibility):** Cố định hạt giống ngẫu nhiên (seed), quy trình thực nghiệm rõ ràng, đảm bảo cùng code cùng seed ra cùng kết quả.
-2. **So sánh công bằng (Fair Comparison):** Mô hình cổ điển (Classical Baseline) được tối ưu hóa và huấn luyện nghiêm ngặt tương đương để đối chứng.
-3. **Đánh giá đa chiều (Multi-metric Evaluation):** Đánh giá trên dữ liệu mất cân bằng với đầy đủ các chỉ số: *Accuracy, Balanced Accuracy, F1-Score, MCC, ROC-AUC, PR-AUC* và kiểm định thống kê qua đa seed ($\geq 5$ seeds).
+**Mục tiêu giai đoạn:** Circuit Ablation Study — Khảo sát 6 cấu hình mạch lượng tử tĩnh (Fixed Quanvolution), trực quan hóa Quantum Feature Maps, xác định mạch Quán quân, và Proof-of-Concept Trainable Quanvolution.
 
 ---
 
-## Phase 1: Training & Evaluation
+## 📌 Nhiệm vụ Giai đoạn 2 (Tuần 5 - Tuần 7)
 
-Implemented reproducible 10-seed experiment pipeline with perfectly fair classical baseline.
-
-### How to Run
-
-1. Open terminal in `d:\KhoaLuanTotNghiep`.
-2. Run all experiments automatically:
-   ```bash
-   python run_all.py
-   ```
-3. Or run individually:
-   - BreastMNIST (binary, 780 samples):
-     ```bash
-     python src/train.py --dataset breastmnist --epochs 30
-     ```
-   - OCTMNIST (multi-class, subset 5000 samples):
-     ```bash
-     python src/train.py --dataset octmnist --max_samples 5000 --epochs 30
-     ```
-
-Script auto-precomputes quantum features first (multiprocessing enabled), saves deterministic splits, then trains 10 fixed seeds. Results save to `results/` folder.
+| STT | Nhiệm vụ | Sản phẩm Bàn giao | Trạng thái |
+| :---: | :--- | :--- | :---: |
+| 1 | Trực quan hóa Feature Maps (Quantum vs Classical Conv) | `src/visual/visualize_features.py` | ✅ Hoàn thành |
+| 2 | Khảo sát 6 biến thể mạch lượng tử (Circuit Ablation) | `src/experiments/circuit_ablation.py` | ✅ Hoàn thành |
+| 3 | Xác nhận Quán quân & Kiểm định thống kê (10 seeds) | `results/circuit_ablation_champion_10seeds.json` | ✅ Hoàn thành |
+| 4 | Trainable Quanvolution POC (Bonus) | `src/models/trainable_quanv.py` | ✅ Hoàn thành |
 
 ---
 
-## 📂 2. Cấu trúc Thư mục Dự án
+## 🏆 6 Mạch Khảo sát & Kết quả Trên BreastMNIST (5 seeds)
 
-```text
-├── docs/                        # Tài liệu nghiên cứu, tóm tắt lý thuyết (Tuần 1 - M1)
-├── notebooks/                   # Jupyter Notebooks chạy thử nghiệm và trực quan hóa
-│   └── 00_quanvolution_demo.ipynb
-├── src/                         # Mã nguồn chính (Modules tái sử dụng)
-│   ├── data/                    # Pipeline nạp và xử lý MedMNIST
-│   ├── models/                  # Định nghĩa Quantum Circuit & Classical CNN
-│   ├── utils/                   # Hàm seed, metric y tế, kiểm định thống kê
-│   └── visual/                  # Trực quan hóa feature maps và biểu đồ
-├── results/                     # Kết quả đầu ra (Figures, CSV tables, Checkpoints)
-│   └── figures/
-├── quanvolution_demo.py         # Script demo ban đầu (Giai đoạn 0)
-├── requirements.txt             # Danh sách thư viện phụ thuộc
-├── .gitignore                   # Cấu hình bỏ qua các file tạm / dữ liệu nặng
-└── README.md                    # Hướng dẫn dự án
-```
+| Mạch | Kiến trúc | ROC-AUC (Mean) | Nhận xét |
+| :--- | :--- | :---: | :--- |
+| `random_L1` | RandomLayers L=1 | 0.8369 | Mạnh, ổn định |
+| `random_L2` | RandomLayers L=2 | 0.8292 | — |
+| **`basic_L2`** | BasicEntangler L=2 | **0.8497** | **🏆 Quán quân BreastMNIST** |
+| `basic_L1` | BasicEntangler L=1 | 0.8304 | — |
+| `strongly_L1` | StronglyEntangling L=1 | 0.8296 | — |
+| `strongly_L2` | StronglyEntangling L=2 | 0.8237 | — |
+
+**Quán quân BreastMNIST:** `basic_L2` — ROC-AUC 0.8497 vs Classical CNN 0.8307 (Paired t-test p=0.0309, Wilcoxon p=0.0273 ✅)
+
+**Quán quân OCTMNIST:** `random_L1` — ROC-AUC 0.6922 (mạnh nhất trong tập lớn)
 
 ---
 
-## 🚀 3. Hướng dẫn Cài đặt & Chạy Thực nghiệm
+## 🚀 Cách Chạy lại Thực nghiệm
 
-### Bước 1: Khởi tạo Môi trường Python
-Khuyến nghị sử dụng môi trường ảo (`venv` hoặc `conda`):
 ```bash
-python -m venv venv
-# Kích hoạt trên Windows:
-.\venv\Scripts\activate
+# Từ thư mục GD2/
+python run_ablation.py        # Circuit Ablation Study (6 mạch)
+python run_trainable.py       # Trainable Quanvolution POC
+python run_all.py             # Classical + Fixed Quantum baseline
 ```
-
-### Bước 2: Cài đặt Thư viện
-```bash
-pip install -r requirements.txt
-```
-
-### Bước 3: Chạy Demo Giai đoạn 0
-Chạy script demo Quanvolution trên tập MNIST:
-```bash
-python quanvolution_demo.py
-```
-Sau khi chạy xong, ảnh so sánh đặc trưng lượng tử sẽ được lưu tại: `results/figures/quanvolution_features.png` (hoặc ngay thư mục gốc).
 
 ---
 
-## 📊 4. Lộ trình Thực hiện (13 Tuần)
-- [x] **GĐ0 (T1-T2):** Nền tảng, môi trường, demo Quanvolution (Mốc M1 - 24/08).
-- [x] **GĐ1 (T3-T4):** Pipeline MedMNIST & Baseline CNN công bằng đa seed (Mốc M2 - 07/09).
-- [ ] **GĐ2 (T5-T7):** Cài đặt Quanvolution lõi & trích xuất đặc trưng (Mốc M3 - 28/09).
-- [ ] **GĐ3 (T8-T10):** Thực nghiệm mở rộng, Ablation study & Kiểm định thống kê (Mốc M4 - 19/10).
-- [ ] **GĐ4 (T11-T13):** Hoàn thiện Luận văn, Demo nghiệm thu & Bảo vệ (09/11).
+## 📂 Cấu trúc Thư mục GD2
+
+```
+GD2/
+├── BAO_CAO_GIAI_DOAN_2.md                  # Báo cáo nghiệm thu chi tiết
+├── run_ablation.py                          # Runner Circuit Ablation
+├── run_trainable.py                         # Runner Trainable POC
+├── run_all.py
+├── requirements.txt
+├── src/
+│   ├── models/
+│   │   ├── circuits.py                      # 6 cấu hình mạch lượng tử
+│   │   ├── trainable_quanv.py               # Trainable QNN (POC)
+│   │   ├── classical_cnn.py
+│   │   └── quantum_model.py
+│   ├── data/
+│   │   ├── precompute_circuits.py           # Precompute 6 circuit features
+│   │   └── medmnist_loader.py
+│   ├── experiments/
+│   │   ├── circuit_ablation.py              # 2-stage ablation runner
+│   │   └── trainable_experiment.py
+│   └── visual/
+│       ├── visualize_features.py            # Feature map comparison
+│       ├── plot_ablation.py
+│       └── plot_trainable.py
+└── results/
+    ├── circuit_ablation_summary.json        # Tổng hợp 6 mạch × 5 seeds
+    ├── circuit_ablation_champion_10seeds.json
+    ├── trainable_poc_summary.json
+    └── figures/
+        ├── breastmnist_feature_comparison.png
+        ├── octmnist_feature_comparison.png
+        ├── circuit_ablation_breastmnist.png
+        ├── circuit_ablation_octmnist.png
+        ├── trainable_poc_curves.png
+        └── trainable_poc_metrics.png
+```
+
+---
+
+*← Quay lại [GĐ1](../GD1/BAO_CAO_GIAI_DOAN_1.md) | Tiếp theo [GĐ3](../GD3/BAO_CAO_GIAI_DOAN_3.md) →*
