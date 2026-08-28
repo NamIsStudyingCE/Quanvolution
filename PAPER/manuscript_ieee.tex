@@ -8,6 +8,8 @@
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{multirow}
+\usepackage{makecell}
+\usepackage{array}
 \usepackage{url}
 \usepackage{hyperref}
 
@@ -25,7 +27,7 @@
 \author{Hoang-Nam~Nguyen\textsuperscript{1} and Duy-Xuan-Bach~Nguyen\textsuperscript{1,*}\\
 \textsuperscript{1}\textit{Faculty of Computer Engineering, University of Information Technology, Vietnam National University Ho Chi Minh City (VNU-HCM), Ho Chi Minh City, Vietnam}\\
 \textit{Primary Author (Student):} \texttt{ng.h.nam0802@gmail.com} \quad \textit{*Academic Advisor \& Corresponding Author:} \texttt{bachndx@uit.edu.vn}%
-\thanks{H.-N. Nguyen (First Author) is an undergraduate researcher with the Faculty of Computer Engineering, University of Information Technology, VNU-HCM, Ho Chi Minh City, Vietnam (e-mail: \texttt{ng.h.nam0802@gmail.com}).}%
+\thanks{H.-N. Nguyen (First Author / Primary Researcher) is with the Faculty of Computer Engineering, University of Information Technology, VNU-HCM, Ho Chi Minh City, Vietnam (e-mail: \texttt{ng.h.nam0802@gmail.com}).}%
 \thanks{D.-X.-B. Nguyen (Academic Supervisor and Corresponding Author) is with the Faculty of Computer Engineering, University of Information Technology, VNU-HCM, Ho Chi Minh City, Vietnam (e-mail: \texttt{bachndx@uit.edu.vn}).}%
 \thanks{Reproducibility repository: \url{https://github.com/NamIsStudyingCE/Quanvolution.git}}%
 }
@@ -98,7 +100,10 @@ Table~\ref{tab:literature} situates our empirical investigation within the broad
 \caption{Comparative positioning against seminal and recent QML literature.}
 \label{tab:literature}
 \centering
-\begin{tabular}{lp{3.2cm}p{3.2cm}p{2.6cm}cp{3.4cm}}
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lp{3.0cm}p{3.0cm}p{2.5cm}cp{3.4cm}}
 \toprule
 \textbf{Study} & \textbf{Target Domain} & \textbf{Quantum Architecture} & \textbf{Classical Baseline} & \textbf{Statistical Rigor} & \textbf{Primary Limitations Addressed} \\
 \midrule
@@ -143,6 +148,9 @@ To adhere strictly to the principle of \textit{Ceteris Paribus}, the classical b
 \caption{Parameter breakdown between feature extractors and classifier heads.}
 \label{tab:params}
 \centering
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Model Family} & \textbf{Kernel Params} & \textbf{Head ($K=2$)} & \textbf{Head ($K=4$)} & \textbf{Total Params} \\
@@ -197,39 +205,45 @@ We evaluate $6$ metrics: Accuracy (Acc), Balanced Accuracy (BAcc), F1-Score (mac
 Table~\ref{tab:breastmnist} summarizes test performance across 10 independent seeds on BreastMNIST ($L=2$).
 
 \begin{table*}[t]
-\caption{10-seed empirical performance on BreastMNIST ($L=2$, 20 Epochs). Bold indicates best performance per column; $[ \cdot ]$ denotes $95\%$ CI.}
+\caption{Empirical 10-Seed Performance Comparison on BreastMNIST ($L=2$, 20 Epochs).}
 \label{tab:breastmnist}
 \centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.25}
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
-\textbf{Classical CNN Baseline} & $0.8115 \pm 0.0281$ & $0.6875 \pm 0.0448$ $[0.6554, 0.7195]$ & $0.8799 \pm 0.0188$ & $0.4741 \pm 0.0830$ & $0.8336 \pm 0.0246$ $[0.8160, 0.8512]$ & $0.9041 \pm 0.0095$ $[0.8973, 0.9109]$ \\
-\textbf{Fixed Basic Quanv (L2)} & $0.8192 \pm 0.0101$ & $0.6816 \pm 0.0259$ & $0.8874 \pm 0.0058$ & $0.4874 \pm 0.0378$ & $\mathbf{0.8521 \pm 0.0090}$ $[0.8457, 0.8586]$ & $0.9110 \pm 0.0065$ $[0.9063, 0.9156]$ \\
-\textbf{Trainable Basic Quanv (L2)} & $0.8186 \pm 0.0224$ & $0.6732 \pm 0.0418$ & $0.8862 \pm 0.0145$ & $0.4814 \pm 0.0692$ & $0.8406 \pm 0.0239$ $[0.8235, 0.8577]$ & $0.9173 \pm 0.0184$ $[0.9041, 0.9304]$ \\
-\textbf{Fixed Strongly Quanv (L2)} & $0.7994 \pm 0.0098$ & $0.6602 \pm 0.0213$ & $0.8733 \pm 0.0065$ & $0.4301 \pm 0.0348$ & $0.8139 \pm 0.0143$ $[0.8037, 0.8241]$ & $\mathbf{0.9182 \pm 0.0067}$ $[0.9134, 0.9230]$ \\
-\textbf{Trainable Strongly Quanv (L2)} & $\mathbf{0.8205 \pm 0.0257}$ & $\mathbf{0.6945 \pm 0.0428}$ $[0.6639, 0.7251]$ & $\mathbf{0.8877 \pm 0.0163}$ & $\mathbf{0.4911 \pm 0.0756}$ & $0.8306 \pm 0.0280$ $[0.8106, 0.8506]$ & $0.9167 \pm 0.0087$ $[0.9105, 0.9229]$ \\
+\textbf{Classical CNN Baseline} & $0.8115 \pm 0.0281$ & \makecell{$0.6875 \pm 0.0448$ \\ \scriptsize $[0.6554, 0.7195]$} & $0.8799 \pm 0.0188$ & $0.4741 \pm 0.0830$ & \makecell{$0.8336 \pm 0.0246$ \\ \scriptsize $[0.8160, 0.8512]$} & \makecell{$0.9041 \pm 0.0095$ \\ \scriptsize $[0.8973, 0.9109]$} \\
+\textbf{Fixed Basic Quanv (L2)} & $0.8192 \pm 0.0101$ & \makecell{$0.6816 \pm 0.0259$ \\ \scriptsize $[0.6631, 0.7001]$} & $0.8874 \pm 0.0058$ & $0.4874 \pm 0.0378$ & \makecell{$\mathbf{0.8521 \pm 0.0090}$ \\ \scriptsize $[0.8457, 0.8586]$} & \makecell{$0.9110 \pm 0.0065$ \\ \scriptsize $[0.9063, 0.9156]$} \\
+\textbf{Trainable Basic Quanv (L2)} & $0.8186 \pm 0.0224$ & \makecell{$0.6732 \pm 0.0418$ \\ \scriptsize $[0.6433, 0.7031]$} & $0.8862 \pm 0.0145$ & $0.4814 \pm 0.0692$ & \makecell{$0.8406 \pm 0.0239$ \\ \scriptsize $[0.8235, 0.8577]$} & \makecell{$0.9173 \pm 0.0184$ \\ \scriptsize $[0.9041, 0.9304]$} \\
+\textbf{Fixed Strongly Quanv (L2)} & $0.7994 \pm 0.0098$ & \makecell{$0.6602 \pm 0.0213$ \\ \scriptsize $[0.6450, 0.6754]$} & $0.8733 \pm 0.0065$ & $0.4301 \pm 0.0348$ & \makecell{$0.8139 \pm 0.0143$ \\ \scriptsize $[0.8037, 0.8241]$} & \makecell{$\mathbf{0.9182 \pm 0.0067}$ \\ \scriptsize $[0.9134, 0.9230]$} \\
+\textbf{Trainable Strongly Quanv (L2)} & $\mathbf{0.8205 \pm 0.0257}$ & \makecell{$\mathbf{0.6945 \pm 0.0428}$ \\ \scriptsize $[0.6639, 0.7251]$} & $\mathbf{0.8877 \pm 0.0163}$ & $\mathbf{0.4911 \pm 0.0756}$ & \makecell{$0.8306 \pm 0.0280$ \\ \scriptsize $[0.8106, 0.8506]$} & \makecell{$0.9167 \pm 0.0087$ \\ \scriptsize $[0.9105, 0.9229]$} \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 \begin{table*}[t]
-\caption{10-seed empirical performance on OCTMNIST ($L=1$, 20 Epochs).}
+\caption{Empirical 10-Seed Performance Comparison on OCTMNIST ($L=1$, 20 Epochs).}
 \label{tab:octmnist}
 \centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.25}
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
-\textbf{Classical CNN Baseline} & $\mathbf{0.5298 \pm 0.0239}$ & $\mathbf{0.4433 \pm 0.0199}$ $[0.4291, 0.4575]$ & $\mathbf{0.4792 \pm 0.0241}$ & $\mathbf{0.3092 \pm 0.0314}$ & $\mathbf{0.7505 \pm 0.0240}$ $[0.7333, 0.7676]$ & $\mathbf{0.4991 \pm 0.0268}$ $[0.4799, 0.5182]$ \\
-\textbf{Fixed Basic Quanv (L1)} & $0.4726 \pm 0.0100$ & $0.4075 \pm 0.0077$ & $0.4300 \pm 0.0100$ & $0.2328 \pm 0.0130$ & $0.6711 \pm 0.0042$ $[0.6681, 0.6741]$ & $0.4186 \pm 0.0038$ $[0.4159, 0.4213]$ \\
-\textbf{Trainable Basic Quanv (L1)} & $0.4650 \pm 0.0139$ & $0.3955 \pm 0.0115$ & $0.4179 \pm 0.0145$ & $0.2196 \pm 0.0191$ & $0.6704 \pm 0.0106$ $[0.6628, 0.6780]$ & $0.4102 \pm 0.0076$ $[0.4048, 0.4156]$ \\
-\textbf{Fixed Champ GĐ2 (\texttt{random\_L1})} & $0.4799 \pm 0.0113$ & $0.4048 \pm 0.0099$ & $0.4269 \pm 0.0133$ & $0.2391 \pm 0.0165$ & $0.6912 \pm 0.0071$ $[0.6861, 0.6963]$ & $0.4443 \pm 0.0071$ $[0.4392, 0.4494]$ \\
-\textbf{Fixed Strongly Quanv (L1)} & $0.4778 \pm 0.0087$ & $0.4034 \pm 0.0062$ & $0.4257 \pm 0.0114$ & $0.2348 \pm 0.0126$ & $0.6690 \pm 0.0055$ $[0.6651, 0.6690]$ & $0.4175 \pm 0.0049$ $[0.4140, 0.4210]$ \\
-\textbf{Trainable Strongly Quanv (L1)} & $0.4772 \pm 0.0184$ & $0.4020 \pm 0.0161$ & $0.4246 \pm 0.0201$ & $0.2388 \pm 0.0259$ & $0.6922 \pm 0.0199$ $[0.6780, 0.7065]$ & $0.4365 \pm 0.0125$ $[0.4276, 0.4455]$ \\
+\textbf{Classical CNN Baseline} & $\mathbf{0.5298 \pm 0.0239}$ & \makecell{$\mathbf{0.4433 \pm 0.0199}$ \\ \scriptsize $[0.4291, 0.4575]$} & $\mathbf{0.4792 \pm 0.0241}$ & $\mathbf{0.3092 \pm 0.0314}$ & \makecell{$\mathbf{0.7505 \pm 0.0240}$ \\ \scriptsize $[0.7333, 0.7676]$} & \makecell{$\mathbf{0.4991 \pm 0.0268}$ \\ \scriptsize $[0.4799, 0.5182]$} \\
+\textbf{Fixed Basic Quanv (L1)} & $0.4726 \pm 0.0100$ & \makecell{$0.4075 \pm 0.0077$ \\ \scriptsize $[0.4020, 0.4130]$} & $0.4300 \pm 0.0100$ & $0.2328 \pm 0.0130$ & \makecell{$0.6711 \pm 0.0042$ \\ \scriptsize $[0.6681, 0.6741]$} & \makecell{$0.4186 \pm 0.0038$ \\ \scriptsize $[0.4159, 0.4213]$} \\
+\textbf{Trainable Basic Quanv (L1)} & $0.4650 \pm 0.0139$ & \makecell{$0.3955 \pm 0.0115$ \\ \scriptsize $[0.3873, 0.4037]$} & $0.4179 \pm 0.0145$ & $0.2196 \pm 0.0191$ & \makecell{$0.6704 \pm 0.0106$ \\ \scriptsize $[0.6628, 0.6780]$} & \makecell{$0.4102 \pm 0.0076$ \\ \scriptsize $[0.4048, 0.4156]$} \\
+\textbf{Fixed Champ GĐ2 (\texttt{random\_L1})} & $0.4799 \pm 0.0113$ & \makecell{$0.4048 \pm 0.0099$ \\ \scriptsize $[0.3977, 0.4119]$} & $0.4269 \pm 0.0133$ & $0.2391 \pm 0.0165$ & \makecell{$0.6912 \pm 0.0071$ \\ \scriptsize $[0.6861, 0.6963]$} & \makecell{$0.4443 \pm 0.0071$ \\ \scriptsize $[0.4392, 0.4494]$} \\
+\textbf{Fixed Strongly Quanv (L1)} & $0.4778 \pm 0.0087$ & \makecell{$0.4034 \pm 0.0062$ \\ \scriptsize $[0.3990, 0.4078]$} & $0.4257 \pm 0.0114$ & $0.2348 \pm 0.0126$ & \makecell{$0.6690 \pm 0.0055$ \\ \scriptsize $[0.6651, 0.6690]$} & \makecell{$0.4175 \pm 0.0049$ \\ \scriptsize $[0.4140, 0.4210]$} \\
+\textbf{Trainable Strongly Quanv (L1)} & $0.4772 \pm 0.0184$ & \makecell{$0.4020 \pm 0.0161$ \\ \scriptsize $[0.3905, 0.4135]$} & $0.4246 \pm 0.0201$ & $0.2388 \pm 0.0259$ & \makecell{$0.6922 \pm 0.0199$ \\ \scriptsize $[0.6780, 0.7065]$} & \makecell{$0.4365 \pm 0.0125$ \\ \scriptsize $[0.4276, 0.4455]$} \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \textbf{Key Statistical Findings on BreastMNIST:}
 \begin{enumerate}
@@ -264,6 +278,9 @@ Table~\ref{tab:latency} breaks down CPU inference latency and training wall-cloc
 \caption{Inference latency and computational cost on Intel CPU.}
 \label{tab:latency}
 \centering
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{llccc}
 \toprule
 \textbf{Model} & \textbf{Phase} & \textbf{Mean Latency} & \textbf{Ratio} & \textbf{Kernel Params} \\
