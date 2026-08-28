@@ -30,11 +30,9 @@
 
 \title{Symmetrical Empirical Evaluation of Trainable versus Fixed Quanvolutional Filters in Medical Image Classification: A Rigorous, Reproducible Benchmark on MedMNIST}
 
-\author{Hoang-Nam~Nguyen\textsuperscript{1} and Duy-Xuan-Bach~Nguyen\textsuperscript{1,*}\\
-\textsuperscript{1}\textit{Faculty of Computer Engineering, University of Information Technology, Vietnam National University Ho Chi Minh City (VNU-HCM), Ho Chi Minh City, Vietnam}\\
-\textit{Primary Author (Student):} \texttt{ng.h.nam0802@gmail.com} \quad \textit{*Academic Advisor \& Corresponding Author:} \texttt{bachndx@uit.edu.vn}%
-\thanks{H.-N. Nguyen (First Author / Primary Researcher) is with the Faculty of Computer Engineering, University of Information Technology, VNU-HCM, Ho Chi Minh City, Vietnam (e-mail: \texttt{ng.h.nam0802@gmail.com}).}%
-\thanks{D.-X.-B. Nguyen (Academic Supervisor and Corresponding Author) is with the Faculty of Computer Engineering, University of Information Technology, VNU-HCM, Ho Chi Minh City, Vietnam (e-mail: \texttt{bachndx@uit.edu.vn}).}%
+\author{Hoang-Nam~Nguyen and Duy-Xuan-Bach~Nguyen%
+\thanks{H.-N. Nguyen (Primary Author / Student Researcher) is with the Faculty of Computer Engineering, University of Information Technology, Vietnam National University Ho Chi Minh City (VNU-HCM), Ho Chi Minh City, Vietnam (e-mail: ng.h.nam0802@gmail.com).}%
+\thanks{D.-X.-B. Nguyen (Academic Advisor \& Corresponding Author) is with the Faculty of Computer Engineering, University of Information Technology, Vietnam National University Ho Chi Minh City (VNU-HCM), Ho Chi Minh City, Vietnam (e-mail: bachndx@uit.edu.vn).}%
 \thanks{Reproducibility repository: \url{https://github.com/NamIsStudyingCE/Quanvolution.git}}%
 }
 
@@ -107,7 +105,7 @@ Table~\ref{tab:literature} situates our empirical investigation within the broad
 \label{tab:literature}
 \centering
 \small
-\begin{tabularx}{\textwidth}{@{}l p{2.6cm} p{2.6cm} p{2.2cm} c X@{}}
+\begin{tabularx}{\textwidth}{@{}p{3cm} L L L L L@{}}
 \toprule
 \textbf{Study} & \textbf{Target Domain} & \textbf{Quantum Architecture} & \textbf{Classical Baseline} & \textbf{Statistical Rigor} & \textbf{Primary Limitations Addressed} \\
 \midrule
@@ -160,7 +158,7 @@ To adhere strictly to the principle of \textit{Ceteris Paribus}, the classical b
 \label{tab:params}
 \centering
 \footnotesize
-\begin{tabularx}{\columnwidth}{@{}l c c c@{}}
+\begin{tabularx}{\columnwidth}{@{}L C C C@{}}
 \toprule
 \textbf{Model Family} & \textbf{Kernel} & \textbf{Head ($K=2/4$)} & \textbf{Total ($K=2/4$)} \\
 \midrule
@@ -315,7 +313,7 @@ Table~\ref{tab:latency} breaks down CPU inference latency and training wall-cloc
 \label{tab:latency}
 \centering
 \footnotesize
-\begin{tabularx}{\columnwidth}{@{}l l c c c@{}}
+\begin{tabularx}{\columnwidth}{@{}L L C C C@{}}
 \toprule
 \textbf{Model} & \textbf{Phase} & \textbf{Mean Latency} & \textbf{Ratio} & \textbf{Kernel Params} \\
 \midrule
