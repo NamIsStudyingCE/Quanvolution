@@ -32,3 +32,6 @@ results/logs/
 .vscode/
 .idea/
 *.swp
+
+# Reference repositories
+PAPER/references/academic-phrasebank/
