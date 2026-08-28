@@ -1,12 +1,26 @@
+<div align="center">
+
 # Symmetrical Empirical Evaluation of Trainable versus Fixed Quanvolutional Filters in Medical Image Classification: A Rigorous, Reproducible Benchmark on MedMNIST
 
-**Hoang-Nam Nguyen**$^1$ (Primary Author / Student Researcher) and **Duy-Xuan-Bach Nguyen**$^{1,*}$ (Academic Advisor / Corresponding Author)  
-$^1$*Faculty of Computer Engineering, University of Information Technology, VNU-HCM, Ho Chi Minh City, Vietnam*  
-*Primary Author Email:* `ng.h.nam0802@gmail.com`  
-*Corresponding Author / Academic Advisor Email:* `bachndx@uit.edu.vn`  
-*Source Code & Reproducibility Repository:* `https://github.com/NamIsStudyingCE/Quanvolution.git`  
+<br>
+
+**Hoang-Nam Nguyen**$^1$ *(Primary Author / Student Researcher)* and **Duy-Xuan-Bach Nguyen**$^{1,*}$ *(Academic Advisor \& Corresponding Author)*
+
+<br>
+
+$^1$*Faculty of Computer Engineering, University of Information Technology,*  
+*Vietnam National University Ho Chi Minh City (VNU-HCM), Ho Chi Minh City, Vietnam*  
+
+<br>
+
+**Primary Author Email:** `ng.h.nam0802@gmail.com` $\quad\vert\quad$ **Corresponding Author Email:** `bachndx@uit.edu.vn`  
+**Open-Science Reproducibility Repository:** [https://github.com/NamIsStudyingCE/Quanvolution.git](https://github.com/NamIsStudyingCE/Quanvolution.git)
 
 ---
+
+</div>
+
+<br>
 
 ## ABSTRACT
 
@@ -68,7 +82,7 @@ Table 1 situates our empirical investigation within the broader landscape of QML
 
 | Study | Target Domain | Quantum Architecture | Classical Baseline | Statistical Rigor | Primary Limitations Addressed by Ours |
 | :--- | :--- | :--- | :--- | :---: | :--- |
-| **Henderson et al. (2019)** [7] | Synthetic MNIST | Random Quanvolution | Basic CNN | $1 - 3$ seeds (No tests) | Toy dataset, no medical application, asymmetrical classifier heads. |
+| **Henderson et al. (2019)** [7] | Synthetic MNIST | Random Quanvolution | Basic CNN | $1 - 3$ seeds (No tests) | Toy dataset, no medical scope, asymmetrical classifier heads. |
 | **Cong et al. (2019)** [14] | Quantum Phase Detection | Pure QCNN | Classical MLP | Single-run theoretical | Tailored for quantum spin chains, incompatible with 2D image grids. |
 | **Altares-López et al. (2025)** [10] | Industrial / Medical Images | HQCNN Hybrid | ResNet-18 (Pretrained) | Inconsistent seeds | Unfair baseline; unable to isolate quantum kernel contributions. |
 | **Nature Sci. Rep. (2026)** [11] | MedMNIST (PathMNIST) | VQC on IBM Quantum | Basic MLP | $3 - 5$ seeds (Untuned) | Weak classical baseline; quantum device noise obscures algorithmic validity. |
@@ -86,7 +100,7 @@ Figure 1 illustrates the end-to-end architecture. The pipeline consists of four 
 3. **Quantum Feature Maps:** Outputs are structured into $4 \times 14 \times 14$ feature tensors ($784$ dimensions).
 4. **Symmetrical Classifier Head:** Features pass through `BatchNorm2d(4)`, `ReLU`, and `Linear(784, K)` to generate output class logits ($K=2$ for BreastMNIST, $K=4$ for OCTMNIST).
 
-*(High-resolution diagrams: `Fig1_quanvolution_pipeline.png` and `Fig1_quanvolution_pipeline.pdf`).*
+*(High-resolution publication diagrams are available in `figures/Fig1_quanvolution_pipeline.png` and vector format `figures/Fig1_quanvolution_pipeline.pdf`).*
 
 ### 3.2. Quantum Ansatz Variations
 We examine three distinct ansatz families:
@@ -143,7 +157,7 @@ We evaluate $6$ metrics: Accuracy (Acc), Balanced Accuracy (BAcc), F1-Score (mac
 ### 5.1. BreastMNIST Benchmark (Small-Sample, Imbalanced Regime)
 Table 3 summarizes test performance across 10 independent seeds on BreastMNIST ($L=2$).
 
-**TABLE 3: 10-seed empirical performance on BreastMNIST ($L=2$, 20 Epochs).**
+**TABLE 3: 10-seed empirical performance on BreastMNIST ($L=2$, 20 Epochs).**  
 *(Bold indicates best performance per column; $[ \cdot ]$ denotes $95\%$ CI).*
 
 | Model Architecture | Accuracy | Balanced Acc | F1-Score | MCC | ROC-AUC | PR-AUC |
@@ -209,8 +223,8 @@ Key computational insights include:
 
 ### 6.1. Decoupling Data Regimes: Capacity Bottleneck vs. Regularization
 The divergent outcomes between BreastMNIST and OCTMNIST highlight a fundamental architectural principle:
-* **Small Data Regime (BreastMNIST - 546 train samples, binary):** Classical convolutions with freely unconstrained weights readily overfit spurious artifacts. The fixed 4-qubit quantum transformation acts as a rigid **Structural Regularizer** in Hilbert space, compressing the optimization search space and resulting in a $\sim 2.73\times$ reduction in variance and peak ROC-AUC ($0.8521$).
-* **Large Multi-Class Regime (OCTMNIST - 3,500 train samples, 4 classes):** Separating 4 subtle retinal pathologies requires high spatial feature flexibility. Shallow 4-qubit kernels hit an **Expressibility Bottleneck**, whereas classical convolutions scale effectively to dominate the task ($0.7505$ vs. $0.6922$).
+* **Small Data Regime (BreastMNIST — 546 train samples, binary):** Classical convolutions with freely unconstrained weights readily overfit spurious artifacts. The fixed 4-qubit quantum transformation acts as a rigid **Structural Regularizer** in Hilbert space, compressing the optimization search space and resulting in a $\sim 2.73\times$ reduction in variance and peak ROC-AUC ($0.8521$).
+* **Large Multi-Class Regime (OCTMNIST — 3,500 train samples, 4 classes):** Separating 4 subtle retinal pathologies requires high spatial feature flexibility. Shallow 4-qubit kernels hit an **Expressibility Bottleneck**, whereas classical convolutions scale effectively to dominate the task ($0.7505$ vs. $0.6922$).
 
 ### 6.2. Potency of Quantum Inductive Bias in Zero-Parameter Kernels
 A major finding is that zero-parameter fixed quantum circuits (`Fixed Basic` and `Fixed Strongly`) achieved top-tier performance on BreastMNIST, outperforming heavily parameterized trainable counterparts. This confirms that adding trainable parameters to the quantum circuit does not guarantee improved generalization in low-data regimes; an appropriately designed fixed circuit provides sufficient inductive bias with **strictly zero trainable kernel parameters**.
