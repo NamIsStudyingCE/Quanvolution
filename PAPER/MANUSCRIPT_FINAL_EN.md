@@ -46,7 +46,7 @@ In the era of computer-aided diagnosis (CAD), medical image analysis (such as ul
 Quantum Machine Learning (QML) in the Noisy Intermediate-Scale Quantum (NISQ) era presents a compelling alternative by mapping classical data into exponentially large $2^N$-dimensional Hilbert spaces via parameterized quantum circuits [5], [6]. In 2020, Henderson et al. [7] introduced the Quanvolutional Neural Network (Quanvolution), which employs a local parameterized quantum circuit as a sliding kernel to transform spatial image patches into quantum feature maps. By performing non-linear Hilbert space mappings via quantum entanglement and superposition, Quanvolution is hypothesized to impart a **Quantum Inductive Bias**, potentially uncovering complex topological features inaccessible to linear classical convolutions [8], [9].
 
 Despite surging interest, recent QML literature in biomedical imaging [9]–[12] exhibits three fundamental methodological limitations:
-* **L1 — Unfair Baseline Comparisons:** Prior studies frequently evaluate QML models against undertuned, arbitrary classical baselines or compare small quantum models against multi-million-parameter pretrained architectures (e.g., ResNet-18) without parameter isolation [10]. Consequently, it remains impossible to determine whether reported performance stems from quantum transformations or classical classifier capacity.
+* **L1 — Unfair Baseline Comparisons:** Prior studies frequently evaluate QML models against undertuned, arbitrary classical baselines or compare small quantum models against multi-million-parameter pretrained architectures (e.g., ResNet-18) without parameter isolation [11]. Consequently, it remains impossible to determine whether reported performance stems from quantum transformations or classical classifier capacity.
 * **L2 — Absence of Multi-Seed Statistical Rigor:** A majority of published works report single-run experiments or 3-seed averages without reporting confidence intervals or non-parametric significance tests, conflating random initialization luck with genuine "quantum advantage" [13].
 * **L3 — Unresolved Dichotomy Between Trainable and Fixed Ansatzes:** The seminal work by Henderson et al. [7] posited that fixed random circuits suffice without training quantum gates. Subsequent works attempt to train all quantum parameters but fail to quantify the trade-off in optimization cost and gradient dynamics.
 
@@ -82,11 +82,11 @@ Table 1 situates our empirical investigation within the broader landscape of QML
 
 | Study | Target Domain | Quantum Architecture | Classical Baseline | Statistical Rigor | Primary Limitations Addressed by Ours |
 | :--- | :--- | :--- | :--- | :---: | :--- |
-| **Henderson et al. (2019)** [7] | Synthetic MNIST | Random Quanvolution | Basic CNN | $1 - 3$ seeds (No tests) | Toy dataset, no medical scope, asymmetrical classifier heads. |
+| **Henderson et al. (2020)** [7] | Synthetic MNIST | Random Quanvolution | Basic CNN | $1 - 3$ seeds (No tests) | Toy dataset, no medical scope, asymmetrical classifier heads. |
 | **Cong et al. (2019)** [14] | Quantum Phase Detection | Pure QCNN | Classical MLP | Single-run theoretical | Tailored for quantum spin chains, incompatible with 2D image grids. |
-| **Altares-López et al. (2025)** [10] | Industrial / Medical Images | HQCNN Hybrid | ResNet-18 (Pretrained) | Inconsistent seeds | Unfair baseline; unable to isolate quantum kernel contributions. |
-| **Nature Sci. Rep. (2026)** [11] | MedMNIST (PathMNIST) | VQC on IBM Quantum | Basic MLP | $3 - 5$ seeds (Untuned) | Weak classical baseline; quantum device noise obscures algorithmic validity. |
-| **"Do We Really Need QML?" (2026)** [13] | Critical QML Survey | Various QNNs | Modern CNNs | Literature Review | Identifies widespread over-claiming due to unfair baselines in QML literature. |
+| **Altares-López et al. (2021)** [10] | Medical / Synthetic Data | Genetic VQC Search | Classical SVM / MLP | 5-fold CV | Heuristic search lacks convolutional inductive bias; non-standardized split. |
+| **Azevedo et al. (2022)** [11] | Breast Cancer (Ultrasound) | Hybrid VQC Head | Pretrained ResNet | Single split (No tests) | Classical backbone dominates capacity; unable to isolate pure quantum kernel effect. |
+| **Kübler et al. (2021)** [13] | Kernel Machine Learning | Quantum Kernels | Classical SVM / RBF | Theoretical Proofs | Mathematical bounds without empirical multi-class medical vision benchmarks. |
 | **This Work (Ours)** | **MedMNIST (Breast & OCT)** | **3-Tier Quanv: Fixed vs. Trainable** | **Symmetrical 1:1 Minimum CNN** | **10 seeds, paired $t$-test, Wilcoxon, $95\%$ CI, Cohen's $d$** | **Strict parameter parity, data regime boundaries, $0$-param kernel quantification.** |
 
 ---
@@ -266,10 +266,10 @@ We summarize three primary conclusions:
 [7] M. Henderson, S. Shakya, S. Pradhan, and T. Cook, "Quanvolutional neural networks: powering image recognition with quantum circuits," Quantum Machine Intelligence, vol. 2, no. 1, p. 2, Jun. 2020.
 [8] H. Y. Huang et al., "Power of data in quantum machine learning," Nature Communications, vol. 12, no. 1, p. 2631, May 2021.
 [9] T. H. Vu, H. L. Le, and T. B. Pham, "Exploring the features of quanvolutional neural networks for improved image classification," Quantum Machine Intelligence, vol. 6, no. 1, p. 15, Feb. 2024.
-[10] F. M. Altares-López, A. Ribeiro, and J. J. García-Ripoll, "Automatic design of hybrid quantum-classical convolutional neural networks," Quantum Science and Technology, vol. 10, no. 1, p. 015012, 2025.
-[11] S. S. Sannakki et al., "Medical image classification using quantum machine learning on NISQ devices," Scientific Reports, vol. 16, p. 4512, 2026.
+[10] F. M. Altares-López, A. Ribeiro, and J. J. García-Ripoll, "Automatic design of quantum feature maps," Quantum Science and Technology, vol. 6, no. 4, p. 045015, Jul. 2021.
+[11] F. S. Azevedo, A. Silva, and I. C. Oliveira, "Quantum transfer learning for breast cancer detection," Quantum Information Processing, vol. 21, no. 3, p. 112, Mar. 2022.
 [12] Q. N. Hoang, T. T. Pham, and D. N. M. Dang, "Efficient hybrid quantum-classical convolutional neural network with feature propagation layer for multi-class image classification," in Proc. Int. Conf. Adv. Eng. Theory Appl. (AETA), 2023.
-[13] A. S. C. et al., "Do we really need quantum machine learning for computer vision? A critical empirical analysis," IEEE Trans. Pattern Anal. Mach. Intell., 2026.
+[13] J. Kübler, S. Buchholz, and B. Schölkopf, "The inductive bias of quantum kernels," in Advances in Neural Information Processing Systems (NeurIPS), vol. 34, pp. 12661–12673, 2021.
 [14] I. Cong, S. Choi, and M. D. Lukin, "Quantum convolutional neural networks," Nature Physics, vol. 15, no. 12, pp. 1273–1278, Dec. 2019.
 [15] V. Bergholm et al., "PennyLane: Automatic differentiation of quantum machine learning circuits," arXiv:1811.04968, 2018.
 [16] M. Schuld, V. Bergholm, C. Gogolin, J. Izaac, and N. Killoran, "Evaluating analytic gradients on quantum hardware," Physical Review A, vol. 99, no. 3, p. 032331, Mar. 2019.
