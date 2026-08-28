@@ -1,9 +1,9 @@
 # Symmetrical Empirical Evaluation of Trainable versus Fixed Quanvolutional Filters in Medical Image Classification: A Rigorous, Reproducible Benchmark on MedMNIST
 
-**Hoang-Nam Nguyen**$^1$ and **Duy-Xuan-Bach Nguyen**$^1$  
+**Hoang-Nam Nguyen**$^1$ (Primary Author / Student Researcher) and **Duy-Xuan-Bach Nguyen**$^{1,*}$ (Academic Advisor / Corresponding Author)  
 $^1$*Faculty of Computer Engineering, University of Information Technology, VNU-HCM, Ho Chi Minh City, Vietnam*  
-*Emails:* `ng.h.nam0802@gmail.com`, `bachndx@uit.edu.vn`  
-*Corresponding Author:* Duy-Xuan-Bach Nguyen (`bachndx@uit.edu.vn`)  
+*Primary Author Email:* `ng.h.nam0802@gmail.com`  
+*Corresponding Author / Academic Advisor Email:* `bachndx@uit.edu.vn`  
 *Source Code & Reproducibility Repository:* `https://github.com/NamIsStudyingCE/Quanvolution.git`  
 
 ---
