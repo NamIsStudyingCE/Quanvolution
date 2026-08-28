@@ -103,9 +103,7 @@ Table~\ref{tab:literature} situates our empirical investigation within the broad
 \label{tab:literature}
 \centering
 \small
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{lp{3.0cm}p{3.0cm}p{2.5cm}cp{3.4cm}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lp{2.8cm}p{2.8cm}p{2.3cm}cp{3.4cm}}
 \toprule
 \textbf{Study} & \textbf{Target Domain} & \textbf{Quantum Architecture} & \textbf{Classical Baseline} & \textbf{Statistical Rigor} & \textbf{Primary Limitations Addressed} \\
 \midrule
@@ -117,7 +115,7 @@ Critical Survey (2026) \cite{do_we_really_need_qml2026} & Critical QML Survey & 
 \midrule
 \textbf{This Work (Ours)} & \textbf{MedMNIST (Breast \& OCT)} & \textbf{3-Tier Quanv: Fixed vs. Trainable} & \textbf{Symmetrical 1:1 Minimum CNN} & \textbf{10 seeds, $t$-test, Wilcoxon, $95\%$ CI, Cohen's $d$} & \textbf{Strict parameter parity, data regime boundaries, $0$-param kernel quantification.} \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table*}
 
 \section{Proposed Methodology}
@@ -150,20 +148,20 @@ To adhere strictly to the principle of \textit{Ceteris Paribus}, the classical b
 \caption{Parameter breakdown between feature extractors and classifier heads.}
 \label{tab:params}
 \centering
-\small
-\setlength{\tabcolsep}{4pt}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{lcccc}
+\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lcccc}
 \toprule
-\textbf{Model Family} & \textbf{Kernel Params} & \textbf{Head ($K=2$)} & \textbf{Head ($K=4$)} & \textbf{Total Params} \\
+\textbf{Model Family} & \textbf{Kernel} & \textbf{Head ($K=2/4$)} & \textbf{Total ($K=2/4$)} \\
 \midrule
-\textbf{Classical Minimum CNN} & \textbf{$20$} & $1{,}570$ & $3{,}140$ & \textbf{$1{,}598$ / $3{,}168$} \\
-\textbf{Fixed Basic Quanv} & \textbf{$0$} & $1{,}570$ & $3{,}140$ & \textbf{$1{,}578$ / $3{,}148$} \\
-\textbf{Fixed Strongly Quanv} & \textbf{$0$} & $1{,}570$ & $3{,}140$ & \textbf{$1{,}578$ / $3{,}148$} \\
-\textbf{Trainable Basic Quanv} & \textbf{$8$} & $1{,}570$ & $3{,}140$ & \textbf{$1{,}586$ / $3{,}156$} \\
-\textbf{Trainable Strongly Quanv} & \textbf{$12 - 24$} & $1{,}570$ & $3{,}140$ & \textbf{$1{,}590$ / $3{,}172$} \\
+\textbf{Classical Minimum CNN} & \textbf{$20$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}598$ / $3{,}168$} \\
+\textbf{Fixed Basic Quanv} & \textbf{$0$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}578$ / $3{,}148$} \\
+\textbf{Fixed Strongly Quanv} & \textbf{$0$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}578$ / $3{,}148$} \\
+\textbf{Trainable Basic Quanv} & \textbf{$8$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}586$ / $3{,}156$} \\
+\textbf{Trainable Strongly Quanv} & \textbf{$12 - 24$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}590$ / $3{,}172$} \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}
 
 \subsection{Quantum Differentiation \& Gradient Check}
@@ -211,9 +209,8 @@ Table~\ref{tab:breastmnist} summarizes test performance across 10 independent se
 \label{tab:breastmnist}
 \centering
 \small
-\setlength{\tabcolsep}{4.5pt}
 \renewcommand{\arraystretch}{1.25}
-\begin{tabular}{lcccccc}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
@@ -223,7 +220,7 @@ Table~\ref{tab:breastmnist} summarizes test performance across 10 independent se
 \textbf{Fixed Strongly Quanv (L2)} & $0.7994 \pm 0.0098$ & \makecell{$0.6602 \pm 0.0213$ \\ \scriptsize $[0.6450, 0.6754]$} & $0.8733 \pm 0.0065$ & $0.4301 \pm 0.0348$ & \makecell{$0.8139 \pm 0.0143$ \\ \scriptsize $[0.8037, 0.8241]$} & \makecell{$\mathbf{0.9182 \pm 0.0067}$ \\ \scriptsize $[0.9134, 0.9230]$} \\
 \textbf{Trainable Strongly Quanv (L2)} & $\mathbf{0.8205 \pm 0.0257}$ & \makecell{$\mathbf{0.6945 \pm 0.0428}$ \\ \scriptsize $[0.6639, 0.7251]$} & $\mathbf{0.8877 \pm 0.0163}$ & $\mathbf{0.4911 \pm 0.0756}$ & \makecell{$0.8306 \pm 0.0280$ \\ \scriptsize $[0.8106, 0.8506]$} & \makecell{$0.9167 \pm 0.0087$ \\ \scriptsize $[0.9105, 0.9229]$} \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table*}
 
 \begin{table*}[t]
@@ -231,9 +228,8 @@ Table~\ref{tab:breastmnist} summarizes test performance across 10 independent se
 \label{tab:octmnist}
 \centering
 \small
-\setlength{\tabcolsep}{4.5pt}
 \renewcommand{\arraystretch}{1.25}
-\begin{tabular}{lcccccc}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
@@ -244,7 +240,7 @@ Table~\ref{tab:breastmnist} summarizes test performance across 10 independent se
 \textbf{Fixed Strongly Quanv (L1)} & $0.4778 \pm 0.0087$ & \makecell{$0.4034 \pm 0.0062$ \\ \scriptsize $[0.3990, 0.4078]$} & $0.4257 \pm 0.0114$ & $0.2348 \pm 0.0126$ & \makecell{$0.6690 \pm 0.0055$ \\ \scriptsize $[0.6651, 0.6690]$} & \makecell{$0.4175 \pm 0.0049$ \\ \scriptsize $[0.4140, 0.4210]$} \\
 \textbf{Trainable Strongly Quanv (L1)} & $0.4772 \pm 0.0184$ & \makecell{$0.4020 \pm 0.0161$ \\ \scriptsize $[0.3905, 0.4135]$} & $0.4246 \pm 0.0201$ & $0.2388 \pm 0.0259$ & \makecell{$0.6922 \pm 0.0199$ \\ \scriptsize $[0.6780, 0.7065]$} & \makecell{$0.4365 \pm 0.0125$ \\ \scriptsize $[0.4276, 0.4455]$} \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table*}
 
 \textbf{Key Statistical Findings on BreastMNIST:}
@@ -280,20 +276,20 @@ Table~\ref{tab:latency} breaks down CPU inference latency and training wall-cloc
 \caption{Inference latency and computational cost on Intel CPU.}
 \label{tab:latency}
 \centering
-\small
-\setlength{\tabcolsep}{4pt}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{llccc}
+\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}llccc}
 \toprule
 \textbf{Model} & \textbf{Phase} & \textbf{Mean Latency} & \textbf{Ratio} & \textbf{Kernel Params} \\
 \midrule
 \textbf{Classical CNN} & Forward Pass & \textbf{$0.310\text{ ms}$} & \textbf{$1.0\times$} & $20$ \\
 \textbf{Fixed Quanv} & FE ($196$ patches) & $220.187\text{ ms}$ & $710.3\times$ & \textbf{$0$} \\
-& Classifier Head & $0.034\text{ ms}$ & $0.11\times$ & $100\%$ Identical \\
+& Classifier Head & $0.034\text{ ms}$ & $0.11\times$ & Identical \\
 & \textbf{End-to-End} & \textbf{$220.221\text{ ms}$} & \textbf{$710.4\times$} & \textbf{$0$} \\
 \textbf{Trainable Quanv} & \textbf{End-to-End} & \textbf{$\sim 220.25\text{ ms}$} & \textbf{$\sim 710.5\times$} & $12 - 24$ \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}
 
 Key computational insights include:
