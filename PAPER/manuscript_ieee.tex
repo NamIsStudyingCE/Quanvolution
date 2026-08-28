@@ -1,5 +1,7 @@
 \documentclass[journal]{IEEEtran}
 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
@@ -109,7 +111,7 @@ Table~\ref{tab:literature} situates our empirical investigation within the broad
 \midrule
 Henderson et al. (2019) \cite{henderson2020quanvolutional} & Synthetic MNIST & Random Quanvolution & Basic CNN & $1 - 3$ seeds (No tests) & Toy dataset, no medical scope, asymmetrical heads. \\
 Cong et al. (2019) \cite{cong2019quantum} & Quantum Phase Detection & Pure QCNN & Classical MLP & Single-run theoretical & Tailored for quantum spin chains, incompatible with 2D grids. \\
-Altares-López et al. (2025) \cite{altares2025automatic} & Industrial / Medical & HQCNN Hybrid & ResNet-18 (Pretrained) & Inconsistent seeds & Unfair baseline; unable to isolate quantum kernel gains. \\
+Altares-L{\'o}pez et al. (2025) \cite{altares2025automatic} & Industrial / Medical & HQCNN Hybrid & ResNet-18 (Pretrained) & Inconsistent seeds & Unfair baseline; unable to isolate quantum kernel gains. \\
 Nature Sci. Rep. (2026) \cite{sannakki2026medical} & MedMNIST (PathMNIST) & VQC on IBM Quantum & Basic MLP & $3 - 5$ seeds (Untuned) & Weak baseline; device noise obscures algorithmic validity. \\
 Critical Survey (2026) \cite{do_we_really_need_qml2026} & Critical QML Survey & Various QNNs & Modern CNNs & Literature Review & Identifies widespread over-claiming in QML literature. \\
 \midrule
@@ -238,7 +240,7 @@ Table~\ref{tab:breastmnist} summarizes test performance across 10 independent se
 \textbf{Classical CNN Baseline} & $\mathbf{0.5298 \pm 0.0239}$ & \makecell{$\mathbf{0.4433 \pm 0.0199}$ \\ \scriptsize $[0.4291, 0.4575]$} & $\mathbf{0.4792 \pm 0.0241}$ & $\mathbf{0.3092 \pm 0.0314}$ & \makecell{$\mathbf{0.7505 \pm 0.0240}$ \\ \scriptsize $[0.7333, 0.7676]$} & \makecell{$\mathbf{0.4991 \pm 0.0268}$ \\ \scriptsize $[0.4799, 0.5182]$} \\
 \textbf{Fixed Basic Quanv (L1)} & $0.4726 \pm 0.0100$ & \makecell{$0.4075 \pm 0.0077$ \\ \scriptsize $[0.4020, 0.4130]$} & $0.4300 \pm 0.0100$ & $0.2328 \pm 0.0130$ & \makecell{$0.6711 \pm 0.0042$ \\ \scriptsize $[0.6681, 0.6741]$} & \makecell{$0.4186 \pm 0.0038$ \\ \scriptsize $[0.4159, 0.4213]$} \\
 \textbf{Trainable Basic Quanv (L1)} & $0.4650 \pm 0.0139$ & \makecell{$0.3955 \pm 0.0115$ \\ \scriptsize $[0.3873, 0.4037]$} & $0.4179 \pm 0.0145$ & $0.2196 \pm 0.0191$ & \makecell{$0.6704 \pm 0.0106$ \\ \scriptsize $[0.6628, 0.6780]$} & \makecell{$0.4102 \pm 0.0076$ \\ \scriptsize $[0.4048, 0.4156]$} \\
-\textbf{Fixed Champ GĐ2 (\texttt{random\_L1})} & $0.4799 \pm 0.0113$ & \makecell{$0.4048 \pm 0.0099$ \\ \scriptsize $[0.3977, 0.4119]$} & $0.4269 \pm 0.0133$ & $0.2391 \pm 0.0165$ & \makecell{$0.6912 \pm 0.0071$ \\ \scriptsize $[0.6861, 0.6963]$} & \makecell{$0.4443 \pm 0.0071$ \\ \scriptsize $[0.4392, 0.4494]$} \\
+\textbf{Fixed Champ (Phase 2, \texttt{random\_L1})} & $0.4799 \pm 0.0113$ & \makecell{$0.4048 \pm 0.0099$ \\ \scriptsize $[0.3977, 0.4119]$} & $0.4269 \pm 0.0133$ & $0.2391 \pm 0.0165$ & \makecell{$0.6912 \pm 0.0071$ \\ \scriptsize $[0.6861, 0.6963]$} & \makecell{$0.4443 \pm 0.0071$ \\ \scriptsize $[0.4392, 0.4494]$} \\
 \textbf{Fixed Strongly Quanv (L1)} & $0.4778 \pm 0.0087$ & \makecell{$0.4034 \pm 0.0062$ \\ \scriptsize $[0.3990, 0.4078]$} & $0.4257 \pm 0.0114$ & $0.2348 \pm 0.0126$ & \makecell{$0.6690 \pm 0.0055$ \\ \scriptsize $[0.6651, 0.6690]$} & \makecell{$0.4175 \pm 0.0049$ \\ \scriptsize $[0.4140, 0.4210]$} \\
 \textbf{Trainable Strongly Quanv (L1)} & $0.4772 \pm 0.0184$ & \makecell{$0.4020 \pm 0.0161$ \\ \scriptsize $[0.3905, 0.4135]$} & $0.4246 \pm 0.0201$ & $0.2388 \pm 0.0259$ & \makecell{$0.6922 \pm 0.0199$ \\ \scriptsize $[0.6780, 0.7065]$} & \makecell{$0.4365 \pm 0.0125$ \\ \scriptsize $[0.4276, 0.4455]$} \\
 \bottomrule
@@ -344,7 +346,7 @@ We summarize three primary conclusions:
 \bibitem{henderson2020quanvolutional} M.~Henderson, S.~Shakya, S.~Pradhan, and T.~Cook, ``Quanvolutional neural networks: powering image recognition with quantum circuits,'' \textit{Quantum Machine Intelligence}, vol.~2, no.~1, p.~2, Jun.~2020.
 \bibitem{huang2021power} H.~Y.~Huang et al., ``Power of data in quantum machine learning,'' \textit{Nature Communications}, vol.~12, no.~1, p.~2631, May~2021.
 \bibitem{vu2024exploring} T.~H.~Vu, H.~L.~Le, and T.~B.~Pham, ``Exploring the features of quanvolutional neural networks for improved image classification,'' \textit{Quantum Machine Intelligence}, vol.~6, no.~1, p.~15, Feb.~2024.
-\bibitem{altares2025automatic} F.~M.~Altares-López, A.~Ribeiro, and J.~J.~García-Ripoll, ``Automatic design of hybrid quantum-classical convolutional neural networks,'' \textit{Quantum Science and Technology}, vol.~10, no.~1, p.~015012, 2025.
+\bibitem{altares2025automatic} F.~M.~Altares-L{\'o}pez, A.~Ribeiro, and J.~J.~Garc{\'i}a-Ripoll, ``Automatic design of hybrid quantum-classical convolutional neural networks,'' \textit{Quantum Science and Technology}, vol.~10, no.~1, p.~015012, 2025.
 \bibitem{sannakki2026medical} S.~S.~Sannakki et al., ``Medical image classification using quantum machine learning on NISQ devices,'' \textit{Scientific Reports}, vol.~16, p.~4512, 2026.
 \bibitem{hoang2023efficient} Q.~N.~Hoang, T.~T.~Pham, and D.~N.~M.~Dang, ``Efficient hybrid quantum-classical convolutional neural network with feature propagation layer for multi-class image classification,'' in \textit{Proc. Int. Conf. Adv. Eng. Theory Appl. (AETA)}, 2023.
 \bibitem{do_we_really_need_qml2026} A.~S.~C. et al., ``Do we really need quantum machine learning for computer vision? A critical empirical analysis,'' \textit{IEEE Trans. Pattern Anal. Mach. Intell.}, 2026.
