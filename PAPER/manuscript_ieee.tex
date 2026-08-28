@@ -167,7 +167,8 @@ To adhere strictly to the principle of \textit{Ceteris Paribus}, the classical b
 \label{tab:params}
 \centering
 \footnotesize
-\begin{tabularx}{\columnwidth}{@{}L C C C@{}}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}l c c c@{}}
 \toprule
 \textbf{Model Family} & \textbf{Kernel} & \textbf{Head ($K=2/4$)} & \textbf{Total ($K=2/4$)} \\
 \midrule
@@ -181,7 +182,8 @@ To adhere strictly to the principle of \textit{Ceteris Paribus}, the classical b
 \midrule
 \textbf{Trainable Strongly Quanv} & \textbf{$12 - 24$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}590$ / $3{,}172$} \\
 \bottomrule
-\end{tabularx}
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Quantum Differentiation \& Gradient Check}
@@ -236,8 +238,9 @@ Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks}(a) summarize test perf
 \label{tab:breastmnist}
 \centering
 \small
-\setlength{\tabcolsep}{3pt}
-\begin{tabularx}{\textwidth}{@{}l *{6}{C}@{}}
+\setlength{\tabcolsep}{4.5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l c c c c c c@{}}
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
@@ -251,7 +254,8 @@ Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks}(a) summarize test perf
 \midrule
 \textbf{Trainable Strongly Quanv (L2)} & $\mathbf{0.8205 \pm 0.0257}$ & \makecell{$\mathbf{0.6945 \pm 0.0428}$ \\ \scriptsize $[0.6639, 0.7251]$} & $\mathbf{0.8877 \pm 0.0163}$ & $\mathbf{0.4911 \pm 0.0756}$ & \makecell{$0.8306 \pm 0.0280$ \\ \scriptsize $[0.8106, 0.8506]$} & \makecell{$0.9167 \pm 0.0087$ \\ \scriptsize $[0.9105, 0.9229]$} \\
 \bottomrule
-\end{tabularx}
+\end{tabular}%
+}
 \end{table*}
 
 \begin{figure*}[t]
@@ -268,8 +272,9 @@ Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks}(a) summarize test perf
 \label{tab:octmnist}
 \centering
 \small
-\setlength{\tabcolsep}{3pt}
-\begin{tabularx}{\textwidth}{@{}l *{6}{C}@{}}
+\setlength{\tabcolsep}{4.5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l c c c c c c@{}}
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
@@ -285,7 +290,8 @@ Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks}(a) summarize test perf
 \midrule
 \textbf{Trainable Strongly Quanv (L1)} & $0.4772 \pm 0.0184$ & \makecell{$0.4020 \pm 0.0161$ \\ \scriptsize $[0.3905, 0.4135]$} & $0.4246 \pm 0.0201$ & $0.2388 \pm 0.0259$ & \makecell{$0.6922 \pm 0.0199$ \\ \scriptsize $[0.6780, 0.7065]$} & \makecell{$0.4365 \pm 0.0125$ \\ \scriptsize $[0.4276, 0.4455]$} \\
 \bottomrule
-\end{tabularx}
+\end{tabular}%
+}
 \end{table*}
 
 \textbf{Key Statistical Findings on BreastMNIST:}
@@ -335,7 +341,8 @@ Table~\ref{tab:latency} breaks down CPU inference latency and training wall-cloc
 \label{tab:latency}
 \centering
 \footnotesize
-\begin{tabularx}{\columnwidth}{@{}L L C C C@{}}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}l l c c c@{}}
 \toprule
 \textbf{Model} & \textbf{Phase} & \textbf{Mean Latency} & \textbf{Ratio} & \textbf{Kernel Params} \\
 \midrule
@@ -349,7 +356,8 @@ Table~\ref{tab:latency} breaks down CPU inference latency and training wall-cloc
 \midrule
 \textbf{Trainable Quanv} & \textbf{End-to-End} & \textbf{$\sim 220.25\text{ ms}$} & \textbf{$\sim 710.5\times$} & $12 - 24$ \\
 \bottomrule
-\end{tabularx}
+\end{tabular}%
+}
 \end{table}
 
 Key computational insights include:
