@@ -114,11 +114,11 @@ def draw_pipeline():
     q_ys = [4.9, 4.0, 3.1, 2.2]
     
     for i, qy in enumerate(q_ys):
-        # Qubit line from x=4.1 to x=9.6
-        ax.plot([4.1, 9.5], [qy, qy], color='#37474f', linewidth=1.3, zorder=1)
+        # State label |0>_i placed cleanly with no overlapping line
+        ax.text(4.35, qy, f"$|0\\rangle_{i}$", ha='center', va='center', fontsize=9.5, fontweight='bold', color='#1a237e', zorder=3)
         
-        # State label |0> comfortably inside the purple box (x=4.35)
-        ax.text(4.45, qy, f"$|0\\rangle_{i}$", ha='center', va='center', fontsize=9, fontweight='bold', color='#1a237e', zorder=3)
+        # Qubit line strictly starts AFTER the state label (from x=4.62 to x=9.5)
+        ax.plot([4.62, 9.5], [qy, qy], color='#37474f', linewidth=1.3, zorder=1)
         
         # RY Embedding Gate (x: 4.95 -> 5.75)
         ry_gate = patches.Rectangle((4.95, qy-0.26), 0.8, 0.52, facecolor='#e1bee7', edgecolor='#6a1b9a', linewidth=1.1, zorder=2)
