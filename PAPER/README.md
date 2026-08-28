@@ -45,7 +45,7 @@ PAPER/
 | **2. Related Work** | Định vị bài báo với Henderson (2019), Cong (2019), HQCNN, Nature Sci Rep. | **Bảng 1** | `tables/Table1_literature_comparison.md` |
 | **3. Method** | Kiến trúc 4-qubit, 3 họ Ansatz, Symmetrical Minimum CNN, 3-tier matrix. | **Hình 1**<br>**Hình 2**<br>**Bảng 2** | `figures/Fig1_quanvolution_pipeline.png`<br>`figures/Fig2_feature_comparison.png`<br>`tables/Table2_parameter_split.md` |
 | **4. Experimental Setup** | BreastMNIST (780) + OCTMNIST (5.000 subset), 10 seeds, 20 epochs, Wilcoxon note. | — | `README.md` |
-| **5. Results** | Đọc số khách quan: BreastMNIST, OCTMNIST, Trainability, Động học, Chi phí. | **Bảng 3**<br>**Bảng 4**<br>**Bảng 5**<br>**Hình 3**<br>**Hình 4** | `tables/Table3_breastmnist_results.md`<br>`tables/Table4_octmnist_results.md`<br>`tables/Table5_latency_cost.md`<br>`figures/Fig3_*`, `Fig4_*` |
+| **5. Results** | Đọc số khách quan: BreastMNIST, OCTMNIST, Trainability, Động học, Chi phí. | **Bảng 3**<br>**Bảng 4**<br>**Bảng 5**<br>**Hình 3a & 3b**<br>**Hình 4a–4d** | `tables/Table3_breastmnist_results.md`<br>`tables/Table4_octmnist_results.md`<br>`tables/Table5_latency_cost.md`<br>`figures/Fig3a_*`, `Fig3b_*`, `Fig4*` |
 | **6. Discussion** | Lý giải Data Regime, Quantum Inductive Bias, Ý nghĩa lâm sàng, Đánh đổi tốc độ. | — | Luận điểm trong `Table2`, `Table5` |
 | **7. Threats & 8. Conclusion** | Hạn chế thực nghiệm, 3 take-home message, hướng mở phần cứng tương lai. | — | `README.md` |
 

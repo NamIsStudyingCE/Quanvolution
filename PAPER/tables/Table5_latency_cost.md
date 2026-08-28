@@ -34,4 +34,4 @@
 
 1. **Hiệu quả Tiền tính toán (Precomputation Advantage):** Với mạch tĩnh (Fixed Quanvolution), đặc trưng lượng tử chỉ cần trích xuất **đúng 1 lần duy nhất**, sau đó toàn bộ quá trình train 10 seeds cực kỳ nhanh ($\approx 12-18$ giây), nhanh hơn cả train Classical CNN từ ảnh thô.
 2. **Khả thi trong Y tế Lâm sàng:** Độ trễ suy luận $\approx 0.22 \text{ giây/ảnh}$ hoàn toàn nằm trong giới hạn cho phép của các hệ thống chẩn đoán hỗ trợ bác sĩ (CAD systems), đổi lại là **độ ổn định phương sai vượt trội (~3x std nhỏ hơn)** và khả năng nhận diện ca bệnh hiếm (PR-AUC cao).
-3. **Định hướng Tương lai (Future Work):** Độ trễ $\sim 710\times$ là hạn chế của môi trường giả lập CPU phần mềm. Khi chuyển giao sang bộ tăng tốc lượng tử chuyên dụng (GPU Tensor Core cuQuantum hoặc chip ASIC/FPGA lượng tử), độ trễ sẽ được rút ngắn tiệm cận thời gian thực.
+3. **Định hướng Tương lai (Future Work):** Độ trễ $\sim 710\times$ là hạn chế của môi trường giả lập CPU phần mềm. Khi chuyển giao sang bộ tăng tốc lượng tử chuyên dụng (GPU Tensor Core cuQuantum hoặc chip ASIC/FPGA lượng tử), việc xử lý song song các patch lượng tử có tiềm năng rút ngắn đáng kể thời gian tính toán.
