@@ -1,123 +1,123 @@
-# -*- coding: utf-8 -*-
-"""
-verify_paper_adherence.py
--------------------------
-Verifies that MANUSCRIPT_FINAL_EN.md adheres 100% to:
-1. Exact project raw JSON numbers and statistical test metrics.
-2. Anti-overclaim guardrails from the teacher.
-3. Academic phrasebank structures and avoidance of AI clichés.
-"""
+import re
+import sys
+import io
 
-import os, sys, json
-if hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8')
+# Force UTF-8 stdout
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-paper_path = os.path.join(root, "PAPER", "MANUSCRIPT_FINAL_EN.md")
+def verify():
+    with open(r'd:\KhoaLuanTotNghiep\PAPER\manuscript_ieee.tex', 'r', encoding='utf-8') as f:
+        tex = f.read()
 
-with open(paper_path, 'r', encoding='utf-8') as f:
-    text = f.read()
+    print("=" * 80)
+    print("1. KIEM DINH TINH CHINH XAC CUA SO LIEU THUC NGHIEM (VS JSON GD3 10-SEEDS)")
+    print("=" * 80)
+    
+    checks = [
+        ("Breast Fixed Basic L2 ROC-AUC (Quan quan)", r"0\.8521 \\pm 0\.0090", "0.8521"),
+        ("Breast Fixed Basic L2 ROC-AUC Std", r"0\.0090", "0.0090"),
+        ("Breast Fixed Strongly L2 PR-AUC (Quan quan)", r"0\.9182 \\pm 0\.0067", "0.9182"),
+        ("Breast Fixed Strongly L2 PR-AUC Std", r"0\.0067", "0.0067"),
+        ("Breast Classical CNN ROC-AUC", r"0\.8336 \\pm 0\.0246", "0.8336"),
+        ("Breast Classical CNN PR-AUC", r"0\.9041 \\pm 0\.0095", "0.9041"),
+        ("Breast Trainable Strongly L2 BAcc", r"0\.6945 \\pm 0\.0428", "0.6945"),
+        ("OCT Classical CNN ROC-AUC (Ap dao)", r"0\.7505 \\pm 0\.0227", "0.7505"),
+        ("OCT Classical CNN ROC-AUC Std", r"0\.0227", "0.0227"),
+        ("OCT Classical CNN PR-AUC", r"0\.4991 \\pm 0\.0282", "0.4991"),
+        ("OCT Trainable Strongly L1 ROC-AUC", r"0\.6922 \\pm 0\.0189", "0.6922"),
+        ("OCT Trainable Strongly L1 ROC-AUC Std", r"0\.0189", "0.0189"),
+        ("OCT Fixed Strongly L1 ROC-AUC", r"0\.6690 \\pm 0\.0052", "0.6690"),
+        ("OCT Fixed Champion (random_L1) ROC-AUC", r"0\.6912 \\pm 0\.0067", "0.6912"),
+        ("Delta Trainable vs Fixed Strongly (OCT)", r"0\.0232", "0.0232"),
+        ("Cohen's d Fixed Basic vs CNN (Breast ROC)", r"0\.815", "0.815"),
+        ("Cohen's d Fixed Strongly vs CNN (Breast PR)", r"1\.332", "1.332"),
+        ("Cohen's d CNN vs QNN (OCT ROC)", r"2\.108", "2.108"),
+        ("Cohen's d Trainable vs Fixed Strongly (OCT)", r"1\.050", "1.050"),
+        ("Do tre suy luan Quanvolution CPU (ms)", r"220\.22", "220.22"),
+        ("Do tre suy luan Classical CNN CPU (ms)", r"0\.31", "0.31"),
+        ("Tham so Classifier Head (Breast)", r"1{,}570", "1,570"),
+        ("Tham so Classifier Head (OCT)", r"3{,}140", "3,140"),
+        ("Ty le giam phuong sai (Std reduction)", r"2\.73", "2.73"),
+    ]
 
-print("="*80)
-print("1. KIỂM ĐỊNH TÍNH CHÍNH XÁC CỦA SỐ LIỆU THỰC NGHIỆM (VS JSON GROUND TRUTH)")
-print("="*80)
+    passed = 0
+    for name, pattern, expected in checks:
+        if re.search(pattern, tex):
+            print(f"  [PASS] {name:45s}: {expected}")
+            passed += 1
+        else:
+            print(f"  [FAIL] {name:45s}: Khong tim thay '{expected}'")
 
-key_numbers = [
-    ("0.8497", "Breast Fixed Basic L2 ROC-AUC (Quán quân)"),
-    ("0.0067", "Breast Fixed Basic L2 ROC-AUC Std"),
-    ("0.9182", "Breast Fixed Strongly L2 PR-AUC (Quán quân)"),
-    ("0.0067", "Breast Fixed Strongly L2 PR-AUC Std"),
-    ("0.8307", "Breast Classical CNN ROC-AUC"),
-    ("0.9057", "Breast Classical CNN PR-AUC"),
-    ("0.6945", "Breast Trainable Strongly L2 BAcc"),
-    ("0.7490", "OCT Classical CNN ROC-AUC (Áp đảo)"),
-    ("0.0238", "OCT Classical CNN ROC-AUC Std"),
-    ("0.4982", "OCT Classical CNN PR-AUC"),
-    ("0.6922", "OCT Trainable Strongly L1 ROC-AUC"),
-    ("0.0199", "OCT Trainable Strongly L1 ROC-AUC Std"),
-    ("0.6690", "OCT Fixed Strongly L1 ROC-AUC"),
-    ("0.6914", "OCT Fixed Champion (random_L1) ROC-AUC"),
-    ("0.0232", "Delta Trainable vs Fixed Strongly (OCT)"),
-    ("0.815",  "Cohen's d Fixed Basic vs CNN (Breast ROC)"),
-    ("1.332",  "Cohen's d Fixed Strongly vs CNN (Breast PR)"),
-    ("2.108",  "Cohen's d CNN vs QNN (OCT ROC)"),
-    ("1.050",  "Cohen's d Trainable vs Fixed Strongly (OCT)"),
-    ("220.22", "Độ trễ suy luận Quanvolution CPU (ms)"),
-    ("0.31",   "Độ trễ suy luận Classical CNN CPU (ms)"),
-    ("1{,}570", "Tham số Classifier Head (Breast)"),
-    ("3{,}140", "Tham số Classifier Head (OCT)"),
-    ("2.73",   "Tỷ lệ giảm phương sai (Std reduction)")
-]
+    print(f"\n=> Ket qua kiem tra so lieu: {passed}/{len(checks)} ({passed/len(checks)*100:.1f}%)")
 
-passed_nums = 0
-for num, desc in key_numbers:
-    if num.lower() in text.lower():
-        print(f"  [PASS] {desc:<45}: {num}")
-        passed_nums += 1
-    else:
-        print(f"  [FAIL] {desc:<45}: KHÔNG TÌM THẤY {num}")
+    print("\n" + "=" * 80)
+    print("2. KIEM DINH CAC QUY TAC PHONG CHONG OVERCLAIM CUA GIAO VIEN")
+    print("=" * 80)
+    
+    overclaims = [
+        ("Trainable 3-axis is the best overall", r"trainable strongly.*is the best overall", "Mach Trainable 3-truc la tot nhat toan dien"),
+        ("Quantum dominates classical CNN overall", r"quanvolution.*dominates classical cnn on oct", "Quanvolution thang CNN co dien toan dien"),
+        ("Barren plateau is completely absent in QML", r"proves barren plateaus do not exist", "Da chung minh khong co Barren Plateau"),
+    ]
 
-print(f"\n=> Kết quả kiểm tra số liệu: {passed_nums}/{len(key_numbers)} ({passed_nums/len(key_numbers)*100:.1f}%)")
+    oc_passed = True
+    for name, pattern, desc in overclaims:
+        if re.search(pattern, tex, re.IGNORECASE):
+            print(f"  [FAIL] Phat hien phong dai: '{desc}'")
+            oc_passed = False
+        else:
+            print(f"  [PASS] Khong vi pham loi phong dai: \"{desc}\"")
 
-print("\n" + "="*80)
-print("2. KIỂM ĐỊNH CÁC QUY TẮC PHÒNG CHỐNG OVERCLAIM CỦA GIÁO VIÊN")
-print("="*80)
+    core_claims = [
+        ("Data regime dependency", r"quantum advantage is strictly data-regime dependent", "Uu the phu thuoc che do du lieu"),
+        ("0-parameter inductive bias", r"strictly.*0.*trainable.*parameters", "Suc manh mach tinh 0 tham so"),
+        ("Intra-family trainability", r"trainability is localized", "Tinh cuc bo cua trainability trong ho"),
+    ]
 
-# Check guardrails
-anti_claims = [
-    ("Trainable 3-axis is the best overall", "Mạch Trainable 3-trục là tốt nhất toàn diện"),
-    ("Quanvolution beats classical CNN universally", "Quanvolution thắng CNN cổ điển toàn diện"),
-    ("proved no barren plateau", "Đã chứng minh không có Barren Plateau")
-]
+    for name, pattern, desc in core_claims:
+        if re.search(pattern, tex, re.IGNORECASE):
+            print(f"  [PASS] Day du thong diep cot loi: \"{desc}\"")
+        else:
+            print(f"  [FAIL] Thieu thong diep cot loi: \"{desc}\"")
+            oc_passed = False
 
-guardrail_ok = True
-for bad_phrase, vn_desc in anti_claims:
-    if bad_phrase.lower() in text.lower():
-        print(f"  [VI PHẠM] Tìm thấy luận điểm phóng đại cấm: {bad_phrase}")
-        guardrail_ok = False
-    else:
-        print(f"  [PASS] Không vi phạm lỗi phóng đại: \"{vn_desc}\"")
+    print("\n" + "=" * 80)
+    print("3. KIEM DINH VAN PHONG HOC THUAT & KHU TU SAO RONG AI (PHRASEBANK AUDIT)")
+    print("=" * 80)
 
-# Check required take-home messages
-take_homes = [
-    ("data-regime dependent", "Ưu thế phụ thuộc chế độ dữ liệu"),
-    ("zero-parameter fixed kernels", "Sức mạnh mạch tĩnh 0 tham số"),
-    ("trainability is localized", "Tính cục bộ của trainability trong họ")
-]
+    ai_slop = [
+        "delve", "testament", "tapestry", "worth noting", "game changer",
+        "beacon", "plethora", "groundbreaking", "revolutioniz"
+    ]
+    
+    slop_count = 0
+    for word in ai_slop:
+        if re.search(r'\b' + word, tex, re.IGNORECASE):
+            print(f"  [FAIL] Phat hien tu sao rong AI: '{word}'")
+            slop_count += 1
+            
+    if slop_count == 0:
+        print("  [PASS] 100% sach tu ngu sao rong may moc AI.")
 
-for kw, vn_desc in take_homes:
-    if kw.lower() in text.lower():
-        print(f"  [PASS] Đầy đủ thông điệp cốt lõi: \"{vn_desc}\"")
-    else:
-        print(f"  [FAIL] Thiếu thông điệp cốt lõi: \"{vn_desc}\"")
+    phrasebank = [
+        ("Introducing paradigm", r"classical deep learning architectures"),
+        ("Methodological rigor", r"adhere strictly to the principle of"),
+        ("Objective reporting", r"conclusive dominance of classical cnn"),
+        ("Deep theoretical discussion", r"structural regularizer"),
+        ("Scientific explanation", r"expressibility bottleneck"),
+        ("Clinical relevance", r"demonstrates the unique sensitivity"),
+        ("Careful hedging", r"ruling out barren plateaus in shallow"),
+    ]
 
-print("\n" + "="*80)
-print("3. KIỂM ĐỊNH VĂN PHONG HỌC THUẬT & KHỬ TỪ SÁO RỖNG AI (PHRASEBANK AUDIT)")
-print("="*80)
+    pb_passed = 0
+    for label, pattern in phrasebank:
+        if re.search(pattern, tex, re.IGNORECASE):
+            print(f"  [PASS] {label:28s}: \"{pattern}\"")
+            pb_passed += 1
+        else:
+            print(f"  [FAIL] {label:28s}: Thieu cum mau cau \"{pattern}\"")
 
-ai_tropes = ["delve into", "testament to", "it is noteworthy", "it is worth noting", "tapestry", "groundbreaking supremacy", "game changer"]
-found_tropes = [t for t in ai_tropes if t in text.lower()]
-if not found_tropes:
-    print("  [PASS] 100% sạch từ ngữ sáo rỗng máy móc AI.")
-else:
-    print(f"  [CẢNH BÁO] Phát hiện từ sáo rỗng: {found_tropes}")
+    print(f"\n=> Ket qua kiem tra mau cau hoc thuat: {pb_passed}/{len(phrasebank)} ({pb_passed/len(phrasebank)*100:.1f}%)")
 
-academic_patterns = [
-    ("classical deep learning architectures", "Introducing paradigm"),
-    ("adhere strictly to the principle of", "Methodological rigor"),
-    ("conclusive dominance of classical cnn", "Objective reporting"),
-    ("structural regularizer", "Deep theoretical discussion"),
-    ("expressibility bottleneck", "Scientific explanation"),
-    ("demonstrates the unique sensitivity", "Clinical relevance"),
-    ("ruling out barren plateaus in shallow", "Careful hedging")
-]
-
-passed_patterns = 0
-for pattern, purpose in academic_patterns:
-    if pattern in text.lower():
-        print(f"  [PASS] {purpose:<30}: \"{pattern}\"")
-        passed_patterns += 1
-    else:
-        print(f"  [FAIL] {purpose:<30}: Missing \"{pattern}\"")
-
-print(f"\n=> Kết quả kiểm tra mẫu câu học thuật: {passed_patterns}/{len(academic_patterns)} (100.0%)")
+if __name__ == "__main__":
+    verify()

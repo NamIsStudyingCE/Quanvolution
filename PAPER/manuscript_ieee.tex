@@ -48,11 +48,11 @@
 \begin{abstract}
 Quanvolutional Neural Networks (QNNs) have emerged as a promising paradigm to combine the high-dimensional, non-linear representation capabilities of Variational Quantum Circuits (VQCs) in Hilbert spaces with classical deep learning architectures. Nevertheless, existing literature in quantum machine learning (QML) often lacks fair, reproducible evaluation frameworks: quantum feature extractors are rarely isolated from classical classifier heads, multi-seed statistical testing is frequently omitted, and claims of ``quantum advantage'' are often overstated. 
 
-This paper establishes a rigorous, symmetrical, $1:1$ comparative benchmark evaluating \textbf{Trainable Quanvolution}, \textbf{Fixed Quanvolution}, and a \textbf{Symmetrical Minimum Classical CNN Baseline} on two standardized biomedical datasets from MedMNIST v2: BreastMNIST (binary, small-sample, class-imbalanced) and OCTMNIST (4-class, $5{,}000$ retinal OCT images). All experiments are strictly standardized across $10$ independent random seeds ($20$ epochs), evaluated on $6$ clinical classification metrics, and backed by paired $t$-tests, Wilcoxon signed-rank tests, $95\%$ confidence intervals (CI), and Cohen's $d$ effect sizes.
+This paper establishes a rigorous, symmetrical, $1:1$ comparative benchmark evaluating \textbf{Trainable Quanvolution}, \textbf{Fixed Quanvolution}, and a \textbf{Symmetrical Minimum Classical CNN Baseline} on two standardized biomedical datasets from MedMNIST v2: BreastMNIST (binary, small-sample, class-imbalanced, $780$ images) and OCTMNIST ($4$-class, standardized $5{,}000 / \approx 97{,}000$ retinal OCT image subset). All experiments are strictly standardized across $10$ independent random seeds ($20$ epochs), evaluated on $6$ clinical classification metrics, and backed by paired $t$-tests, Wilcoxon signed-rank tests, $95\%$ confidence intervals (CI), and Cohen's $d$ effect sizes.
 
 Our empirical findings reveal three key scientific takeaways:
-(1) \textbf{Data Regime Dependency:} On small-sample, imbalanced data (BreastMNIST), fixed quantum filters achieve superior ranking performance and variance stability: \texttt{Fixed Basic L2} attains the highest ROC-AUC of $\mathbf{0.8497 \pm 0.0067}$ ($d = +0.815, p = 0.0298$ vs. Classical CNN $0.8307$), while \texttt{Fixed Strongly L2} achieves the highest PR-AUC of $\mathbf{0.9182 \pm 0.0067}$ ($d = +1.332, p = 0.0023$) with a $\sim 2.73\times$ smaller standard deviation. Conversely, on large multi-class data (OCTMNIST), the classical CNN baseline overwhelmingly dominates all quantum configurations (ROC-AUC $\mathbf{0.7490 \pm 0.0238}$, $d = +2.108, p < 0.001$), demonstrating that quantum expressibility is severely constrained by an architectural capacity bottleneck in multi-class regimes.
-(2) \textbf{True Value of Trainability:} Optimizing parameter angles within the quantum kernel is only beneficial when compared internally within the same ansatz family (on OCTMNIST, \texttt{Trainable Strongly} reaches ROC-AUC $0.6922 \pm 0.0199$, statistically outperforming \texttt{Fixed Strongly} $0.6690$ with $\Delta = +0.0232, d = +1.050, p_{\text{wilcoxon}} = 0.0098$). However, it only ties statistically with an appropriately chosen fixed random ansatz (\texttt{Fixed random\_L1} $0.6914, p = 0.8875$, ns).
+(1) \textbf{Data Regime Dependency:} On small-sample, imbalanced data (BreastMNIST), fixed quantum filters achieve superior ranking performance and variance stability: \texttt{Fixed Basic L2} attains the highest ROC-AUC of $\mathbf{0.8521 \pm 0.0090}$ ($d = +0.815, p = 0.0298$ vs. Classical CNN $0.8336$), while \texttt{Fixed Strongly L2} achieves the highest PR-AUC of $\mathbf{0.9182 \pm 0.0067}$ ($d = +1.332, p = 0.0023$) with a $\sim 2.73\times$ smaller standard deviation ($0.0090$ vs. $0.0246$). Conversely, on large multi-class data (OCTMNIST), the classical CNN baseline overwhelmingly dominates all quantum configurations (ROC-AUC $\mathbf{0.7505 \pm 0.0227}$, $d = +2.108, p < 0.001$), demonstrating that quantum expressibility is severely constrained by an architectural capacity bottleneck in multi-class regimes.
+(2) \textbf{True Value of Trainability:} Optimizing parameter angles within the quantum kernel is only beneficial when compared internally within the same ansatz family (on OCTMNIST, \texttt{Trainable Strongly} reaches ROC-AUC $0.6922 \pm 0.0189$, statistically outperforming \texttt{Fixed Strongly} $0.6690 \pm 0.0052$ with $\Delta = +0.0232, d = +1.050, p_{\text{wilcoxon}} = 0.0098$). However, it only ties statistically with an appropriately chosen fixed random ansatz (\texttt{Fixed random\_L1} $0.6912 \pm 0.0067, p = 0.8875$, ns).
 (3) \textbf{Computational Trade-off:} Fixed quanvolutions provide a powerful \textbf{Quantum Inductive Bias} with \textbf{strictly $0$ trainable parameters} in the feature extractor and permit one-time precomputation ($18\text{ s}$ for 10 seeds), but CPU statevector simulation incurs an inference latency of $\sim 220.22\text{ ms/image}$ ($\sim 710\times$ slower than classical convolution at $0.31\text{ ms/image}$).
 
 This work offers an honest, reproducible, and evidence-based benchmark, clarifying realistic boundaries for quantum-classical hybrid architectures in computer-aided medical diagnosis.
@@ -160,7 +160,7 @@ We examine three distinct ansatz families:
 \subsection{Symmetrical Classical Baseline}
 To adhere strictly to the principle of \textit{Ceteris Paribus}, the classical baseline uses:
 \begin{itemize}
-    \item \textbf{Feature Extractor:} \texttt{Conv2D(in\_channels=1, out\_channels=4, kernel\_size=2, stride=2, bias=False)}, consuming exactly $1 \times 4 \times 2 \times 2 = 16$ weights ($20$ parameters with bias) to yield an identical $4 \times 14 \times 14$ ($784$-dim) tensor.
+    \item \textbf{Feature Extractor:} \texttt{Conv2D(in\_channels=1, out\_channels=4, kernel\_size=2, stride=2, bias=True)}, consuming exactly $1 \times 4 \times 2 \times 2 = 16$ weights ($20$ parameters with bias) plus $8$ parameters from \texttt{BatchNorm2d(4)}, totaling $28$ feature extractor parameters to yield an identical $4 \times 14 \times 14$ ($784$-dim) tensor.
     \item \textbf{Classifier Head:} An identical \texttt{BatchNorm2d(4) + Linear(784, K)} module ($1{,}570$ parameters for $K=2$; $3{,}140$ parameters for $K=4$).
 \end{itemize}
 
@@ -170,19 +170,19 @@ To adhere strictly to the principle of \textit{Ceteris Paribus}, the classical b
 \centering
 \footnotesize
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}l c c c@{}}
+\begin{tabular}{@{}l c c c c@{}}
 \toprule
-\textbf{Model Family} & \textbf{Kernel} & \textbf{Head ($K=2/4$)} & \textbf{Total ($K=2/4$)} \\
+\textbf{Model Family} & \textbf{Kernel ($L=2 / 1$)} & \textbf{BN} & \textbf{Head ($K=2 / 4$)} & \textbf{Total ($K=2, L=2$ / $K=4, L=1$)} \\
 \midrule
-\textbf{Classical Minimum CNN} & \textbf{$20$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}598$ / $3{,}168$} \\
+\textbf{Classical Minimum CNN} & \textbf{$20$} (conv) & $8$ & $1{,}570$ / $3{,}140$ & \textbf{$1{,}598$ / $3{,}168$} \\
 \midrule
-\textbf{Fixed Basic Quanv} & \textbf{$0$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}578$ / $3{,}148$} \\
+\textbf{Fixed Basic Quanv} & \textbf{$0$} & $8$ & $1{,}570$ / $3{,}140$ & \textbf{$1{,}578$ / $3{,}148$} \\
 \midrule
-\textbf{Fixed Strongly Quanv} & \textbf{$0$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}578$ / $3{,}148$} \\
+\textbf{Fixed Strongly Quanv} & \textbf{$0$} & $8$ & $1{,}570$ / $3{,}140$ & \textbf{$1{,}578$ / $3{,}148$} \\
 \midrule
-\textbf{Trainable Basic Quanv} & \textbf{$8$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}586$ / $3{,}156$} \\
+\textbf{Trainable Basic Quanv} & \textbf{$8$ / $4$} & $8$ & $1{,}570$ / $3{,}140$ & \textbf{$1{,}586$ / $3{,}152$} \\
 \midrule
-\textbf{Trainable Strongly Quanv} & \textbf{$12 - 24$} & $1{,}570$ / $3{,}140$ & \textbf{$1{,}590$ / $3{,}172$} \\
+\textbf{Trainable Strongly Quanv} & \textbf{$24$ / $12$} & $8$ & $1{,}570$ / $3{,}140$ & \textbf{$1{,}602$ / $3{,}160$} \\
 \bottomrule
 \end{tabular}%
 }
@@ -208,7 +208,7 @@ The mean absolute deviation was $|\Delta| < 4.1 \times 10^{-8}$, verifying gradi
 Experiments are conducted on two distinct biomedical benchmarks from MedMNIST v2 \cite{yang2023medmnist}:
 \begin{itemize}
     \item \textbf{BreastMNIST:} $780$ breast ultrasound images ($28 \times 28$, binary: $546$ train, $78$ val, $156$ test) with $73\%$ benign and $27\%$ malignant samples, representing the \textbf{Small-Sample, Imbalanced Data Regime}.
-    \item \textbf{OCTMNIST (Subset):} $5{,}000$ retinal optical coherence tomography images ($28 \times 28$, 4 classes: $3{,}500$ train, $500$ val, $1{,}000$ test), representing the \textbf{Large-Sample, Multi-Class Data Regime}.
+    \item \textbf{OCTMNIST (Subset):} Standardized subset of $5{,}000$ retinal optical coherence tomography images from the $\approx 97{,}000$ total collection ($28 \times 28$, 4 balanced classes: $3{,}500$ train, $500$ val, $1{,}000$ test), representing the \textbf{Large-Sample, Multi-Class Data Regime}.
 \end{itemize}
 
 \subsection{Training Protocol}
@@ -219,13 +219,13 @@ All models are evaluated over \textbf{$10$ independent random seeds}:
 \begin{itemize}
     \item \textbf{Epochs:} $20$ epochs across all models (convergence confirmed by epoch 15).
     \item \textbf{Optimization:} Adam optimizer ($lr = 0.001$ for classical weights, $lr = 0.01$ for quantum angles $\boldsymbol{\theta}$); Cross-Entropy loss; batch size $B=32$.
-    \item \textbf{Environment:} Intel Core CPU, 16GB RAM, PyTorch 2.13.0 + PennyLane 0.42.3.
+    \item \textbf{Environment:} Intel Core CPU, 16GB RAM, PyTorch 2.1.0 + PennyLane 0.35.0.
 \end{itemize}
 
 \subsection{Evaluation Metrics \& Statistical Testing}
 We evaluate $6$ metrics: Accuracy (Acc), Balanced Accuracy (BAcc), F1-Score (macro), Matthews Correlation Coefficient (MCC), ROC-AUC (One-vs-Rest macro), and PR-AUC. Statistical rigor is established using:
 \begin{itemize}
-    \item Paired Student's $t$-tests and Wilcoxon signed-rank tests ($\alpha = 0.05$). Note that for $n=10$, the minimal discrete Wilcoxon $p$-value is $p_{\min} = 1/2^9 \approx 0.00195$.
+    \item Paired Student's $t$-tests and Wilcoxon signed-rank tests ($\alpha = 0.05$). For $n=10$, the discrete Wilcoxon $p$-value has a theoretical minimum $p_{\min} = 1/2^9 \approx 0.00195$. Given the exploratory nature across multiple metrics and datasets, reported $p$-values are unadjusted for family-wise error rates (e.g., Bonferroni/Holm), serving as descriptive hypothesis screening.
     \item $95\%$ Confidence Intervals based on $t_{df=9}^* = 2.262$.
     \item Cohen's $d$ paired effect sizes ($|d| \ge 0.8$ denotes large effect, $|d| \ge 1.2$ very large effect).
 \end{itemize}
@@ -233,7 +233,7 @@ We evaluate $6$ metrics: Accuracy (Acc), Balanced Accuracy (BAcc), F1-Score (mac
 \section{Results \& Empirical Findings}
 
 \subsection{BreastMNIST Benchmark (Small-Sample, Imbalanced Regime)}
-Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks}(a) summarize test performance across 10 independent seeds on BreastMNIST ($L=2$).
+Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks}(a) summarize test performance across 10 independent seeds on BreastMNIST ($L=2$, 20 epochs).
 
 \begin{table*}[t]
 \caption{Empirical 10-Seed Performance Comparison on BreastMNIST ($L=2$, 20 Epochs).}
@@ -246,15 +246,15 @@ Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks}(a) summarize test perf
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
-\textbf{Classical CNN Baseline} & $0.8115 \pm 0.0281$ & \makecell{$0.6875 \pm 0.0448$ \\ \scriptsize $[0.6554, 0.7195]$} & $0.8799 \pm 0.0188$ & $0.4741 \pm 0.0830$ & \makecell{$0.8307 \pm 0.0246$ \\ \scriptsize $[0.8160, 0.8512]$} & \makecell{$0.9057 \pm 0.0095$ \\ \scriptsize $[0.8973, 0.9109]$} \\
+\textbf{Classical CNN Baseline} & $0.8103 \pm 0.0265$ & \makecell{$0.6875 \pm 0.0448$ \\ \scriptsize $[0.6537, 0.7213]$} & $0.8802 \pm 0.0164$ & $0.4702 \pm 0.0821$ & \makecell{$0.8336 \pm 0.0246$ \\ \scriptsize $[0.8150, 0.8521]$} & \makecell{$0.9041 \pm 0.0095$ \\ \scriptsize $[0.8970, 0.9113]$} \\
 \midrule
-\textbf{Fixed Basic Quanv (L2)} & $0.8192 \pm 0.0101$ & \makecell{$0.6816 \pm 0.0259$ \\ \scriptsize $[0.6631, 0.7001]$} & $0.8874 \pm 0.0058$ & $0.4874 \pm 0.0378$ & \makecell{$\mathbf{0.8497 \pm 0.0067}$ \\ \scriptsize $[0.8457, 0.8586]$} & \makecell{$0.9110 \pm 0.0065$ \\ \scriptsize $[0.9063, 0.9156]$} \\
+\textbf{Fixed Basic Quanv (L2)} & $0.8083 \pm 0.0193$ & \makecell{$0.6816 \pm 0.0490$ \\ \scriptsize $[0.6447, 0.7186]$} & $0.8796 \pm 0.0095$ & $0.4626 \pm 0.0674$ & \makecell{$\mathbf{0.8521 \pm 0.0090}$ \\ \scriptsize $[0.8453, 0.8589]$} & \makecell{$0.9110 \pm 0.0049$ \\ \scriptsize $[0.9073, 0.9146]$} \\
 \midrule
-\textbf{Trainable Basic Quanv (L2)} & $0.8186 \pm 0.0224$ & \makecell{$0.6732 \pm 0.0418$ \\ \scriptsize $[0.6433, 0.7031]$} & $0.8862 \pm 0.0145$ & $0.4814 \pm 0.0692$ & \makecell{$0.8406 \pm 0.0239$ \\ \scriptsize $[0.8235, 0.8577]$} & \makecell{$0.9173 \pm 0.0184$ \\ \scriptsize $[0.9057, 0.9304]$} \\
+\textbf{Trainable Basic Quanv (L2)} & $0.7917 \pm 0.0239$ & \makecell{$0.6732 \pm 0.0382$ \\ \scriptsize $[0.6444, 0.7021]$} & $0.8668 \pm 0.0168$ & $0.4224 \pm 0.0711$ & \makecell{$0.8406 \pm 0.0239$ \\ \scriptsize $[0.8226, 0.8586]$} & \makecell{$0.9173 \pm 0.0184$ \\ \scriptsize $[0.9033, 0.9312]$} \\
 \midrule
-\textbf{Fixed Strongly Quanv (L2)} & $0.7994 \pm 0.0098$ & \makecell{$0.6602 \pm 0.0213$ \\ \scriptsize $[0.6450, 0.6754]$} & $0.8733 \pm 0.0065$ & $0.4301 \pm 0.0348$ & \makecell{$0.8139 \pm 0.0143$ \\ \scriptsize $[0.8037, 0.8241]$} & \makecell{$\mathbf{0.9182 \pm 0.0067}$ \\ \scriptsize $[0.9134, 0.9230]$} \\
+\textbf{Fixed Strongly Quanv (L2)} & $0.7846 \pm 0.0177$ & \makecell{$0.6602 \pm 0.0202$ \\ \scriptsize $[0.6449, 0.6754]$} & $0.8631 \pm 0.0124$ & $0.3942 \pm 0.0509$ & \makecell{$0.8139 \pm 0.0142$ \\ \scriptsize $[0.8032, 0.8246]$} & \makecell{$\mathbf{0.9182 \pm 0.0067}$ \\ \scriptsize $[0.9131, 0.9232]$} \\
 \midrule
-\textbf{Trainable Strongly Quanv (L2)} & $\mathbf{0.8205 \pm 0.0257}$ & \makecell{$\mathbf{0.6945 \pm 0.0428}$ \\ \scriptsize $[0.6639, 0.7251]$} & $\mathbf{0.8877 \pm 0.0163}$ & $\mathbf{0.4911 \pm 0.0756}$ & \makecell{$0.8306 \pm 0.0280$ \\ \scriptsize $[0.8106, 0.8506]$} & \makecell{$0.9167 \pm 0.0087$ \\ \scriptsize $[0.9105, 0.9229]$} \\
+\textbf{Trainable Strongly Quanv (L2)} & $\mathbf{0.8019 \pm 0.0284}$ & \makecell{$\mathbf{0.6945 \pm 0.0428}$ \\ \scriptsize $[0.6623, 0.7268]$} & $\mathbf{0.8724 \pm 0.0183}$ & $\mathbf{0.4549 \pm 0.0896}$ & \makecell{$0.8306 \pm 0.0279$ \\ \scriptsize $[0.8096, 0.8516]$} & \makecell{$0.9167 \pm 0.0157$ \\ \scriptsize $[0.9048, 0.9286]$} \\
 \bottomrule
 \end{tabular}%
 }
@@ -280,17 +280,17 @@ Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks}(a) summarize test perf
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
-\textbf{Classical CNN Baseline} & $\mathbf{0.4492 \pm 0.0239}$ & \makecell{$\mathbf{0.4433 \pm 0.0199}$ \\ \scriptsize $[0.4291, 0.4575]$} & $\mathbf{0.4792 \pm 0.0241}$ & $\mathbf{0.3092 \pm 0.0314}$ & \makecell{$\mathbf{0.7490 \pm 0.0238}$ \\ \scriptsize $[0.7333, 0.7676]$} & \makecell{$\mathbf{0.4982 \pm 0.0268}$ \\ \scriptsize $[0.4799, 0.5182]$} \\
+\textbf{Classical CNN Baseline} & $\mathbf{0.4433 \pm 0.0128}$ & \makecell{$\mathbf{0.4433 \pm 0.0128}$ \\ \scriptsize $[0.4336, 0.4530]$} & $\mathbf{0.3206 \pm 0.0166}$ & $\mathbf{0.3156 \pm 0.0188}$ & \makecell{$\mathbf{0.7505 \pm 0.0227}$ \\ \scriptsize $[0.7333, 0.7676]$} & \makecell{$\mathbf{0.4991 \pm 0.0282}$ \\ \scriptsize $[0.4778, 0.5203]$} \\
 \midrule
-\textbf{Fixed Basic Quanv (L1)} & $0.4726 \pm 0.0100$ & \makecell{$0.4075 \pm 0.0077$ \\ \scriptsize $[0.4020, 0.4130]$} & $0.4300 \pm 0.0100$ & $0.2328 \pm 0.0130$ & \makecell{$0.6711 \pm 0.0042$ \\ \scriptsize $[0.6681, 0.6741]$} & \makecell{$0.4186 \pm 0.0038$ \\ \scriptsize $[0.4159, 0.4213]$} \\
+\textbf{Fixed Basic Quanv (L1)} & $0.4075 \pm 0.0040$ & \makecell{$0.4075 \pm 0.0040$ \\ \scriptsize $[0.4045, 0.4105]$} & $0.2971 \pm 0.0071$ & $0.2566 \pm 0.0068$ & \makecell{$0.6711 \pm 0.0040$ \\ \scriptsize $[0.6681, 0.6741]$} & \makecell{$0.4186 \pm 0.0070$ \\ \scriptsize $[0.4133, 0.4239]$} \\
 \midrule
-\textbf{Trainable Basic Quanv (L1)} & $0.4650 \pm 0.0139$ & \makecell{$0.3955 \pm 0.0115$ \\ \scriptsize $[0.3873, 0.4037]$} & $0.4179 \pm 0.0145$ & $0.2196 \pm 0.0191$ & \makecell{$0.6704 \pm 0.0106$ \\ \scriptsize $[0.6628, 0.6780]$} & \makecell{$0.4102 \pm 0.0076$ \\ \scriptsize $[0.4048, 0.4156]$} \\
+\textbf{Trainable Basic Quanv (L1)} & $0.3955 \pm 0.0152$ & \makecell{$0.3955 \pm 0.0152$ \\ \scriptsize $[0.3840, 0.4070]$} & $0.2837 \pm 0.0193$ & $0.2394 \pm 0.0192$ & \makecell{$0.6704 \pm 0.0101$ \\ \scriptsize $[0.6628, 0.6780]$} & \makecell{$0.4102 \pm 0.0124$ \\ \scriptsize $[0.4008, 0.4195]$} \\
 \midrule
-\textbf{Fixed Champ (Phase 2, \texttt{random\_L1})} & $0.4799 \pm 0.0113$ & \makecell{$0.4048 \pm 0.0099$ \\ \scriptsize $[0.3977, 0.4119]$} & $0.4269 \pm 0.0133$ & $0.2391 \pm 0.0165$ & \makecell{$0.6914 \pm 0.0071$ \\ \scriptsize $[0.6861, 0.6963]$} & \makecell{$0.4443 \pm 0.0071$ \\ \scriptsize $[0.4392, 0.4494]$} \\
+\textbf{Fixed Champ (Phase 2, \texttt{random\_L1})} & $0.4048 \pm 0.0123$ & \makecell{$0.4048 \pm 0.0123$ \\ \scriptsize $[0.3955, 0.4141]$} & $0.2997 \pm 0.0191$ & $0.2530 \pm 0.0136$ & \makecell{$0.6912 \pm 0.0067$ \\ \scriptsize $[0.6862, 0.6963]$} & \makecell{$0.4443 \pm 0.0084$ \\ \scriptsize $[0.4380, 0.4506]$} \\
 \midrule
-\textbf{Fixed Strongly Quanv (L1)} & $0.4778 \pm 0.0087$ & \makecell{$0.4034 \pm 0.0062$ \\ \scriptsize $[0.3990, 0.4078]$} & $0.4257 \pm 0.0114$ & $0.2348 \pm 0.0126$ & \makecell{$0.6690 \pm 0.0055$ \\ \scriptsize $[0.6651, 0.6690]$} & \makecell{$0.4175 \pm 0.0049$ \\ \scriptsize $[0.4140, 0.4210]$} \\
+\textbf{Fixed Strongly Quanv (L1)} & $0.4034 \pm 0.0044$ & \makecell{$0.4034 \pm 0.0044$ \\ \scriptsize $[0.4001, 0.4067]$} & $0.3050 \pm 0.0123$ & $0.2421 \pm 0.0061$ & \makecell{$0.6690 \pm 0.0052$ \\ \scriptsize $[0.6650, 0.6729]$} & \makecell{$0.4175 \pm 0.0044$ \\ \scriptsize $[0.4142, 0.4209]$} \\
 \midrule
-\textbf{Trainable Strongly Quanv (L1)} & $0.4772 \pm 0.0184$ & \makecell{$0.4020 \pm 0.0161$ \\ \scriptsize $[0.3905, 0.4135]$} & $0.4246 \pm 0.0201$ & $0.2388 \pm 0.0259$ & \makecell{$0.6922 \pm 0.0199$ \\ \scriptsize $[0.6780, 0.7065]$} & \makecell{$0.4365 \pm 0.0125$ \\ \scriptsize $[0.4276, 0.4455]$} \\
+\textbf{Trainable Strongly Quanv (L1)} & $0.4020 \pm 0.0141$ & \makecell{$0.4020 \pm 0.0141$ \\ \scriptsize $[0.3914, 0.4126]$} & $0.2949 \pm 0.0178$ & $0.2481 \pm 0.0220$ & \makecell{$0.6922 \pm 0.0189$ \\ \scriptsize $[0.6780, 0.7065]$} & \makecell{$0.4365 \pm 0.0274$ \\ \scriptsize $[0.4158, 0.4571]$} \\
 \bottomrule
 \end{tabular}%
 }
@@ -298,20 +298,20 @@ Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks}(a) summarize test perf
 
 \textbf{Key Statistical Findings on BreastMNIST:}
 \begin{enumerate}
-    \item \textbf{Fixed Basic Wins on ROC-AUC:} \texttt{Fixed Basic L2} achieves the highest ROC-AUC of $\mathbf{0.8497 \pm 0.0067}$, outperforming Classical CNN ($0.8307$) with statistical significance ($p_{\text{ttest}} = 0.0309, p_{\text{wilcoxon}} = 0.0298$) and a large effect size (\textbf{Cohen's $d = +0.815$}).
-    \item \textbf{Fixed Strongly Wins on PR-AUC:} \texttt{Fixed Strongly L2} attains the highest PR-AUC of $\mathbf{0.9182 \pm 0.0067}$, significantly outperforming Classical CNN ($0.9057, p = 0.0023$) with a very large effect size (\textbf{Cohen's $d = +1.332$}).
-    \item \textbf{Variance Stability:} Fixed quantum models exhibit standard deviations $\mathbf{2.73\times}$ smaller than Classical CNN in ROC-AUC ($0.0067$ vs. $0.0246$), confirming robustness to random seed variations.
-    \item \textbf{Trainable Performance:} \texttt{Trainable Strongly} yields the highest Balanced Accuracy ($0.6945 \pm 0.0428$, $+0.0344$ over \texttt{Fixed Strongly}, $d = +0.677, p = 0.061$), but the difference versus Classical CNN ($0.6875$) is not statistically significant ($p = 0.670, d = +0.139$).
+    \item \textbf{Fixed Basic Wins on ROC-AUC:} \texttt{Fixed Basic L2} achieves the highest ROC-AUC of $\mathbf{0.8521 \pm 0.0090}$, outperforming Classical CNN ($0.8336 \pm 0.0246$) with statistical significance ($p_{\text{ttest}} = 0.0298, p_{\text{wilcoxon}} = 0.0254$) and a large effect size (\textbf{Cohen's $d = +0.815$}).
+    \item \textbf{Fixed Strongly Wins on PR-AUC:} \texttt{Fixed Strongly L2} attains the highest PR-AUC of $\mathbf{0.9182 \pm 0.0067}$, significantly outperforming Classical CNN ($0.9041 \pm 0.0095, p_{\text{ttest}} = 0.0023, p_{\text{wilcoxon}} = 0.0059$) with a very large effect size (\textbf{Cohen's $d = +1.332$}).
+    \item \textbf{Variance Stability:} Fixed quantum models exhibit standard deviations $\mathbf{2.73\times}$ smaller than Classical CNN in ROC-AUC ($0.0090$ vs. $0.0246$), confirming robustness to random seed variations.
+    \item \textbf{Trainable Performance:} \texttt{Trainable Strongly} yields the highest Balanced Accuracy ($0.6945 \pm 0.0428$, $+0.0344$ over \texttt{Fixed Strongly} $0.6602 \pm 0.0202$, $d = +0.677, p = 0.0611$), but the difference versus Classical CNN ($0.6875 \pm 0.0448$) is not statistically significant ($p = 0.6701, d = +0.139$).
 \end{enumerate}
 
 \subsection{OCTMNIST Benchmark (Large-Sample, Multi-Class Regime)}
-Table~\ref{tab:octmnist} and Fig.~\ref{fig:benchmarks}(b) present test results across 10 independent seeds on OCTMNIST ($L=1$).
+Table~\ref{tab:octmnist} and Fig.~\ref{fig:benchmarks}(b) present test results across 10 independent seeds on OCTMNIST ($L=1$, 20 epochs).
 
 \textbf{Key Statistical Findings on OCTMNIST:}
 \begin{enumerate}
-    \item \textbf{Conclusive Dominance of Classical CNN:} Classical CNN leads decisively across all 6 metrics (ROC-AUC $\mathbf{0.7490}$, PR-AUC $\mathbf{0.4982}$, Acc $\mathbf{0.4492}$), outperforming the best quantum model with $p < 0.001$ and huge effect sizes (\textbf{Cohen's $d = +2.108$} for ROC-AUC; \textbf{$d = +1.874$} for BAcc).
-    \item \textbf{Tier-3 Trainability Effect:} \texttt{Trainable Strongly} ($0.6922 \pm 0.0199$) significantly surpasses \texttt{Fixed Strongly} ($0.6690 \pm 0.0055$) with $\Delta = +0.0232$ ROC-AUC ($p_{\text{wilcoxon}} = 0.0098 < 0.01$, \textbf{Cohen's $d = +1.050$}).
-    \item \textbf{Statistical Tie with Fixed Champion:} \texttt{Trainable Strongly} ($0.6922$) only ties statistically with \texttt{Fixed random\_L1} ($0.6914, \Delta = +0.0010, p = 0.8875$, ns; Cohen's $d = +0.047$).
+    \item \textbf{Conclusive Dominance of Classical CNN:} Classical CNN leads decisively across all 6 metrics (ROC-AUC $\mathbf{0.7505 \pm 0.0227}$, PR-AUC $\mathbf{0.4991 \pm 0.0282}$, Acc/BAcc $\mathbf{0.4433 \pm 0.0128}$), outperforming the best quantum model with $p < 0.001$ and huge effect sizes (\textbf{Cohen's $d = +2.108$} for ROC-AUC; \textbf{$d = +1.874$} for BAcc).
+    \item \textbf{Tier-3 Trainability Effect:} \texttt{Trainable Strongly} ($0.6922 \pm 0.0189$) significantly surpasses \texttt{Fixed Strongly} ($0.6690 \pm 0.0052$) with $\Delta = +0.0232$ ROC-AUC ($p_{\text{wilcoxon}} = 0.0098 < 0.01$, \textbf{Cohen's $d = +1.050$}).
+    \item \textbf{Statistical Tie with Fixed Champion:} \texttt{Trainable Strongly} ($0.6922$) only ties statistically with \texttt{Fixed random\_L1} ($0.6912 \pm 0.0067, \Delta = +0.0010, p = 0.8875$, ns; Cohen's $d = +0.046$).
 \end{enumerate}
 
 \subsection{Optimization Dynamics \& Gradient Health}
@@ -365,7 +365,7 @@ Table~\ref{tab:latency} breaks down CPU inference latency and training wall-cloc
 Key computational insights include:
 \begin{itemize}
     \item Over $99.98\%$ of execution time is spent on simulating $196$ quantum statevector evolutions on CPU.
-    \item Although simulation is $\sim 710\times$ slower than classical convolution, an inference latency of $\approx 0.22\text{ s/image}$ is entirely viable for clinical CAD workflows.
+    \item Although simulation is $\sim 710\times$ slower than classical convolution, an inference latency of $\approx 0.22\text{ s/image}$ is potentially acceptable for offline screening or low-throughput computer-aided diagnosis workflows.
     \item Fixed quanvolutions allow one-time feature precomputation, reducing 10-seed training time to just $18\text{ seconds}$.
 \end{itemize}
 
@@ -374,20 +374,23 @@ Key computational insights include:
 \subsection{Decoupling Data Regimes: Capacity Bottleneck vs. Regularization}
 The divergent outcomes between BreastMNIST and OCTMNIST highlight a fundamental architectural principle:
 \begin{itemize}
-    \item \textbf{Small Data Regime (BreastMNIST --- 546 train samples, binary):} Classical convolutions with freely unconstrained weights readily overfit spurious artifacts. The fixed 4-qubit quantum transformation acts as a rigid \textbf{Structural Regularizer} in Hilbert space, compressing the optimization search space and resulting in a $\sim 2.73\times$ reduction in variance and peak ROC-AUC ($0.8497$).
-    \item \textbf{Large Multi-Class Regime (OCTMNIST --- 3,500 train samples, 4 classes):} Separating 4 subtle retinal pathologies requires high spatial feature flexibility. Shallow 4-qubit kernels hit an \textbf{Expressibility Bottleneck}, whereas classical convolutions scale effectively to dominate the task ($0.7490$ vs. $0.6922$).
+    \item \textbf{Small Data Regime (BreastMNIST --- 546 train samples, binary):} Classical convolutions with freely unconstrained weights readily overfit spurious artifacts. The fixed 4-qubit quantum transformation acts as a rigid \textbf{Structural Regularizer} in Hilbert space, compressing the optimization search space and resulting in a $\sim 2.73\times$ reduction in variance ($0.0090$ vs. $0.0246$) and peak ROC-AUC ($0.8521$).
+    \item \textbf{Large Multi-Class Regime (OCTMNIST --- 3,500 train samples, 4 classes):} Separating 4 subtle retinal pathologies requires high spatial feature flexibility. Shallow 4-qubit kernels hit an \textbf{Expressibility Bottleneck}, whereas classical convolutions scale effectively to dominate the task ($0.7505$ vs. $0.6922$).
 \end{itemize}
 
 \subsection{Potency of Quantum Inductive Bias in Zero-Parameter Kernels}
 A major finding is that zero-parameter fixed quantum circuits (\texttt{Fixed Basic} and \texttt{Fixed Strongly}) achieved top-tier performance on BreastMNIST, outperforming heavily parameterized trainable counterparts. This confirms that adding trainable parameters to the quantum circuit does not guarantee improved generalization in low-data regimes; an appropriately designed fixed circuit provides sufficient inductive bias with \textbf{strictly zero trainable kernel parameters}.
 
 \subsection{Clinical Relevance in Medical Diagnosis}
-In screening scenarios, false negatives are vastly more costly than false positives. Thus, PR-AUC under class imbalance serves as the critical clinical metric. The fact that \texttt{Fixed Strongly Quanvolution} reaches a PR-AUC of $\mathbf{0.9182 \pm 0.0067}$ ($d = +1.332$ over Classical CNN at $0.9057$) demonstrates the unique sensitivity of quantum kernel representations in isolating rare pathological cases.
+In screening scenarios, false negatives are vastly more costly than false positives. Thus, PR-AUC under class imbalance serves as the critical clinical metric. The fact that \texttt{Fixed Strongly Quanvolution} reaches a PR-AUC of $\mathbf{0.9182 \pm 0.0067}$ ($d = +1.332$ over Classical CNN at $0.9041$) demonstrates the unique sensitivity of quantum kernel representations in isolating rare pathological cases.
 
 \section{Threats to Validity \& Limitations}
+To ensure objective and balanced scientific reporting, several methodological boundaries of this benchmark should be explicitly noted:
 \begin{enumerate}
-    \item \textbf{Resolution \& Patch Size:} This study is limited to $28 \times 28$ MedMNIST images with $2 \times 2$ (4-qubit) patches. Scaling to $224 \times 224$ images will require advanced multi-scale patch partitioning.
-    \item \textbf{Simulation Environment:} All experiments were conducted on noiseless statevector simulators (\texttt{default.qubit}). Physical QPU execution will introduce gate errors and readout decoherence.
+    \item \textbf{Resolution and Patch Constraints:} This study evaluates $28 \times 28$ MedMNIST images partitioned into local $2 \times 2$ patches ($4$ qubits). Scaling to standard clinical resolutions ($224 \times 224$ or $512 \times 512$) will require multi-scale patch decomposition or hierarchical pooling to avoid combinatorial simulation bottlenecks.
+    \item \textbf{Subsampled Dataset Scale:} While BreastMNIST evaluates the full benchmark ($780$ images), the OCTMNIST experiment utilizes a balanced subset of $5{,}000$ images from the complete $\approx 97{,}000$ collection to enable extensive 10-seed ablation. Future benchmarks should assess behavior under full-scale multi-class distributions.
+    \item \textbf{Noiseless Statevector Simulation:} All quantum transformations were executed using exact statevector simulation (\texttt{default.qubit}). Physical NISQ QPU deployment will inevitably introduce gate infidelities, readout noise, and qubit crosstalk, which may degrade subtle quantum inductive biases.
+    \item \textbf{Exploratory Multiple Comparisons:} Given the evaluation of $6$ metrics across $2$ datasets, the statistical tests serve as exploratory indicators of relative model behavior rather than confirmatory clinical trial endpoints.
 \end{enumerate}
 
 \section{Conclusion \& Future Work}
