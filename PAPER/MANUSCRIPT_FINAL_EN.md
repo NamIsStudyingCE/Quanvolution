@@ -1,152 +1,150 @@
-# Trainable vs. Fixed Quanvolutional Filters for Medical Image Classification: A Fair, Reproducible Benchmark on MedMNIST
+# Symmetrical Empirical Evaluation of Trainable versus Fixed Quanvolutional Filters in Medical Image Classification: A Rigorous, Reproducible Benchmark on MedMNIST
 
-**Hoang-Nam Nguyen**$^1$ and **Duy-Xuan-Bach Nguyen**$^{1,*}$  
+**Hoang-Nam Nguyen**$^1$ and **Duy-Xuan-Bach Nguyen**$^1$  
 $^1$*Faculty of Computer Engineering, University of Information Technology, VNU-HCM, Ho Chi Minh City, Vietnam*  
-$^*$\textit{Corresponding author: bachndx@uit.edu.vn}  
-*Open-source Repository & Reproducibility Package:* `https://github.com/NamIsStudyingCE/Quanvolution.git`  
+*Emails:* `ng.h.nam0802@gmail.com`, `bachndx@uit.edu.vn`  
+*Corresponding Author:* Duy-Xuan-Bach Nguyen (`bachndx@uit.edu.vn`)  
+*Source Code & Reproducibility Repository:* `https://github.com/NamIsStudyingCE/Quanvolution.git`  
 
 ---
 
 ## ABSTRACT
 
-Quanvolutional Neural Networks (QNNs) have emerged as a compelling paradigm that integrates the expressive, non-linear Hilbert space representations of Variational Quantum Circuits (VQCs) into classical deep learning pipelines. However, contemporary quantum machine learning (QML) literature in biomedical imaging frequently suffers from three methodological shortcomings: lack of parameter isolation between quantum feature extractors and classical classifier heads, absence of multi-seed statistical testing, and premature claims of "quantum advantage." 
+Quanvolutional Neural Networks (QNNs) have emerged as a promising paradigm to combine the high-dimensional, non-linear representation capabilities of Variational Quantum Circuits (VQCs) in Hilbert spaces with classical deep learning architectures. Nevertheless, existing literature in quantum machine learning (QML) often lacks fair, reproducible evaluation frameworks: quantum feature extractors are rarely isolated from classical classifier heads, multi-seed statistical testing is frequently omitted, and claims of "quantum advantage" are often overstated. 
 
-In this work, we present a rigorous, $1:1$ symmetrical, and fully reproducible empirical benchmark evaluating **Trainable Quanvolutional Filters**, **Fixed Quanvolutional Filters**, and a **Symmetrical Minimum Classical CNN Baseline** across two standard MedMNIST v2 datasets: BreastMNIST (binary, small-sample, class-imbalanced) and OCTMNIST ($5{,}000$-sample multi-class subset). All evaluations are standardized across $10$ independent random seeds ($20$ epochs), assessed via $6$ clinical diagnostic metrics, and validated through paired parametric ($t$-test) and non-parametric (Wilcoxon signed-rank) hypothesis testing, $95\%$ confidence intervals (CI), and standardized effect sizes (Cohen's $d$).
+This paper establishes a rigorous, symmetrical, $1:1$ comparative benchmark evaluating **Trainable Quanvolution**, **Fixed Quanvolution**, and a **Symmetrical Minimum Classical CNN Baseline** on two standardized biomedical datasets from MedMNIST v2: BreastMNIST (binary, small-sample, class-imbalanced) and OCTMNIST (4-class, $5{,}000$ retinal OCT images). All experiments are strictly standardized across $10$ independent random seeds ($20$ epochs), evaluated on $6$ clinical classification metrics, and backed by paired $t$-tests, Wilcoxon signed-rank tests, $95\%$ confidence intervals (CI), and Cohen's $d$ effect sizes.
 
-Our extensive empirical findings reveal three primary insights:
-1. **Data Regime Dependency:** In the low-data, class-imbalanced regime (BreastMNIST), fixed quantum circuits achieve state-of-the-art ranking metrics: `Fixed Basic L2` attains the highest ROC-AUC of **$0.8521 \pm 0.0090$** ($d = +0.815, p = 0.0298$ vs. Classical CNN $0.8336$), while `Fixed Strongly L2` achieves the highest PR-AUC of **$0.9182 \pm 0.0067$** ($d = +1.332, p = 0.0023$) alongside a $\sim 2.73\times$ reduction in variance. Conversely, in the larger multi-class regime (OCTMNIST), the classical CNN baseline comprehensively outperforms all quantum architectures with an ROC-AUC of **$0.7505 \pm 0.0240$** ($d = +2.108, p < 0.001$), demonstrating that shallow quantum kernels suffer from an expressibility bottleneck as the number of semantic classes scales.
-2. **True Utility of Circuit Trainability:** Optimizing parameter-shift quantum rotation angles ($\boldsymbol{\theta}$) yields statistically significant gains only within identical ansatz families (on OCTMNIST, `Trainable Strongly` achieves ROC-AUC $0.6922 \pm 0.0199$ vs. `Fixed Strongly` $0.6690$, $\Delta = +0.0232, d = +1.050, p_{\text{wilcoxon}} = 0.0098$). However, the 3-axis trainable ansatz merely statistically ties with an optimally designed fixed random circuit (`random_L1` $0.6912, p = 0.8875$, ns).
-3. **Computational Trade-offs:** Fixed quanvolution provides a potent *Quantum Inductive Bias* requiring **exactly $0$ trainable parameters** at the feature extraction layer and enabling single-pass precomputation, but classical CPU emulation incurs an inference latency of $\sim 220.22\text{ ms/image}$ ($\sim 710\times$ slower than classical convolution at $0.31\text{ ms/image}$).
+Our empirical findings reveal three key scientific takeaways:
+1. **Data Regime Dependency:** On small-sample, imbalanced data (BreastMNIST), fixed quantum filters achieve superior ranking performance and variance stability: `Fixed Basic L2` attains the highest ROC-AUC of **$0.8521 \pm 0.0090$** ($d = +0.815, p = 0.0298$ vs. Classical CNN $0.8336$), while `Fixed Strongly L2` achieves the highest PR-AUC of **$0.9182 \pm 0.0067$** ($d = +1.332, p = 0.0023$) with a $\sim 2.73\times$ smaller standard deviation. Conversely, on large multi-class data (OCTMNIST), the classical CNN baseline overwhelmingly dominates all quantum configurations (ROC-AUC **$0.7505 \pm 0.0240$**, $d = +2.108, p < 0.001$), demonstrating that quantum expressibility is severely constrained by an architectural capacity bottleneck in multi-class regimes.
+2. **True Value of Trainability:** Optimizing parameter angles within the quantum kernel is only beneficial when compared internally within the same ansatz family (on OCTMNIST, `Trainable Strongly` reaches ROC-AUC $0.6922 \pm 0.0199$, statistically outperforming `Fixed Strongly` $0.6690$ with $\Delta = +0.0232, d = +1.050, p_{\text{wilcoxon}} = 0.0098$). However, it only ties statistically with an appropriately chosen fixed random ansatz (`Fixed random_L1` $0.6912, p = 0.8875$, ns).
+3. **Computational Trade-off:** Fixed quanvolutions provide a powerful **Quantum Inductive Bias** with **strictly $0$ trainable parameters** in the feature extractor and permit one-time precomputation ($18\text{ s}$ for 10 seeds), but CPU statevector simulation incurs an inference latency of $\sim 220.22\text{ ms/image}$ ($\sim 710\times$ slower than classical convolution at $0.31\text{ ms/image}$).
 
-This study provides an objective empirical baseline, dispels prevalent overclaims in quantum vision, and outlines the precise operational boundaries where quanvolutional architectures offer viable utility for computer-aided diagnosis.
+This work offers an honest, reproducible, and evidence-based benchmark, clarifying realistic boundaries for quantum-classical hybrid architectures in computer-aided medical diagnosis.
 
-**Keywords:** Quantum Machine Learning (QML), Quanvolutional Neural Networks, Medical Image Classification, MedMNIST, Quantum Inductive Bias, Reproducible Benchmark.
+**Keywords:** Quantum Machine Learning (QML), Quanvolutional Neural Networks, MedMNIST, Medical Image Classification, Quantum Inductive Bias, Reproducible Benchmark.
 
 ---
 
 ## 1. INTRODUCTION
 
-In the era of computer-assisted healthcare, biomedical image analysis—encompassing breast ultrasonography, optical coherence tomography (OCT), and chest radiography—demands classification algorithms that exhibit high sensitivity toward subtle pathological lesions while remaining resilient against severe class imbalance and data scarcity [1], [2]. Classical Convolutional Neural Networks (CNNs), though ubiquitous, fundamentally rely on optimizing thousands to millions of parameters across dense feature spaces, which poses severe risks of empirical overfitting and degraded generalization when fine-tuned on limited clinical cohorts [3].
+In the era of computer-aided diagnosis (CAD), medical image analysis (such as ultrasound, optical coherence tomography, and radiography) demands models capable of extracting discriminative spatial features under severe constraints of data scarcity and extreme class imbalance [1]–[3]. While deep Classical Convolutional Neural Networks (CNNs) serve as the foundation of modern computer vision, their parameter-heavy nature poses a substantial risk of overfitting and generalization degradation when applied to low-resource biomedical datasets [4].
 
-Quantum Machine Learning (QML) within the Noisy Intermediate-Scale Quantum (NISQ) era offers a compelling mathematical alternative by mapping classical vectors into exponentially large $2^N$-dimensional Hilbert spaces via quantum superposition and multi-qubit entanglement [4], [5]. In 2019, Henderson et al. [6] introduced the Quanvolutional Neural Network (Quanvolution), wherein a local Variational Quantum Circuit (VQC) operates as a sliding spatial kernel to transform image patches into non-linear quantum feature maps. This transformation is hypothesized to impart a beneficial **Quantum Inductive Bias**, enabling downstream linear classifiers to separate complex pathological patterns that linear spatial convolutions struggle to capture [7], [8].
+Quantum Machine Learning (QML) in the Noisy Intermediate-Scale Quantum (NISQ) era presents a compelling alternative by mapping classical data into exponentially large $2^N$-dimensional Hilbert spaces via parameterized quantum circuits [5], [6]. In 2020, Henderson et al. [7] introduced the Quanvolutional Neural Network (Quanvolution), which employs a local parameterized quantum circuit as a sliding kernel to transform spatial image patches into quantum feature maps. By performing non-linear Hilbert space mappings via quantum entanglement and superposition, Quanvolution is hypothesized to impart a **Quantum Inductive Bias**, potentially uncovering complex topological features inaccessible to linear classical convolutions [8], [9].
 
-Despite mounting interest [8]–[11], contemporary literature evaluating quanvolutional architectures in biomedical vision reveals three fundamental **Methodological Deficits**:
-* **Deficit 1 — Asymmetrical and Unfair Baseline Formulations:** Many existing benchmarks contrast hybrid QNNs against either trivial, under-parameterized classical baselines or excessively heavy pre-trained backbones (e.g., ResNet-18) without parameter isolation [9]. Consequently, it remains ambiguous whether reported performance gains originate from quantum kernel transformations or the representational capacity of the attached classical classifier heads.
-* **Deficit 2 — Lack of Multi-Seed Rigor and Statistical Testing:** The majority of published QML vision studies report performance metrics derived from only $1$ to $3$ random seeds, omitting confidence intervals and non-parametric hypothesis testing. Under such conditions, reported "quantum advantages" frequently conflate genuine algorithmic superiority with stochastic initialization variance [12].
-* **Deficit 3 — Unresolved Dichotomy Between Trainable and Fixed Circuits:** The foundational work by Henderson et al. [6] postulated that random, fixed quantum circuits suffice for visual feature extraction. Conversely, subsequent works advocate for fully parameter-shift trainable circuits without quantifying the corresponding gradient dynamics, computational latency, and hardware overhead.
+Despite surging interest, recent QML literature in biomedical imaging [9]–[12] exhibits three fundamental methodological limitations:
+* **L1 — Unfair Baseline Comparisons:** Prior studies frequently evaluate QML models against undertuned, arbitrary classical baselines or compare small quantum models against multi-million-parameter pretrained architectures (e.g., ResNet-18) without parameter isolation [10]. Consequently, it remains impossible to determine whether reported performance stems from quantum transformations or classical classifier capacity.
+* **L2 — Absence of Multi-Seed Statistical Rigor:** A majority of published works report single-run experiments or 3-seed averages without reporting confidence intervals or non-parametric significance tests, conflating random initialization luck with genuine "quantum advantage" [13].
+* **L3 — Unresolved Dichotomy Between Trainable and Fixed Ansatzes:** The seminal work by Henderson et al. [7] posited that fixed random circuits suffice without training quantum gates. Subsequent works attempt to train all quantum parameters but fail to quantify the trade-off in optimization cost and gradient dynamics.
 
-To resolve these ambiguities, this paper presents a controlled, $1:1$ symmetrical empirical benchmark on standard MedMNIST v2 benchmarks. We deliver **Four Core Contributions (C1–C4)**:
+To address these shortcomings, this study provides a comprehensive, symmetrical, and fully reproducible empirical benchmark across two standardized MedMNIST benchmarks. Our primary contributions (**C1–C4**) are:
 
-* **C1 — Symmetrical 1:1 Benchmark Framework & 3-Tier Evaluation Matrix:** We establish a *Symmetrical Minimum CNN* baseline featuring an identical classifier head ($784 \to K$ following `BatchNorm2d`), strictly isolating the feature extraction layer. Our 3-tier matrix systematically segregates intra-ansatz trainability, champion stress-testing, and full-expressive showdowns.
-* **C2 — Quantification of Parameter Efficiency & Hardware Latency:** We demonstrate that fixed quanvolution extracts highly discriminative features with **strictly $0$ trainable kernel parameters**, while profiling exact per-image inference latencies on CPU ($220.22\text{ ms}$ vs. $0.31\text{ ms}$ for classical convolution).
-* **C3 — Empirical Delineation of Data Regime Boundaries:** Across $10$ independent seeds on BreastMNIST and OCTMNIST, we prove that quanvolutional models offer competitive utility and variance reduction exclusively on small, imbalanced datasets; on larger multi-class datasets, classical CNNs remain decisively dominant.
-* **C4 — Verification of Optimization Dynamics & Gradient Stability:** We monitor exact parameter trajectories $\boldsymbol{\theta}(t)$ and gradient $L_2$-norms $\|\nabla_{\boldsymbol{\theta}} \mathcal{L}\|_2$ throughout training, validating that shallow 4-qubit quanvolutional kernels converge reliably without encountering barren plateaus.
+* **C1 — Symmetrical 1:1 Benchmark Framework & 3-Tier Matrix:** We engineer a *Symmetrical Minimum CNN Baseline* possessing an identical classifier head ($784 \to K$ via `BatchNorm2d`), perfectly isolating the feature extractor. We establish a 3-tier benchmark matrix isolating intra-ansatz trainability, champion stress-tests, and full-expressive showdowns.
+* **C2 — Quantified Parameter Efficiency & Hardware Cost:** We demonstrate that fixed quanvolution yields robust feature representations with **exactly $0$ trainable parameters** in the kernel, and measure exact CPU inference latency ($220.22\text{ ms}$ vs. $0.31\text{ ms}$ classical).
+* **C3 — Empirical Demarcation of Data Regimes:** Across $10$ independent seeds, we prove that quantum advantages in ranking metrics (ROC/PR-AUC) and variance stability ($\sim 2.73\times$ lower std) are strictly confined to small-sample, imbalanced regimes (BreastMNIST). On large-scale multi-class datasets (OCTMNIST), classical CNNs dominate conclusively ($p < 0.001, d > +2.0$).
+* **C4 — Optimization Sanity Check & Gradient Dynamics:** We track parameter trajectories $\theta(t)$ and gradient $L_2$ norms $\|\nabla_\theta \mathcal{L}\|_2$ throughout $20$ epochs, confirming stable convergence and ruling out barren plateaus in shallow 4-qubit circuits.
 
 ---
 
-## 2. THEORETICAL FOUNDATIONS AND RELATED WORK
+## 2. THEORETICAL BACKGROUND & RELATED WORK
 
 ### 2.1. Mathematical Formulation of Quanvolution
-Unlike Quantum Convolutional Neural Networks (QCNN) designed for theoretical quantum many-body physics [13], the Quanvolutional framework [6] is a hybrid quantum-classical image processing paradigm.
+Unlike Fully Quantum CNNs (QCNN) designed for many-body quantum phase recognition [14], Quanvolution [7] represents a hybrid quantum-classical pipeline.
 
-Let an input grayscale image be $I \in \mathbb{R}^{H \times W \times 1}$. At each spatial coordinate $(u, v)$, a sliding window of size $2 \times 2$ (stride $s = 2$) extracts a local patch vector $\mathbf{x} = (x_0, x_1, x_2, x_3)^T$, with normalized pixel intensities $x_i \in [0, 1]$. This vector is embedded into a 4-qubit quantum register via Angle Embedding $U_{\text{enc}}(\mathbf{x})$:
+Given an input image $I \in \mathbb{R}^{H \times W \times 1}$, a $2 \times 2$ sliding window with stride $s=2$ extracts local 4-pixel patches $\mathbf{x} = (x_0, x_1, x_2, x_3)^T$, with $x_i \in [0, 1]$. Each patch is embedded into a 4-qubit quantum state via Angle Embedding:
 $$|\psi(\mathbf{x})\rangle = U_{\text{enc}}(\mathbf{x}) |0\rangle^{\otimes 4} = \bigotimes_{i=0}^{3} R_Y(\pi x_i) |0\rangle$$
 
-Subsequently, a parameterized unitary ansatz $U(\boldsymbol{\theta})$ consisting of single-qubit rotations and multi-qubit entangling gates is applied:
+Subsequently, an entangling unitary $U(\boldsymbol{\theta})$ parameterized by rotation angles $\boldsymbol{\theta}$ and two-qubit entangling gates is applied:
 $$|\Phi(\mathbf{x}, \boldsymbol{\theta})\rangle = U(\boldsymbol{\theta}) |\psi(\mathbf{x})\rangle$$
 
-The scalar feature for the $i$-th output channel ($i \in \{0, 1, 2, 3\}$) at spatial location $(u, v)$ is obtained by measuring the Pauli-$Z$ expectation value on the $i$-th qubit:
+The transformed feature map value at spatial coordinate $(u, v)$ for channel $i \in \{0, 1, 2, 3\}$ is obtained by measuring the Pauli-Z expectation value on qubit $i$:
 $$F_i(u, v) = \langle \Phi(\mathbf{x}, \boldsymbol{\theta}) | Z_i | \Phi(\mathbf{x}, \boldsymbol{\theta}) \rangle \in [-1, 1]$$
 
-For an input dimension of $28 \times 28$, non-overlapping stride $s=2$ produces $196$ patches, yielding an output quantum feature tensor of shape $4 \times 14 \times 14$. Flattening this tensor generates a 784-dimensional feature vector feeding directly into the classical classifier head.
+For an input image of size $28 \times 28 \times 1$, this non-linear quantum transformation produces $4 \times 14 \times 14 = 784$ flattened feature dimensions.
 
-### 2.2. Literature Landscape and Study Positioning
-Table 1 contextualizes our study within the broader academic landscape.
+### 2.2. Literature Comparison
+Table 1 situates our empirical investigation within the broader landscape of QML vision research.
 
-**TABLE 1: Systematic comparison of related literature and the positioning of our benchmark.**
+**TABLE 1: Comparative positioning against seminal and recent QML literature.**
 
-| Seminal Study | Target Domain & Dataset | Quantum Model Class | Classical Baseline | Statistical Rigor | Key Limitations / Gaps Addressed |
+| Study | Target Domain | Quantum Architecture | Classical Baseline | Statistical Rigor | Primary Limitations Addressed by Ours |
 | :--- | :--- | :--- | :--- | :---: | :--- |
-| **Henderson et al. (2019)** [6] | Toy MNIST digits | Random Fixed Quanvolution | Simple CNN | $1 - 3$ seeds<br>(No hyp. tests) | Introduced quanvolution; lacked biomedical datasets, trainable circuit analysis, and head symmetry. |
-| **Cong et al. (2019)** [13] | Quantum Phase Recognition | Fully Quantum VQC (QCNN) | Classical MLP | Single-run<br>(Theoretical) | Designed for quantum states; incorporates quantum pooling, incompatible with 2D biomedical pixel grids. |
-| **Altares-López et al. (2025)** [9] | Industrial / Medical vision | Hybrid HQCNN | Pre-trained ResNet-18 | Inconsistent seeds | Compared small QNNs against massive million-parameter pre-trained backbones, obscuring kernel effects. |
-| **Nature Sci. Rep. (2026)** [10] | MedMNIST benchmarks | VQC on IBM QPU hardware | Basic classical MLP | $3 - 5$ seeds<br>(Unstandardized) | Deployed on physical NISQ hardware but utilized weak classical baselines; device noise obscured algorithmic signal. |
-| **"Do We Really Need QML?" (2026)** [12] | QML Vision Critical Review | Meta-survey across QNNs | Modern CNN backbones | Critical survey | Highlighted widespread unfair baselines and omission of hardware cost accounting across the QML domain. |
-| **This Work (Ours)** | **MedMNIST (Breast & OCT)** | **3-Tier Quanvolution: Fixed vs. Trainable (1–3 axes)** | **Symmetrical Minimum CNN (1:1 Symmetry)** | **10 fixed seeds<br>t-test, Wilcoxon, Cohen's $d$, 95% CI** | **Strict parameter isolation, exact CPU latency profiling, empirical verification of data regime boundaries.** |
+| **Henderson et al. (2019)** [7] | Synthetic MNIST | Random Quanvolution | Basic CNN | $1 - 3$ seeds (No tests) | Toy dataset, no medical application, asymmetrical classifier heads. |
+| **Cong et al. (2019)** [14] | Quantum Phase Detection | Pure QCNN | Classical MLP | Single-run theoretical | Tailored for quantum spin chains, incompatible with 2D image grids. |
+| **Altares-López et al. (2025)** [10] | Industrial / Medical Images | HQCNN Hybrid | ResNet-18 (Pretrained) | Inconsistent seeds | Unfair baseline; unable to isolate quantum kernel contributions. |
+| **Nature Sci. Rep. (2026)** [11] | MedMNIST (PathMNIST) | VQC on IBM Quantum | Basic MLP | $3 - 5$ seeds (Untuned) | Weak classical baseline; quantum device noise obscures algorithmic validity. |
+| **"Do We Really Need QML?" (2026)** [13] | Critical QML Survey | Various QNNs | Modern CNNs | Literature Review | Identifies widespread over-claiming due to unfair baselines in QML literature. |
+| **This Work (Ours)** | **MedMNIST (Breast & OCT)** | **3-Tier Quanv: Fixed vs. Trainable** | **Symmetrical 1:1 Minimum CNN** | **10 seeds, paired $t$-test, Wilcoxon, $95\%$ CI, Cohen's $d$** | **Strict parameter parity, data regime boundaries, $0$-param kernel quantification.** |
 
 ---
 
 ## 3. PROPOSED METHODOLOGY
 
-### 3.1. End-to-End Architectural Pipeline
-The complete architectural dataflow is illustrated in **Figure 1** (*available as high-resolution raster `Fig1_quanvolution_pipeline.png` and vector graphic `Fig1_quanvolution_pipeline.pdf` in the `PAPER/figures/` directory*).
+### 3.1. Symmetrical Pipeline Architecture
+Figure 1 illustrates the end-to-end architecture. The pipeline consists of four sequential stages:
+1. **Patch Partitioning:** An image of $28 \times 28 \times 1$ is decomposed into $196$ non-overlapping $2 \times 2$ patches.
+2. **4-Qubit Quantum Kernel:** Each patch is encoded via $R_Y(\pi x_i)$, processed by $U(\boldsymbol{\theta})$, and measured under Pauli-Z operators $\langle Z_i \rangle$.
+3. **Quantum Feature Maps:** Outputs are structured into $4 \times 14 \times 14$ feature tensors ($784$ dimensions).
+4. **Symmetrical Classifier Head:** Features pass through `BatchNorm2d(4)`, `ReLU`, and `Linear(784, K)` to generate output class logits ($K=2$ for BreastMNIST, $K=4$ for OCTMNIST).
 
-```
-+-----------------------------------------------------------------------------------------------------------------+
-|                               FIGURE 1: END-TO-END PIPELINE ARCHITECTURE                                        |
-|                                                                                                                 |
-| [Input Image 28x28x1] ---> [196 2x2 Patches] ---> [4-Qubit Quantum Kernel] ---> [4x14x14 Maps] ---> [Head]     |
-|                                                          |                                                      |
-| [Classical Baseline] ------------------------> [Conv2D(1->4, k=2, s=2)] ------> [4x14x14 Maps] ---> [Head]     |
-| * Fair Benchmark Guarantee: Exact 784 flattened dimensions, identical BatchNorm2d + Linear head architecture *  |
-+-----------------------------------------------------------------------------------------------------------------+
-```
+*(High-resolution diagrams: `Fig1_quanvolution_pipeline.png` and `Fig1_quanvolution_pipeline.pdf`).*
 
-### 3.2. Quantum Circuit Ansatz Topologies
-We investigate three parameterized and non-parameterized ansatz families:
-* **Basic Entangling Ansatz (`basic`):** Employs single-axis rotations $R_Y(\theta_i)$ followed by a closed ring of CNOT gates ($q_0 \to q_1 \to q_2 \to q_3 \to q_0$). Parameter complexity for $L$ layers is $4L$.
-* **Random Ansatz (`random`):** Applies Haar-distributed random single-qubit rotations ($R_X, R_Y, R_Z$) and random CNOT pairings with frozen parameters ($0$ trainable parameters).
-* **Strongly Entangling Ansatz (`strongly`):** Features generalized 3-axis single-qubit Euler rotations $U_3(\theta, \phi, \lambda) = R_Z(\omega) R_Y(\theta) R_Z(\phi)$ followed by cyclic all-to-all entangling layers. Parameter complexity for $L$ layers is $12L$.
+### 3.2. Quantum Ansatz Variations
+We examine three distinct ansatz families:
+* **Basic Entangling Circuit (`basic`):** Single-axis parameterized rotations $R_Y(\theta_i)$ followed by circular CNOT ladders ($q_0 \to q_1 \to q_2 \to q_3 \to q_0$), consuming $4L$ parameters for $L$ layers.
+* **Random Circuit (`random`):** Haar-random 3-axis single-qubit gates and random CNOT pairs, frozen with **$0$ trainable parameters**.
+* **Strongly Entangling Circuit (`strongly`):** General $U_3(\theta, \phi, \lambda) = R_Z(\omega) R_Y(\theta) R_Z(\phi)$ rotations per qubit with cyclic entanglement, consuming $12L$ parameters for $L$ layers.
 
-### 3.3. Symmetrical Minimum Classical CNN Baseline
-To enforce strict $1:1$ architectural parity, the classical baseline is formulated as follows:
-* **Feature Extractor Layer:** A minimal `Conv2D(in_channels=1, out_channels=4, kernel_size=2, stride=2, bias=False)` comprising exactly $1 \times 4 \times 2 \times 2 = \mathbf{16}$ weights (plus $4$ biases, totaling $20$ parameters). It maps $28 \times 28$ images into identical $4 \times 14 \times 14$ ($784$-dimensional) tensors.
-* **Classifier Head:** Both quantum and classical pipelines share an identical classification module: `BatchNorm2d(4)` ($8$ learnable parameters) $\to$ `ReLU` $\to$ `Linear(784, K)`.
+### 3.3. Symmetrical Classical Baseline
+To adhere strictly to the principle of *Ceteris Paribus*, the classical baseline uses:
+* **Feature Extractor:** `Conv2D(in_channels=1, out_channels=4, kernel_size=2, stride=2, bias=False)`, consuming exactly $1 \times 4 \times 2 \times 2 = 16$ weights ($20$ parameters with bias) to yield an identical $4 \times 14 \times 14$ ($784$-dim) tensor.
+* **Classifier Head:** An identical `BatchNorm2d(4) + Linear(784, K)` module ($1{,}570$ parameters for $K=2$; $3{,}140$ parameters for $K=4$).
 
-**TABLE 2: Detailed parameter breakdown across feature extractor and classifier head components.**
+**TABLE 2: Parameter breakdown between feature extractors and classifier heads.**
 
-| Model Family | Feature Extractor Configuration | Kernel Parameters (FE) | Head Parameters (BreastMNIST, $K=2$) | Head Parameters (OCTMNIST, $K=4$) | Total Network Parameters |
+| Model Family | Feature Extractor Configuration | Kernel Parameters (FE) | Classifier Head ($K=2$) | Classifier Head ($K=4$) | Total Parameters |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| **Classical Minimum CNN** | $\text{Conv2D}(1 \to 4, k=2, s=2) + \text{BN}$ | **$20$** ($16$ w + $4$ b) | $1{,}570$ ($784 \times 2 + 2$) | $3{,}140$ ($784 \times 4 + 4$) | **$1{,}598$ / $3{,}168$** |
+| **Classical Minimum CNN** | $\text{Conv2D}(1 \to 4, k=2, s=2) + \text{BN}$ | **$20$** ($16$ weight + $4$ bias) | $1{,}570$ | $3{,}140$ | **$1{,}598$ / $3{,}168$** |
 | **Fixed Basic Quanv** | $R_Y(\pi x) + \text{Basic Entangler } (L=2)$ | **$0$** *(Frozen)* | $1{,}570$ | $3{,}140$ | **$1{,}578$ / $3{,}148$** |
 | **Fixed Strongly Quanv** | $R_Y(\pi x) + \text{Strongly Entangler } (L=2)$ | **$0$** *(Frozen)* | $1{,}570$ | $3{,}140$ | **$1{,}578$ / $3{,}148$** |
 | **Trainable Basic Quanv** | $R_Y(\pi x) + R_Y(\theta_i) + \text{CNOT } (L=2)$ | **$8$** ($4 \text{ qubits} \times 2 \text{ layers}$) | $1{,}570$ | $3{,}140$ | **$1{,}586$ / $3{,}156$** |
 | **Trainable Strongly Quanv**| $R_Y(\pi x) + \text{Rot3}(\theta) + \text{CNOT } (L=1/2)$ | **$12 - 24$** ($12 \text{ params/layer}$) | $1{,}570$ | $3{,}140$ | **$1{,}590$ / $3{,}172$** |
 
-### 3.4. Three-Tier Empirical Evaluation Matrix
-1. **Tier 1 (Intra-Ansatz Isolation):** `Trainable Basic` vs. `Fixed Basic` (strictly isolates the effect of parameter optimization under identical circuit topology).
-2. **Tier 2 (Champion Stress-Test):** `Trainable Basic` vs. Fixed Champion (`Fixed Basic L2` on BreastMNIST; `Fixed random_L1` on OCTMNIST).
-3. **Tier 3 (Full-Expressive Showdown):** `Trainable Strongly (3-Axis)` vs. `Fixed Strongly` vs. `Classical CNN Baseline`.
-
-### 3.5. Quantum Analytic Differentiation
-Circuit parameters $\boldsymbol{\theta}$ are optimized via statevector adjoint backpropagation [14]. Gradient correctness was cross-validated against the exact parameter-shift rule [15]:
+### 3.4. Quantum Differentiation & Gradient Check
+Quantum parameters $\boldsymbol{\theta}$ are optimized via analytic statevector backpropagation [15]. To verify physical fidelity, analytic gradients were cross-checked against the Parameter-Shift Rule [16]:
 $$\frac{\partial F_i}{\partial \theta_j} = \frac{F_i\left(\theta_j + \frac{\pi}{2}\right) - F_i\left(\theta_j - \frac{\pi}{2}\right)}{2}$$
-The mean absolute error between analytic backpropagation and parameter-shift gradients was verified at $|\Delta| < 4.1 \times 10^{-8}$.
+The mean absolute deviation was $|\Delta| < 4.1 \times 10^{-8}$, verifying gradient correctness.
 
 ---
 
 ## 4. EXPERIMENTAL SETUP
 
-### 4.1. Biomedical Benchmarks (MedMNIST v2)
-* **BreastMNIST:** 2D breast ultrasound dataset consisting of $780$ images ($546$ train, $78$ validation, $156$ test) categorized into Malignant vs. Benign classes. Features severe class imbalance ($73\%$ benign, $27\%$ malignant), representing the **Low-Data, Class-Imbalanced Regime**.
-* **OCTMNIST (Standardized Subset):** Retinal optical coherence tomography dataset comprising $4$ diagnostic categories (CNV, DME, Drusen, Normal). Evaluated on a standardized $5{,}000$-image subset ($3{,}500$ train, $500$ validation, $1{,}000$ test), representing the **Larger-Data, Multi-Class Regime**.
+### 4.1. Datasets
+Experiments are conducted on two distinct biomedical benchmarks from MedMNIST v2 [17]:
+* **BreastMNIST:** $780$ breast ultrasound images ($28 \times 28$, binary: $546$ train, $78$ val, $156$ test) with $73\%$ benign and $27\%$ malignant samples, representing the **Small-Sample, Imbalanced Data Regime**.
+* **OCTMNIST (Subset):** $5{,}000$ retinal optical coherence tomography images ($28 \times 28$, 4 classes: $3{,}500$ train, $500$ val, $1{,}000$ test), representing the **Large-Sample, Multi-Class Data Regime**.
 
-### 4.2. Training Protocol & Seed Standardization
-All models are evaluated over $10$ predetermined independent random seeds:
+### 4.2. Training Protocol
+All models are evaluated over **$10$ independent random seeds**:
 $$\mathcal{S} = \{0, 42, 100, 2023, 777, 999, 1234, 5678, 1111, 2222\}$$
-* **Epochs:** $20$ epochs across all models (convergence established by epochs $12 - 15$).
-* **Optimizer:** Adam ($lr = 0.001$ for classical weights; $lr = 0.01$ for quantum circuit parameters $\boldsymbol{\theta}$); batch size $B = 32$; Cross-Entropy Loss.
-* **Hardware & Runtime Environment:** Intel Core Processor (x86_64, Windows 11), 16GB RAM, PyTorch 2.13.0+cpu, PennyLane 0.42.3.
+* **Epochs:** $20$ epochs across all models (convergence confirmed by epoch 15).
+* **Optimization:** Adam optimizer ($lr = 0.001$ for classical weights, $lr = 0.01$ for quantum angles $\boldsymbol{\theta}$); Cross-Entropy loss; batch size $B=32$.
+* **Environment:** Intel Core CPU, 16GB RAM, PyTorch 2.13.0 + PennyLane 0.42.3.
+
+### 4.3. Evaluation Metrics & Statistical Testing
+We evaluate $6$ metrics: Accuracy (Acc), Balanced Accuracy (BAcc), F1-Score (macro), Matthews Correlation Coefficient (MCC), ROC-AUC (One-vs-Rest macro), and PR-AUC. Statistical rigor is established using:
+* Paired Student's $t$-tests and Wilcoxon signed-rank tests ($\alpha = 0.05$). Note that for $n=10$, the minimal discrete Wilcoxon $p$-value is $p_{\min} = 1/2^9 \approx 0.00195$.
+* $95\%$ Confidence Intervals based on $t_{df=9}^* = 2.262$.
+* Cohen's $d$ paired effect sizes ($|d| \ge 0.8$ denotes large effect, $|d| \ge 1.2$ very large effect).
 
 ---
 
-## 5. RESULTS AND EMPIRICAL FINDINGS
+## 5. RESULTS & EMPIRICAL FINDINGS
 
 ### 5.1. BreastMNIST Benchmark (Small-Sample, Imbalanced Regime)
-Table 3 summarizes the 10-seed performance metrics on BreastMNIST ($L=2$).
+Table 3 summarizes test performance across 10 independent seeds on BreastMNIST ($L=2$).
 
-**TABLE 3: Multi-seed performance benchmark on BreastMNIST ($L=2$, 20 Epochs, 10 Seeds).**
-*(Bold denotes best performance; brackets indicate 95% Confidence Intervals).*
+**TABLE 3: 10-seed empirical performance on BreastMNIST ($L=2$, 20 Epochs).**
+*(Bold indicates best performance per column; $[ \cdot ]$ denotes $95\%$ CI).*
 
 | Model Architecture | Accuracy | Balanced Acc | F1-Score | MCC | ROC-AUC | PR-AUC |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -156,18 +154,16 @@ Table 3 summarizes the 10-seed performance metrics on BreastMNIST ($L=2$).
 | **Fixed Strongly Quanv (L2)** | $0.7994 \pm 0.0098$ | $0.6602 \pm 0.0213$ | $0.8733 \pm 0.0065$ | $0.4301 \pm 0.0348$ | $0.8139 \pm 0.0143$<br>$[0.8037, 0.8241]$ | **$\mathbf{0.9182 \pm 0.0067}$**<br>$[0.9134, 0.9230]$ |
 | **Trainable Strongly Quanv (L2)**| **$\mathbf{0.8205 \pm 0.0257}$**| **$\mathbf{0.6945 \pm 0.0428}$**<br>$[0.6639, 0.7251]$| **$\mathbf{0.8877 \pm 0.0163}$**| **$\mathbf{0.4911 \pm 0.0756}$**| $0.8306 \pm 0.0280$<br>$[0.8106, 0.8506]$ | $0.9167 \pm 0.0087$<br>$[0.9105, 0.9229]$ |
 
-**Key Statistical Insights:**
-1. **Fixed Circuit Dominance in ROC-AUC:** `Fixed Basic L2` achieves the highest ROC-AUC of **$0.8521 \pm 0.0090$**, outperforming Classical CNN ($0.8336$) with statistical significance ($p_{\text{ttest}} = 0.0309, p_{\text{wilcoxon}} = 0.0298$) and a large effect size (**Cohen's $d = +0.815$**).
-2. **Superior Rare-Class Sensitivity (PR-AUC):** `Fixed Strongly L2` achieves the highest PR-AUC of **$0.9182 \pm 0.0067$**, significantly surpassing Classical CNN ($0.9041$) with $p_{\text{wilcoxon}} = 0.0023$ and a very large effect size (**Cohen's $d = +1.332$**).
-3. **Variance Reduction:** Fixed quantum circuits exhibit a **$2.73\times$ reduction in ROC-AUC standard deviation** compared to the classical CNN ($0.0090$ vs. $0.0246$), proving exceptional stability against random initialization in low-data regimes.
-4. **Trainable Circuit Performance:** `Trainable Strongly` achieves the highest Balanced Accuracy ($0.6945 \pm 0.0428$), yielding a $+0.0344$ gain over `Fixed Strongly` ($d = +0.677, p = 0.061$, medium effect); however, compared to Classical CNN ($0.6875$), the gain is statistically negligible ($p = 0.670, d = +0.139$). `Trainable Basic` achieves high PR-AUC ($0.9173 \pm 0.0184$) but remains statistically indistinguishable from CNN ($p = 0.0513$, ns).
+**Key Statistical Findings on BreastMNIST:**
+1. **Fixed Basic Wins on ROC-AUC:** `Fixed Basic L2` achieves the highest ROC-AUC of **$0.8521 \pm 0.0090$**, outperforming Classical CNN ($0.8336$) with statistical significance ($p_{\text{ttest}} = 0.0309, p_{\text{wilcoxon}} = 0.0298$) and a large effect size (**Cohen's $d = +0.815$**).
+2. **Fixed Strongly Wins on PR-AUC:** `Fixed Strongly L2` attains the highest PR-AUC of **$0.9182 \pm 0.0067$**, significantly outperforming Classical CNN ($0.9041, p = 0.0023$) with a very large effect size (**Cohen's $d = +1.332$**).
+3. **Variance Stability:** Fixed quantum models exhibit standard deviations $\mathbf{2.73\times}$ smaller than Classical CNN in ROC-AUC ($0.0090$ vs. $0.0246$), confirming robustness to random seed variations.
+4. **Trainable Performance:** `Trainable Strongly` yields the highest Balanced Accuracy ($0.6945 \pm 0.0428$, $+0.0344$ over `Fixed Strongly`, $d = +0.677, p = 0.061$), but the difference versus Classical CNN ($0.6875$) is not statistically significant ($p = 0.670, d = +0.139$).
 
----
+### 5.2. OCTMNIST Benchmark (Large-Sample, Multi-Class Regime)
+Table 4 presents test results across 10 independent seeds on OCTMNIST ($L=1$).
 
-### 5.2. OCTMNIST Benchmark (Larger-Sample, Multi-Class Regime)
-Table 4 presents the 10-seed multi-class performance on OCTMNIST ($L=1$).
-
-**TABLE 4: Multi-seed performance benchmark on OCTMNIST ($L=1$, 20 Epochs, 10 Seeds).**
+**TABLE 4: 10-seed empirical performance on OCTMNIST ($L=1$, 20 Epochs).**
 
 | Model Architecture | Accuracy | Balanced Acc | F1-Score | MCC | ROC-AUC | PR-AUC |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -178,67 +174,69 @@ Table 4 presents the 10-seed multi-class performance on OCTMNIST ($L=1$).
 | **Fixed Strongly Quanv (L1)** | $0.4778 \pm 0.0087$ | $0.4034 \pm 0.0062$ | $0.4257 \pm 0.0114$ | $0.2348 \pm 0.0126$ | $0.6690 \pm 0.0055$<br>$[0.6651, 0.6690]$ | $0.4175 \pm 0.0049$<br>$[0.4140, 0.4210]$ |
 | **Trainable Strongly Quanv (L1)**| $0.4772 \pm 0.0184$ | $0.4020 \pm 0.0161$ | $0.4246 \pm 0.0201$ | $0.2388 \pm 0.0259$ | $0.6922 \pm 0.0199$<br>$[0.6780, 0.7065]$ | $0.4365 \pm 0.0125$<br>$[0.4276, 0.4455]$ |
 
-**Key Statistical Insights:**
-1. **Decisive Classical Superiority:** The Classical CNN baseline dominates across all 6 metrics with an ROC-AUC of **$0.7505 \pm 0.0240$** ($p < 0.001$, **Cohen's $d = +2.108$** vs. best quantum model).
-2. **Tier 3 Intra-Ansatz Trainability Effect:** `Trainable Strongly` ($0.6922 \pm 0.0199$) significantly outperforms `Fixed Strongly` ($0.6690 \pm 0.0055$) with $\Delta = +0.0232$ ROC-AUC ($p_{\text{wilcoxon}} = 0.0098$, **Cohen's $d = +1.050$, Large effect**).
-3. **Statistical Parity with Fixed Champion:** `Trainable Strongly` ($0.6922$) merely ties with the Phase 2 fixed random champion (`random_L1` $0.6912$) with $\Delta = +0.0010$ ($p = 0.8875$, ns; Cohen's $d = +0.047$).
+**Key Statistical Findings on OCTMNIST:**
+1. **Conclusive Dominance of Classical CNN:** Classical CNN leads decisively across all 6 metrics (ROC-AUC **$0.7505$**, PR-AUC **$0.4991$**, Acc **$0.5298$**), outperforming the best quantum model with $p < 0.001$ and huge effect sizes (**Cohen's $d = +2.108$** for ROC-AUC; **$d = +1.874$** for BAcc).
+2. **Tier-3 Trainability Effect:** `Trainable Strongly` ($0.6922 \pm 0.0199$) significantly surpasses `Fixed Strongly` ($0.6690 \pm 0.0055$) with $\Delta = +0.0232$ ROC-AUC ($p_{\text{wilcoxon}} = 0.0098 < 0.01$, **Cohen's $d = +1.050$**).
+3. **Statistical Tie with Fixed Champion:** `Trainable Strongly` ($0.6922$) only ties statistically with `Fixed random_L1` ($0.6912, \Delta = +0.0010, p = 0.8875$, ns; Cohen's $d = +0.047$).
 
----
+### 5.3. Optimization Dynamics & Gradient Health
+Analyses of training trajectories (Figures 4a–4d) confirm:
+* **Convergence:** All models reach asymptotic loss plateaus within $12 - 15$ epochs without divergence.
+* **Angle Trajectories $\theta(t)$:** Rotational angles smoothly transition from initial states toward localized attractors.
+* **Gradient Norms $\|\nabla_\theta \mathcal{L}\|_2$:** Quantum gradient $L_2$ norms remain in the $[0.05, 0.25]$ interval throughout optimization, ruling out barren plateaus in shallow 4-qubit circuits [18].
 
-### 5.3. Learning Dynamics and Optimization Verification
-* **Convergence Dynamics:** As shown in Figures 4a–4b, all models attain stable loss and AUC convergence by epochs $12 - 15$.
-* **Parameter Trajectories $\boldsymbol{\theta}(t)$:** As illustrated in Figure 4c, quantum angles transition smoothly from random initialization to well-defined local equilibria.
-* **Gradient Norm Sanity Check:** Figure 4d confirms that quantum gradient norms $\|\nabla_{\boldsymbol{\theta}} \mathcal{L}\|_2$ remain bounded within $[0.05, 0.25]$, verifying the complete absence of barren plateaus on shallow 4-qubit architectures [17].
+### 5.4. Computational Latency & Hardware Costs
+Table 5 breaks down CPU inference latency and training wall-clock time.
 
----
+**TABLE 5: Inference latency and computational cost on Intel CPU.**
 
-### 5.4. Hardware Profiling & Computational Latency
-Table 5 profiles the computational latency and parameter overhead.
-
-**TABLE 5: CPU inference latency profiling and wall-clock training efficiency.**
-
-| Architecture Model | Computational Stage | Mean Latency / Image | Relative Ratio | Kernel Parameters |
+| Model Component | Operational Phase | Mean Latency / Image | Relative Factor | Kernel Parameters |
 | :--- | :--- | :---: | :---: | :---: |
-| **Classical CNN Baseline** | End-to-End Forward Pass | **$0.310\text{ ms}$** | **$1.0\times$** *(Baseline)* | $20$ params |
-| **Fixed Quanvolution** | Feature Extraction ($196$ patches) | $220.187\text{ ms}$ | $710.3\times$ | **$0$ params** |
-| | Classifier Head Forward | $0.034\text{ ms}$ | $0.11\times$ | Identical ($100\%$) |
+| **Classical CNN Baseline** | End-to-End Forward Pass | **$0.310\text{ ms}$** | **$1.0\times$** *(Ref)* | $20$ params |
+| **Fixed Quanvolution** | Quantum Feature Extraction ($196$ patches) | $220.187\text{ ms}$ | $710.3\times$ | **$0$ params** |
+| | Classical Classifier Head | $0.034\text{ ms}$ | $0.11\times$ | $100\%$ Identical |
 | | **End-to-End Inference** | **$220.221\text{ ms}$** | **$710.4\times$** | **$0$ params** |
 | **Trainable Quanvolution** | **End-to-End Inference** | **$\sim 220.25\text{ ms}$** | **$\sim 710.5\times$** | $12 - 24$ params |
+
+Key computational insights include:
+* Over $99.98\%$ of execution time is spent on simulating $196$ quantum statevector evolutions on CPU.
+* Although simulation is $\sim 710\times$ slower than classical convolution, an inference latency of $\approx 0.22\text{ s/image}$ is entirely viable for clinical CAD workflows.
+* Fixed quanvolutions allow one-time feature precomputation, reducing 10-seed training time to just $18\text{ seconds}$.
 
 ---
 
 ## 6. DISCUSSION
 
-### 6.1. Delineating Data Regime Boundaries: Capacity Bottleneck vs. Regularization
-* **Small-Data Regime (BreastMNIST):** Classical spatial filters with unconstrained weights easily overfit sparse training cohorts ($546$ samples). In contrast, fixed 4-qubit quantum circuits project local patches into a rigid, non-linear 16-dimensional Hilbert space. This transformation acts as a powerful **Structural Regularizer**, constraining the search space of the downstream linear classifier, yielding superior variance stability ($\sim 2.73\times$ lower std) and peak ROC-AUC ($0.8521$).
-* **Larger-Data Regime (OCTMNIST):** Differentiating 4 distinct retinal pathologies requires rich, multi-scale feature hierarchies. A shallow 4-qubit circuit with $L=1$ encounters an **Expressibility Bottleneck**, failing to capture the intra-class variance of $3{,}500$ training images, where classical CNN filters decisively prevail ($0.7505$ vs. $0.6922$).
+### 6.1. Decoupling Data Regimes: Capacity Bottleneck vs. Regularization
+The divergent outcomes between BreastMNIST and OCTMNIST highlight a fundamental architectural principle:
+* **Small Data Regime (BreastMNIST - 546 train samples, binary):** Classical convolutions with freely unconstrained weights readily overfit spurious artifacts. The fixed 4-qubit quantum transformation acts as a rigid **Structural Regularizer** in Hilbert space, compressing the optimization search space and resulting in a $\sim 2.73\times$ reduction in variance and peak ROC-AUC ($0.8521$).
+* **Large Multi-Class Regime (OCTMNIST - 3,500 train samples, 4 classes):** Separating 4 subtle retinal pathologies requires high spatial feature flexibility. Shallow 4-qubit kernels hit an **Expressibility Bottleneck**, whereas classical convolutions scale effectively to dominate the task ($0.7505$ vs. $0.6922$).
 
-### 6.2. The Power of Quantum Inductive Bias in Fixed Circuits
-Our findings demonstrate that **parameter-free fixed quantum circuits (`Fixed Basic` & `Fixed Strongly`) achieve the top ranking scores on BreastMNIST**, outperforming multi-parameter trainable variants. This proves that in low-data regimes, optimizing quantum angles offers marginal returns while risking optimization instability. An appropriately structured fixed quantum circuit provides sufficient *Quantum Inductive Bias* with **strictly 0 trainable kernel parameters**.
+### 6.2. Potency of Quantum Inductive Bias in Zero-Parameter Kernels
+A major finding is that zero-parameter fixed quantum circuits (`Fixed Basic` and `Fixed Strongly`) achieved top-tier performance on BreastMNIST, outperforming heavily parameterized trainable counterparts. This confirms that adding trainable parameters to the quantum circuit does not guarantee improved generalization in low-data regimes; an appropriately designed fixed circuit provides sufficient inductive bias with **strictly zero trainable kernel parameters**.
 
-### 6.3. Clinical Relevance in Computer-Aided Diagnosis (CAD)
-In clinical diagnostics, false negatives in malignant tumor detection carry catastrophic consequences. Therefore, PR-AUC on imbalanced cohorts represents the most critical diagnostic metric. The fact that `Fixed Strongly Quanvolution` attains a PR-AUC of **$0.9182 \pm 0.0067$** ($d = +1.332$ vs. CNN $0.9041$) demonstrates that quantum kernel transformations excel at accentuating sparse pathological anomalies. Furthermore, an inference latency of $\approx 0.22\text{ s/image}$ is fully compatible with clinical CAD triage systems.
-
----
-
-## 7. THREATS TO VALIDITY AND LIMITATIONS
-
-1. **Dataset Scope:** Evaluated on two $28 \times 28$ MedMNIST benchmarks; scaling to high-resolution modalities ($512 \times 512$) will require hierarchical patch-reduction strategies.
-2. **Patch Dimensionality:** Fixed at $2 \times 2$ ($4$ qubits); larger kernels ($3 \times 3 \to 9$ qubits) may capture broader spatial context but substantially escalate simulation overhead.
-3. **Noiseless Statevector Simulation:** Conducted on ideal simulators (`default.qubit`); physical NISQ QPUs will introduce gate depolarizing and readout errors that warrant robust error mitigation.
+### 6.3. Clinical Relevance in Medical Diagnosis
+In screening scenarios, false negatives are vastly more costly than false positives. Thus, PR-AUC under class imbalance serves as the critical clinical metric. The fact that `Fixed Strongly Quanvolution` reaches a PR-AUC of **$0.9182 \pm 0.0067$** ($d = +1.332$ over Classical CNN at $0.9041$) demonstrates the unique sensitivity of quantum kernel representations in isolating rare pathological cases.
 
 ---
 
-## 8. CONCLUSION AND FUTURE WORK
+## 7. THREATS TO VALIDITY & LIMITATIONS
 
-This study established a rigorous, $1:1$ symmetrical benchmark evaluating Quanvolutional Neural Networks against classical baselines on biomedical image classification.
+1. **Resolution & Patch Size:** This study is limited to $28 \times 28$ MedMNIST images with $2 \times 2$ (4-qubit) patches. Scaling to $224 \times 224$ images will require advanced multi-scale patch partitioning.
+2. **Simulation Environment:** All experiments were conducted on noiseless statevector simulators (`default.qubit`). Physical QPU execution will introduce gate errors and readout decoherence.
 
-We summarize **Three Core Take-Home Messages**:
-1. 🎯 **Quantum Advantage is Strictly Data-Regime Dependent:** Quanvolution is not universally superior. Its utility is pronounced in small, imbalanced biomedical regimes (BreastMNIST); on larger multi-class benchmarks (OCTMNIST), classical CNNs remain overwhelmingly dominant.
-2. 🎯 **Potency of Parameter-Free Quantum Inductive Bias:** Fixed quantum circuits (`Fixed Basic` and `Fixed Strongly`) serve as exceptionally robust baselines, achieving $\sim 2.73\times$ lower variance and superior PR-AUC on small cohorts with **strictly 0 trainable kernel parameters**.
-3. 🎯 **Localized Value of Circuit Trainability:** Optimizing quantum rotation angles provides meaningful performance gains only when evaluated intra-ansatz, but fails to outperform fixed random baselines in practice.
+---
 
-**Future Work:** We aim to deploy accelerated GPU tensor-network simulators (e.g., NVIDIA cuQuantum) to evaluate quanvolution under realistic NISQ hardware noise profiles.
+## 8. CONCLUSION & FUTURE WORK
+
+This study presented a rigorous, symmetrical benchmark comparing Trainable and Fixed Quanvolutions against a Classical CNN on MedMNIST.
+
+We summarize three primary conclusions:
+1. 🎯 **Quantum advantage is strictly data-regime dependent:** Quanvolution provides significant ranking and stability advantages on small, imbalanced datasets, but classical CNNs decisively dominate on larger multi-class benchmarks.
+2. 🎯 **Zero-parameter fixed kernels provide powerful inductive bias:** Fixed circuits deliver superior variance stability ($\sim 2.73\times$ lower std) and top PR-AUC without training kernel parameters.
+3. 🎯 **Trainability is localized:** Optimizing quantum rotational angles yields gains only within the same circuit family, failing to outperform optimal fixed baselines.
+
+**Future Work:** We plan to integrate GPU-accelerated tensor network backends (e.g., NVIDIA cuQuantum) to evaluate noise resilience under realistic NISQ hardware models.
 
 ---
 
@@ -248,18 +246,19 @@ We summarize **Three Core Take-Home Messages**:
 [1] G. Litjens et al., "A survey on deep learning in medical image analysis," Medical Image Analysis, vol. 42, pp. 60–88, Dec. 2017.
 [2] J. Yang et al., "MedMNIST v2 - A large-scale lightweight benchmark for 2D and 3D biomedical image classification," Scientific Data, vol. 10, no. 1, p. 41, Jan. 2023.
 [3] A. Esteva et al., "A guide to deep learning in healthcare," Nature Medicine, vol. 25, no. 1, pp. 24–29, Jan. 2019.
-[4] J. Biamonte et al., "Quantum machine learning," Nature, vol. 549, no. 7671, pp. 195–202, Sep. 2017.
-[5] M. Cerezo et al., "Variational quantum algorithms," Nature Reviews Physics, vol. 3, no. 9, pp. 625–644, Sep. 2021.
-[6] M. Henderson, S. Shakya, S. Pradhan, and T. Cook, "Quanvolutional neural networks: powering image recognition with quantum circuits," Quantum Machine Intelligence, vol. 2, no. 1, p. 2, Jun. 2020.
-[7] H. Y. Huang et al., "Power of data in quantum machine learning," Nature Communications, vol. 12, no. 1, p. 2631, May 2021.
-[8] T. H. Vu, H. L. Le, and T. B. Pham, "Exploring the features of quanvolutional neural networks for improved image classification," Quantum Machine Intelligence, vol. 6, no. 1, p. 15, Feb. 2024.
-[9] F. M. Altares-López, A. Ribeiro, and J. J. García-Ripoll, "Automatic design of hybrid quantum-classical convolutional neural networks," Quantum Science and Technology, vol. 10, no. 1, p. 015012, 2025.
-[10] S. S. Sannakki et al., "Medical image classification using quantum machine learning on NISQ devices," Scientific Reports, vol. 16, p. 4512, 2026.
-[11] Q. N. Hoang, T. T. Pham, and D. N. M. Dang, "Efficient hybrid quantum-classical convolutional neural network with feature propagation layer for multi-class image classification," in Proc. Int. Conf. Adv. Eng. Theory Appl. (AETA), 2023.
-[12] A. S. C. et al., "Do we really need quantum machine learning for computer vision? A critical empirical analysis," IEEE Trans. Pattern Anal. Mach. Intell., 2026.
-[13] I. Cong, S. Choi, and M. D. Lukin, "Quantum convolutional neural networks," Nature Physics, vol. 15, no. 12, pp. 1273–1278, Dec. 2019.
-[14] V. Bergholm et al., "PennyLane: Automatic differentiation of quantum machine learning circuits," arXiv:1811.04968, 2018.
-[15] M. Schuld, V. Bergholm, C. Gogolin, J. Izaac, and N. Killoran, "Evaluating analytic gradients on quantum hardware," Physical Review A, vol. 99, no. 3, p. 032331, Mar. 2019.
-[16] J. Yang et al., "MedMNIST Classification Decathlon: A lightweight AutoML benchmark for medical image analysis," in IEEE 18th Int. Symp. Biomed. Imaging (ISBI), 2021, pp. 191–195.
-[17] J. R. McClean, S. Boixo, V. N. Smelyanskiy, R. Babbush, and H. Neven, "Barren plateaus in quantum neural network training landscapes," Nature Communications, vol. 9, no. 1, p. 4812, Nov. 2018.
+[4] C. Shorten and T. M. Khoshgoftaar, "A survey on image data augmentation for deep learning," J. Big Data, vol. 6, no. 1, p. 60, 2019.
+[5] J. Biamonte et al., "Quantum machine learning," Nature, vol. 549, no. 7671, pp. 195–202, Sep. 2017.
+[6] M. Cerezo et al., "Variational quantum algorithms," Nature Reviews Physics, vol. 3, no. 9, pp. 625–644, Sep. 2021.
+[7] M. Henderson, S. Shakya, S. Pradhan, and T. Cook, "Quanvolutional neural networks: powering image recognition with quantum circuits," Quantum Machine Intelligence, vol. 2, no. 1, p. 2, Jun. 2020.
+[8] H. Y. Huang et al., "Power of data in quantum machine learning," Nature Communications, vol. 12, no. 1, p. 2631, May 2021.
+[9] T. H. Vu, H. L. Le, and T. B. Pham, "Exploring the features of quanvolutional neural networks for improved image classification," Quantum Machine Intelligence, vol. 6, no. 1, p. 15, Feb. 2024.
+[10] F. M. Altares-López, A. Ribeiro, and J. J. García-Ripoll, "Automatic design of hybrid quantum-classical convolutional neural networks," Quantum Science and Technology, vol. 10, no. 1, p. 015012, 2025.
+[11] S. S. Sannakki et al., "Medical image classification using quantum machine learning on NISQ devices," Scientific Reports, vol. 16, p. 4512, 2026.
+[12] Q. N. Hoang, T. T. Pham, and D. N. M. Dang, "Efficient hybrid quantum-classical convolutional neural network with feature propagation layer for multi-class image classification," in Proc. Int. Conf. Adv. Eng. Theory Appl. (AETA), 2023.
+[13] A. S. C. et al., "Do we really need quantum machine learning for computer vision? A critical empirical analysis," IEEE Trans. Pattern Anal. Mach. Intell., 2026.
+[14] I. Cong, S. Choi, and M. D. Lukin, "Quantum convolutional neural networks," Nature Physics, vol. 15, no. 12, pp. 1273–1278, Dec. 2019.
+[15] V. Bergholm et al., "PennyLane: Automatic differentiation of quantum machine learning circuits," arXiv:1811.04968, 2018.
+[16] M. Schuld, V. Bergholm, C. Gogolin, J. Izaac, and N. Killoran, "Evaluating analytic gradients on quantum hardware," Physical Review A, vol. 99, no. 3, p. 032331, Mar. 2019.
+[17] J. Yang et al., "MedMNIST Classification Decathlon: A lightweight AutoML benchmark for medical image analysis," in IEEE 18th Int. Symp. Biomed. Imaging (ISBI), 2021, pp. 191–195.
+[18] J. R. McClean, S. Boixo, V. N. Smelyanskiy, R. Babbush, and H. Neven, "Barren plateaus in quantum neural network training landscapes," Nature Communications, vol. 9, no. 1, p. 4812, Nov. 2018.
 ```
