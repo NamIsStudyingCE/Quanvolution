@@ -92,4 +92,4 @@ python run_gd3.py
 
 ---
 
-*Tác giả: NamIsStudyingCE | Trường Đại học Công nghệ Thông tin — ĐHQG-HCM*
+*Tác giả: NamIsStudyingCE | Trường Đại học Công nghệ Thông tin (UIT) — ĐHQG-HCM*
