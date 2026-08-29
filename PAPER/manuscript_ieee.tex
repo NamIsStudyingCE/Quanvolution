@@ -31,6 +31,9 @@
     urlcolor=blue
 }
 
+% Suppress all page numbers per conference submission instructions
+\pagestyle{empty}
+
 \begin{document}
 
 \title{Symmetrical Empirical Evaluation of Trainable versus Fixed Quanvolutional Filters in Medical Image Classification: A Rigorous, Reproducible Benchmark on MedMNIST}
@@ -44,6 +47,7 @@
 }
 
 \maketitle
+\thispagestyle{empty}
 
 \begin{abstract}
 Quanvolutional Neural Networks (QNNs) have emerged as a promising paradigm to combine the high-dimensional, non-linear representation capabilities of Variational Quantum Circuits (VQCs) in Hilbert spaces with classical deep learning architectures. Nevertheless, existing literature in quantum machine learning (QML) often lacks fair, reproducible evaluation frameworks: quantum feature extractors are rarely isolated from classical classifier heads, multi-seed statistical testing is frequently omitted, and claims of ``quantum advantage'' are often overstated. 
