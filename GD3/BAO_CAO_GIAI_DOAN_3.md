@@ -14,7 +14,7 @@ Báo cáo giai đoạn 3 này chuẩn hóa lại toàn bộ số liệu và lu�
 * **C1: Ma trận thực nghiệm 3 tầng công bằng (Fair Benchmark):** Tách bạch rõ ràng sức mạnh thực sự của *Trainability* (khả năng tự học) bằng cách đối chiếu 1:1 với phiên bản tĩnh (Fixed) của chính nó, đồng thời so sánh chéo với Quán quân mạch tĩnh và Classical CNN Baseline.
 * **C2: Đánh giá chi phí tham số & Độ trễ (Quantum Inductive Bias):** Lượng hóa điểm bán (selling point) của Quanvolution: Mạch lượng tử tĩnh dùng **0 tham số học** ở tầng đặc trưng nhưng vẫn đạt hiệu năng cạnh tranh với mô hình cổ điển, cùng **độ lệch chuẩn (std) nhỏ hơn ~2.5–3 lần**. 
 * **C3: Khảo sát Hành vi trên Chế độ Dữ liệu (Data Regime):** Phân định ranh giới (Boundary Condition) rõ ràng: Quanvolution thể hiện lợi thế về độ nhạy bắt bệnh và tính ổn định ở dữ liệu nhỏ / lệch lớp (BreastMNIST), nhưng bộc lộ giới hạn dung lượng phần cứng trước Classical CNN khi gặp bài toán dữ liệu lớn / đa lớp (OCTMNIST).
-* **C4: Khảo sát Động học Gradient (Sanity Check):** Kiểm tra bổ trợ xác nhận chuẩn gradient $\|\nabla_\theta \mathcal{L}\|_2$ duy trì ổn định ($0.05 - 0.25$) và góc quay $\theta(t)$ hội tụ sau 12–15 epochs. Đúng như kỳ vọng lý thuyết đối với mạch 4-qubit nông (shallow circuits), không xuất hiện hiện tượng triệt tiêu gradient (Barren Plateaus).
+* **C4: Khảo sát Động học Gradient (Sanity Check):** Kiểm tra bổ trợ xác nhận chuẩn gradient $\|\nabla_\theta \mathcal{L}\|_2$ duy trì ổn định (xấp xỉ $0.2$--$0.5$ trên đường trung bình theo seed, đỉnh từng seed $\approx 1.3$) và góc quay $\theta(t)$ hội tụ sau 12–15 epochs. Đúng như kỳ vọng lý thuyết đối với mạch 4-qubit nông (shallow circuits), không xuất hiện hiện tượng triệt tiêu gradient (Barren Plateaus).
 
 > **🎯 CÂU CHỐT HỌC THUẬT:** "Ưu thế lượng tử phụ thuộc mật thiết vào chế độ dữ liệu; khả năng tự học (trainability) có giá trị cao nhất khi so sánh trong cùng một họ mạch, nhưng xét trên toàn cục, một mạch lượng tử tĩnh (Fixed) được thiết kế tốt vẫn mang lại Quantum Inductive Bias mạnh mẽ với chi phí tham số bằng 0."
 
@@ -36,10 +36,10 @@ Báo cáo giai đoạn 3 này chuẩn hóa lại toàn bộ số liệu và lu�
 
 **💡 Phân tích khoa học (BreastMNIST):**
 1. **Trainability phát huy tác dụng trong cùng họ mạch:** `Trainable Strongly` lật ngược thế cờ đánh bại `Fixed Strongly` cùng họ trên mọi chỉ số ($\Delta \text{BAcc} = +0.0343$, $p=0.061$). 
-2. **Quán quân ROC-AUC Toàn bảng:** `Fixed Basic L2` đạt ROC-AUC cao nhất ($0.8521 \pm 0.0090$, vượt Classical CNN $0.8336$, $p=0.0309 < 0.05$).
-3. **Quán quân PR-AUC Toàn bảng:** `Fixed Strongly L2` đạt PR-AUC cao nhất toàn bảng ($0.9182 \pm 0.0067$), củng cố thêm bằng chứng về *Quantum Inductive Bias* vượt trội của mạch lượng tử tĩnh trên dữ liệu mất cân bằng.
+2. **Quán quân ROC-AUC Toàn bảng:** `Fixed Basic L2` đạt ROC-AUC cao nhất ($0.8521 \pm 0.0095$, vượt Classical CNN $0.8336$, $p=0.0309 < 0.05$).
+3. **Quán quân PR-AUC Toàn bảng:** `Fixed Strongly L2` đạt PR-AUC cao nhất toàn bảng ($0.9182 \pm 0.0071$), củng cố thêm bằng chứng về *Quantum Inductive Bias* vượt trội của mạch lượng tử tĩnh trên dữ liệu mất cân bằng.
 4. **Đánh giá Trainable Basic:** `Trainable Basic L2` đạt PR-AUC cao ($0.9173 \pm 0.0184$), tuy nhiên mức chênh lệch so với Classical CNN ($0.9041$) chưa đạt ngưỡng ý nghĩa thống kê nghiêm ngặt ($p = 0.0512$, ns), phản ánh năng lực phân giải của kích thước mẫu thử nghiệm.
-5. **Đánh giá Balanced Acc của Trainable Strongly:** `Trainable Strongly` đạt Balanced Acc $0.6945 \pm 0.0428$ (nhỉnh hơn Classical CNN $0.6875$), tuy nhiên mức chênh lệch này chưa đạt ý nghĩa thống kê ($p = 0.670$, ns).
+5. **Đánh giá Balanced Acc của Trainable Strongly:** `Trainable Strongly` đạt Balanced Acc $0.6945 \pm 0.0451$ (nhỉnh hơn Classical CNN $0.6875$), tuy nhiên mức chênh lệch này chưa đạt ý nghĩa thống kê ($p = 0.670$, ns).
 
 ---
 

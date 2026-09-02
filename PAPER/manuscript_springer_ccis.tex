@@ -48,8 +48,8 @@ Quanvolutional Neural Networks (QNNs) have emerged as a promising paradigm to co
 This paper establishes a rigorous, symmetrical, $1:1$ comparative benchmark evaluating \textbf{Trainable Quanvolution}, \textbf{Fixed Quanvolution}, and a \textbf{Symmetrical Minimum Classical CNN Baseline} on two standardized biomedical datasets from MedMNIST v2: BreastMNIST (binary, small-sample, class-imbalanced, $780$ images) and OCTMNIST ($4$-class, standardized $5{,}000 / \approx 97{,}000$ retinal OCT image subset). All experiments are strictly standardized across $10$ independent random seeds ($20$ epochs), evaluated on $6$ clinical classification metrics, and backed by paired $t$-tests, Wilcoxon signed-rank tests, $95\%$ confidence intervals (CI), and Cohen's $d$ effect sizes.
 
 Our empirical findings reveal three key scientific takeaways:
-(1) \textbf{Data Regime Dependency:} On small-sample, imbalanced data (BreastMNIST), fixed quantum filters achieve superior ranking performance and variance stability: \texttt{Fixed Basic L2} attains the highest ROC-AUC of $\mathbf{0.8521 \pm 0.0090}$ vs. Classical CNN $0.8336 \pm 0.0246$, while \texttt{Fixed Strongly L2} achieves the highest PR-AUC of $\mathbf{0.9182 \pm 0.0067}$ with a $\sim 2.7\times$ smaller standard deviation. Conversely, on large multi-class data (OCTMNIST), the classical CNN baseline overwhelmingly dominates all quantum configurations (ROC-AUC $\mathbf{0.7505 \pm 0.0227}$, $d = +2.108, p < 0.001$), demonstrating that quantum expressibility is constrained by an architectural capacity bottleneck in multi-class regimes.
-(2) \textbf{True Value of Trainability:} Optimizing parameter angles within the quantum kernel is beneficial only within the same ansatz family: on OCTMNIST, \texttt{Trainable Strongly} ($0.6922 \pm 0.0189$) significantly outperforms \texttt{Fixed Strongly} ($0.6690 \pm 0.0052$) with $\Delta = +0.0232$, $d = +1.050$, $p_{\text{wilcoxon}} = 0.0098$, yet only ties an appropriately chosen fixed random ansatz (\texttt{Fixed random\_L1} $0.6912 \pm 0.0067$, $p = 0.8875$, ns).
+(1) \textbf{Data Regime Dependency:} On small-sample, imbalanced data (BreastMNIST), fixed quantum filters achieve superior ranking performance and variance stability: \texttt{Fixed Basic L2} attains the highest ROC-AUC of $\mathbf{0.8521 \pm 0.0095}$ vs. Classical CNN $0.8336 \pm 0.0259$, while \texttt{Fixed Strongly L2} achieves the highest PR-AUC of $\mathbf{0.9182 \pm 0.0071}$ with a $\sim 2.7\times$ smaller standard deviation. Conversely, on large multi-class data (OCTMNIST), the classical CNN baseline overwhelmingly dominates all quantum configurations (ROC-AUC $\mathbf{0.7505 \pm 0.0240}$, $d = +2.108, p < 0.001$), demonstrating that quantum expressibility is constrained by an architectural capacity bottleneck in multi-class regimes.
+(2) \textbf{True Value of Trainability:} Optimizing parameter angles within the quantum kernel is beneficial only within the same ansatz family: on OCTMNIST, \texttt{Trainable Strongly} ($0.6922 \pm 0.0199$) significantly outperforms \texttt{Fixed Strongly} ($0.6690 \pm 0.0055$) with $\Delta = +0.0232$, $d = +1.050$, $p_{\text{wilcoxon}} = 0.0098$, yet only ties an appropriately chosen fixed random ansatz (\texttt{Fixed random\_L1} $0.6912 \pm 0.0071$, $p = 0.8875$, ns).
 (3) \textbf{Computational Trade-off:} Fixed quanvolutions provide a powerful \textbf{Quantum Inductive Bias} with \textbf{strictly $0$ trainable parameters} in the feature extractor and permit one-time precomputation ($18\text{ s}$ for 10 seeds), but CPU statevector simulation incurs an inference latency of $\sim 220.22\text{ ms/image}$ ($\sim 710\times$ slower than classical convolution at $0.31\text{ ms/image}$).
 
 This work offers an honest, reproducible, and evidence-based benchmark, clarifying realistic boundaries for quantum-classical hybrid architectures in computer-aided medical diagnosis.
@@ -62,7 +62,7 @@ In the era of computer-aided diagnosis (CAD), medical image analysis (ultrasound
 
 Quantum Machine Learning (QML) in the Noisy Intermediate-Scale Quantum (NISQ) era presents a compelling alternative by mapping classical data into exponentially large $2^N$-dimensional Hilbert spaces via parameterized quantum circuits \cite{biamonte2017quantum,cerezo2021variational}. In 2020, Henderson et al. \cite{henderson2020quanvolutional} introduced the Quanvolutional Neural Network (Quanvolution), which employs a local parameterized quantum circuit as a sliding kernel to transform spatial image patches into quantum feature maps. By performing non-linear Hilbert space mappings via quantum entanglement and superposition, Quanvolution is hypothesized to impart a \textbf{Quantum Inductive Bias}, potentially uncovering complex topological features inaccessible to linear classical convolutions \cite{huang2021power,vu2024exploring}.
 
-Despite surging interest, recent QML literature in biomedical imaging \cite{vu2024exploring,altares2021automatic,azevedo2022quantum,hoang2023efficient,sannakki2026medmnist,schuld2024needqml} exhibits three fundamental methodological limitations:
+Despite surging interest, recent QML literature in biomedical imaging \cite{vu2024exploring,altares2021automatic,azevedo2022quantum,hoang2023efficient,matondo2024breast,schuld2022advantage} exhibits three fundamental methodological limitations:
 \begin{itemize}
     \item \textbf{L1 --- Unfair Baseline Comparisons:} Prior studies frequently evaluate QML models against undertuned classical baselines or multi-million-parameter pretrained architectures (e.g., ResNet-18) without parameter isolation \cite{azevedo2022quantum}, making it impossible to determine whether reported performance stems from quantum transformations or classical classifier capacity.
     \item \textbf{L2 --- Absence of Multi-Seed Statistical Rigor:} A majority of published works report single-run experiments or 3-seed averages without reporting confidence intervals or non-parametric significance tests, conflating random initialization luck with genuine ``quantum advantage'' \cite{kubler2021inductive}.
@@ -117,11 +117,11 @@ Cong et al. (2019) \cite{cong2019quantum} & Phase Detection & Pure QCNN & Single
 \midrule
 Altares-L{\'o}pez et al. (2021) \cite{altares2021automatic} & Medical / Synth & Genetic VQC & 5-fold CV & Heuristic search lacks convolutional inductive bias; non-standard split. \\
 \midrule
-Azevedo et al. (2022) \cite{azevedo2022quantum} & Breast (Ultrasound) & Hybrid VQC Head & Single split (No seeds) & Classical backbone dominates capacity; unable to isolate pure quantum kernel effect. \\
+Azevedo et al. (2022) \cite{azevedo2022quantum} & Breast (Mammography) & Hybrid VQC Head & Single split (No seeds) & Classical backbone dominates capacity; unable to isolate pure quantum kernel effect. \\
 \midrule
-K{\"u}bler et al. (2021) \cite{kubler2021inductive} / Schuld \& Killoran (2024) \cite{schuld2024needqml} & Kernel ML / Vision & Quantum Kernels / QNN & Theoretical bounds / Multi-dataset & Critical perspective showing advantage claims often evaporate against fair classical baselines. \\
+K{\"u}bler et al. (2021) \cite{kubler2021inductive} / Schuld \& Killoran (2022) \cite{schuld2022advantage} & Kernel ML / Vision & Quantum Kernels / QNN & Theoretical bounds / Multi-dataset & Critical perspective showing advantage claims often evaporate against fair classical baselines. \\
 \midrule
-Sannakki et al. (2026) \cite{sannakki2026medmnist} & MedMNIST on NISQ & Hardware VQC (IBM QPU) & $3$ runs (device noise) & Physical device noise degrades accuracy; lacks symmetrical parameter-matched classical baseline. \\
+Matondo-Mvula and Elleithy (2024) \cite{matondo2024breast} & BreastMNIST (Ultrasound) & Quanv QNN ($9$-qubit, $3\times3$) & Single run (No seeds/tests) & Simulator-only; $28\times28$ downscaled to $14\times14$; no multi-seed significance testing. \\
 \midrule
 \textbf{This Work (Ours)} & \textbf{MedMNIST (Breast \& OCT)} & \textbf{3-Tier Quanv: Fixed vs. Trainable} & \textbf{10 seeds, $t$-test, Wilcoxon, $95\%$ CI, Cohen's $d$} & \textbf{Strict parameter parity, data regime boundaries, $0$-param kernel quantification.} \\
 \bottomrule
@@ -243,15 +243,15 @@ Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks_breast} summarize test 
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
-\textbf{Classical CNN Baseline} & $0.8103 \pm 0.0265$ & \makecell{$0.6875 \pm 0.0448$ \\ \scriptsize $[0.6537, 0.7213]$} & $0.8802 \pm 0.0164$ & $0.4702 \pm 0.0821$ & \makecell{$0.8336 \pm 0.0246$ \\ \scriptsize $[0.8150, 0.8521]$} & \makecell{$0.9041 \pm 0.0095$ \\ \scriptsize $[0.8970, 0.9113]$} \\
+\textbf{Classical CNN Baseline} & $0.8103 \pm 0.0279$ & \makecell{$0.6875 \pm 0.0473$ \\ \scriptsize $[0.6537, 0.7213]$} & $0.8802 \pm 0.0172$ & $0.4702 \pm 0.0865$ & \makecell{$0.8336 \pm 0.0259$ \\ \scriptsize $[0.8150, 0.8521]$} & \makecell{$0.9041 \pm 0.0100$ \\ \scriptsize $[0.8970, 0.9113]$} \\
 \midrule
-\textbf{Fixed Basic Quanv (L2)} & $0.8083 \pm 0.0193$ & \makecell{$0.6816 \pm 0.0490$ \\ \scriptsize $[0.6447, 0.7186]$} & $0.8796 \pm 0.0095$ & $0.4626 \pm 0.0674$ & \makecell{$\mathbf{0.8521 \pm 0.0090}$ \\ \scriptsize $[0.8453, 0.8589]$} & \makecell{$0.9110 \pm 0.0049$ \\ \scriptsize $[0.9073, 0.9146]$} \\
+\textbf{Fixed Basic Quanv (L2)} & $0.8083 \pm 0.0204$ & \makecell{$0.6816 \pm 0.0517$ \\ \scriptsize $[0.6447, 0.7186]$} & $0.8796 \pm 0.0100$ & $0.4626 \pm 0.0711$ & \makecell{$\mathbf{0.8521 \pm 0.0095}$ \\ \scriptsize $[0.8453, 0.8589]$} & \makecell{$0.9110 \pm 0.0051$ \\ \scriptsize $[0.9073, 0.9146]$} \\
 \midrule
-\textbf{Trainable Basic Quanv (L2)} & $0.7917 \pm 0.0239$ & \makecell{$0.6732 \pm 0.0382$ \\ \scriptsize $[0.6444, 0.7021]$} & $0.8668 \pm 0.0168$ & $0.4224 \pm 0.0711$ & \makecell{$0.8406 \pm 0.0239$ \\ \scriptsize $[0.8226, 0.8586]$} & \makecell{$0.9173 \pm 0.0184$ \\ \scriptsize $[0.9033, 0.9312]$} \\
+\textbf{Trainable Basic Quanv (L2)} & $0.7917 \pm 0.0251$ & \makecell{$0.6732 \pm 0.0403$ \\ \scriptsize $[0.6444, 0.7021]$} & $0.8668 \pm 0.0178$ & $0.4224 \pm 0.0749$ & \makecell{$0.8406 \pm 0.0252$ \\ \scriptsize $[0.8226, 0.8586]$} & \makecell{$0.9173 \pm 0.0194$ \\ \scriptsize $[0.9033, 0.9312]$} \\
 \midrule
-\textbf{Fixed Strongly Quanv (L2)} & $0.7846 \pm 0.0177$ & \makecell{$0.6602 \pm 0.0202$ \\ \scriptsize $[0.6449, 0.6754]$} & $0.8631 \pm 0.0124$ & $0.3942 \pm 0.0509$ & \makecell{$0.8139 \pm 0.0142$ \\ \scriptsize $[0.8032, 0.8246]$} & \makecell{$\mathbf{0.9182 \pm 0.0067}$ \\ \scriptsize $[0.9131, 0.9232]$} \\
+\textbf{Fixed Strongly Quanv (L2)} & $0.7846 \pm 0.0187$ & \makecell{$0.6602 \pm 0.0213$ \\ \scriptsize $[0.6449, 0.6754]$} & $0.8631 \pm 0.0131$ & $0.3942 \pm 0.0536$ & \makecell{$0.8139 \pm 0.0150$ \\ \scriptsize $[0.8032, 0.8246]$} & \makecell{$\mathbf{0.9182 \pm 0.0071}$ \\ \scriptsize $[0.9131, 0.9232]$} \\
 \midrule
-\textbf{Trainable Strongly Quanv (L2)} & $\mathbf{0.8019 \pm 0.0284}$ & \makecell{$\mathbf{0.6945 \pm 0.0428}$ \\ \scriptsize $[0.6623, 0.7268]$} & $\mathbf{0.8724 \pm 0.0183}$ & $\mathbf{0.4549 \pm 0.0896}$ & \makecell{$0.8306 \pm 0.0279$ \\ \scriptsize $[0.8096, 0.8516]$} & \makecell{$0.9167 \pm 0.0157$ \\ \scriptsize $[0.9048, 0.9286]$} \\
+\textbf{Trainable Strongly Quanv (L2)} & $\mathbf{0.8019 \pm 0.0300}$ & \makecell{$\mathbf{0.6945 \pm 0.0451}$ \\ \scriptsize $[0.6623, 0.7268]$} & $\mathbf{0.8724 \pm 0.0193}$ & $\mathbf{0.4549 \pm 0.0945}$ & \makecell{$0.8306 \pm 0.0294$ \\ \scriptsize $[0.8096, 0.8516]$} & \makecell{$0.9167 \pm 0.0166$ \\ \scriptsize $[0.9048, 0.9286]$} \\
 \bottomrule
 \end{tabular}%
 }
@@ -266,10 +266,10 @@ Table~\ref{tab:breastmnist} and Fig.~\ref{fig:benchmarks_breast} summarize test 
 
 \textbf{Key Statistical Findings on BreastMNIST:}
 \begin{enumerate}
-    \item \textbf{Fixed Basic Wins on ROC-AUC:} \texttt{Fixed Basic L2} achieves the highest ROC-AUC of $\mathbf{0.8521 \pm 0.0090}$, outperforming Classical CNN ($0.8336 \pm 0.0246$) with statistical significance ($p_{\text{ttest}} = 0.0298, p_{\text{wilcoxon}} = 0.0254$) and a large effect size (\textbf{Cohen's $d = +0.815$}).
-    \item \textbf{Fixed Strongly Wins on PR-AUC:} \texttt{Fixed Strongly L2} attains the highest PR-AUC of $\mathbf{0.9182 \pm 0.0067}$, significantly outperforming Classical CNN ($0.9041 \pm 0.0095, p_{\text{ttest}} = 0.0023, p_{\text{wilcoxon}} = 0.0059$) with a very large effect size (\textbf{Cohen's $d = +1.332$}).
-    \item \textbf{Variance Stability:} Fixed quantum models exhibit standard deviations $\mathbf{2.7\times}$ smaller than Classical CNN in ROC-AUC ($0.0090$ vs. $0.0246$), confirming robustness to random seed variations.
-    \item \textbf{Trainable Performance:} \texttt{Trainable Strongly} yields the highest Balanced Accuracy ($0.6945 \pm 0.0428$, $+0.0344$ over \texttt{Fixed Strongly} $0.6602 \pm 0.0202$, $d = +0.677, p = 0.0611$), but the difference versus Classical CNN ($0.6875 \pm 0.0448$) is not statistically significant ($p = 0.6701, d = +0.139$).
+    \item \textbf{Fixed Basic Wins on ROC-AUC:} \texttt{Fixed Basic L2} achieves the highest ROC-AUC of $\mathbf{0.8521 \pm 0.0095}$, outperforming Classical CNN ($0.8336 \pm 0.0259$) with statistical significance ($p_{\text{ttest}} = 0.0298, p_{\text{wilcoxon}} = 0.0254$) and a large effect size (\textbf{Cohen's $d = +0.815$}).
+    \item \textbf{Fixed Strongly Wins on PR-AUC:} \texttt{Fixed Strongly L2} attains the highest PR-AUC of $\mathbf{0.9182 \pm 0.0071}$, significantly outperforming Classical CNN ($0.9041 \pm 0.0100, p_{\text{ttest}} = 0.0023, p_{\text{wilcoxon}} = 0.0059$) with a very large effect size (\textbf{Cohen's $d = +1.332$}).
+    \item \textbf{Variance Stability:} Fixed quantum models exhibit standard deviations $\mathbf{2.7\times}$ smaller than Classical CNN in ROC-AUC ($0.0095$ vs. $0.0259$), confirming robustness to random seed variations.
+    \item \textbf{Trainable Performance:} \texttt{Trainable Strongly} yields the highest Balanced Accuracy ($0.6945 \pm 0.0451$, $+0.0344$ over \texttt{Fixed Strongly} $0.6602 \pm 0.0213$, $d = +0.677, p = 0.0611$), but the difference versus Classical CNN ($0.6875 \pm 0.0473$) is not statistically significant ($p = 0.6701, d = +0.139$).
 \end{enumerate}
 
 \subsection{OCTMNIST Benchmark (Large-Sample, Multi-Class Regime)}
@@ -286,17 +286,17 @@ Table~\ref{tab:octmnist} and Fig.~\ref{fig:benchmarks_oct} present test results 
 \toprule
 \textbf{Model Architecture} & \textbf{Accuracy} & \textbf{Balanced Acc} & \textbf{F1-Score} & \textbf{MCC} & \textbf{ROC-AUC} & \textbf{PR-AUC} \\
 \midrule
-\textbf{Classical CNN Baseline} & $\mathbf{0.4433 \pm 0.0128}$ & \makecell{$\mathbf{0.4433 \pm 0.0128}$ \\ \scriptsize $[0.4336, 0.4530]$} & $\mathbf{0.3206 \pm 0.0166}$ & $\mathbf{0.3156 \pm 0.0188}$ & \makecell{$\mathbf{0.7505 \pm 0.0227}$ \\ \scriptsize $[0.7333, 0.7676]$} & \makecell{$\mathbf{0.4991 \pm 0.0282}$ \\ \scriptsize $[0.4778, 0.5203]$} \\
+\textbf{Classical CNN Baseline} & $\mathbf{0.4433 \pm 0.0135}$ & \makecell{$\mathbf{0.4433 \pm 0.0135}$ \\ \scriptsize $[0.4336, 0.4530]$} & $\mathbf{0.3206 \pm 0.0175}$ & $\mathbf{0.3156 \pm 0.0198}$ & \makecell{$\mathbf{0.7505 \pm 0.0240}$ \\ \scriptsize $[0.7333, 0.7676]$} & \makecell{$\mathbf{0.4991 \pm 0.0297}$ \\ \scriptsize $[0.4778, 0.5203]$} \\
 \midrule
-\textbf{Fixed Basic Quanv (L1)} & $0.4075 \pm 0.0040$ & \makecell{$0.4075 \pm 0.0040$ \\ \scriptsize $[0.4045, 0.4105]$} & $0.2971 \pm 0.0071$ & $0.2566 \pm 0.0068$ & \makecell{$0.6711 \pm 0.0040$ \\ \scriptsize $[0.6681, 0.6741]$} & \makecell{$0.4186 \pm 0.0070$ \\ \scriptsize $[0.4133, 0.4239]$} \\
+\textbf{Fixed Basic Quanv (L1)} & $0.4075 \pm 0.0042$ & \makecell{$0.4075 \pm 0.0042$ \\ \scriptsize $[0.4045, 0.4105]$} & $0.2971 \pm 0.0075$ & $0.2566 \pm 0.0072$ & \makecell{$0.6711 \pm 0.0042$ \\ \scriptsize $[0.6681, 0.6741]$} & \makecell{$0.4186 \pm 0.0074$ \\ \scriptsize $[0.4133, 0.4239]$} \\
 \midrule
-\textbf{Trainable Basic Quanv (L1)} & $0.3955 \pm 0.0152$ & \makecell{$0.3955 \pm 0.0152$ \\ \scriptsize $[0.3840, 0.4070]$} & $0.2837 \pm 0.0193$ & $0.2394 \pm 0.0192$ & \makecell{$0.6704 \pm 0.0101$ \\ \scriptsize $[0.6628, 0.6780]$} & \makecell{$0.4102 \pm 0.0124$ \\ \scriptsize $[0.4008, 0.4195]$} \\
+\textbf{Trainable Basic Quanv (L1)} & $0.3955 \pm 0.0161$ & \makecell{$0.3955 \pm 0.0161$ \\ \scriptsize $[0.3840, 0.4070]$} & $0.2837 \pm 0.0203$ & $0.2394 \pm 0.0203$ & \makecell{$0.6704 \pm 0.0106$ \\ \scriptsize $[0.6628, 0.6780]$} & \makecell{$0.4102 \pm 0.0131$ \\ \scriptsize $[0.4008, 0.4195]$} \\
 \midrule
-\textbf{Fixed Champ (Phase 2, \texttt{random\_L1})} & $0.4048 \pm 0.0123$ & \makecell{$0.4048 \pm 0.0123$ \\ \scriptsize $[0.3955, 0.4141]$} & $0.2997 \pm 0.0191$ & $0.2530 \pm 0.0136$ & \makecell{$0.6912 \pm 0.0067$ \\ \scriptsize $[0.6862, 0.6963]$} & \makecell{$0.4443 \pm 0.0084$ \\ \scriptsize $[0.4380, 0.4506]$} \\
+\textbf{Fixed Champ (Phase 2, \texttt{random\_L1})} & $0.4048 \pm 0.0130$ & \makecell{$0.4048 \pm 0.0130$ \\ \scriptsize $[0.3955, 0.4141]$} & $0.2997 \pm 0.0202$ & $0.2530 \pm 0.0144$ & \makecell{$0.6912 \pm 0.0071$ \\ \scriptsize $[0.6862, 0.6963]$} & \makecell{$0.4443 \pm 0.0088$ \\ \scriptsize $[0.4380, 0.4506]$} \\
 \midrule
-\textbf{Fixed Strongly Quanv (L1)} & $0.4034 \pm 0.0044$ & \makecell{$0.4034 \pm 0.0044$ \\ \scriptsize $[0.4001, 0.4067]$} & $0.3050 \pm 0.0123$ & $0.2421 \pm 0.0061$ & \makecell{$0.6690 \pm 0.0052$ \\ \scriptsize $[0.6650, 0.6729]$} & \makecell{$0.4175 \pm 0.0044$ \\ \scriptsize $[0.4142, 0.4209]$} \\
+\textbf{Fixed Strongly Quanv (L1)} & $0.4034 \pm 0.0046$ & \makecell{$0.4034 \pm 0.0046$ \\ \scriptsize $[0.4001, 0.4067]$} & $0.3050 \pm 0.0130$ & $0.2421 \pm 0.0064$ & \makecell{$0.6690 \pm 0.0055$ \\ \scriptsize $[0.6650, 0.6729]$} & \makecell{$0.4175 \pm 0.0047$ \\ \scriptsize $[0.4142, 0.4209]$} \\
 \midrule
-\textbf{Trainable Strongly Quanv (L1)} & $0.4020 \pm 0.0141$ & \makecell{$0.4020 \pm 0.0141$ \\ \scriptsize $[0.3914, 0.4126]$} & $0.2949 \pm 0.0178$ & $0.2481 \pm 0.0220$ & \makecell{$0.6922 \pm 0.0189$ \\ \scriptsize $[0.6780, 0.7065]$} & \makecell{$0.4365 \pm 0.0274$ \\ \scriptsize $[0.4158, 0.4571]$} \\
+\textbf{Trainable Strongly Quanv (L1)} & $0.4020 \pm 0.0148$ & \makecell{$0.4020 \pm 0.0148$ \\ \scriptsize $[0.3914, 0.4126]$} & $0.2949 \pm 0.0188$ & $0.2481 \pm 0.0232$ & \makecell{$0.6922 \pm 0.0199$ \\ \scriptsize $[0.6780, 0.7065]$} & \makecell{$0.4365 \pm 0.0289$ \\ \scriptsize $[0.4158, 0.4571]$} \\
 \bottomrule
 \end{tabular}%
 }
@@ -311,9 +311,9 @@ Table~\ref{tab:octmnist} and Fig.~\ref{fig:benchmarks_oct} present test results 
 
 \textbf{Key Statistical Findings on OCTMNIST:}
 \begin{enumerate}
-    \item \textbf{Conclusive Dominance of Classical CNN:} Classical CNN leads decisively across all 6 metrics (ROC-AUC $\mathbf{0.7505 \pm 0.0227}$, PR-AUC $\mathbf{0.4991 \pm 0.0282}$, Acc/BAcc $\mathbf{0.4433 \pm 0.0128}$), outperforming the best quantum model with $p < 0.001$ and huge effect sizes (\textbf{Cohen's $d = +2.108$} for ROC-AUC; \textbf{$d = +1.874$} for BAcc).
-    \item \textbf{Tier-3 Trainability Effect:} \texttt{Trainable Strongly} ($0.6922 \pm 0.0189$) significantly surpasses \texttt{Fixed Strongly} ($0.6690 \pm 0.0052$) with $\Delta = +0.0232$ ROC-AUC ($p_{\text{wilcoxon}} = 0.0098 < 0.01$, \textbf{Cohen's $d = +1.050$}).
-    \item \textbf{Statistical Tie with Fixed Champion:} \texttt{Trainable Strongly} ($0.6922$) only ties statistically with \texttt{Fixed random\_L1} ($0.6912 \pm 0.0067, \Delta = +0.0010, p = 0.8875$, ns; Cohen's $d = +0.046$).
+    \item \textbf{Conclusive Dominance of Classical CNN:} Classical CNN leads decisively across all 6 metrics (ROC-AUC $\mathbf{0.7505 \pm 0.0240}$, PR-AUC $\mathbf{0.4991 \pm 0.0297}$, Acc/BAcc $\mathbf{0.4433 \pm 0.0135}$), outperforming the best quantum model with $p < 0.001$ and huge effect sizes (\textbf{Cohen's $d = +2.108$} for ROC-AUC; \textbf{$d = +1.874$} for BAcc).
+    \item \textbf{Tier-3 Trainability Effect:} \texttt{Trainable Strongly} ($0.6922 \pm 0.0199$) significantly surpasses \texttt{Fixed Strongly} ($0.6690 \pm 0.0055$) with $\Delta = +0.0232$ ROC-AUC ($p_{\text{wilcoxon}} = 0.0098 < 0.01$, \textbf{Cohen's $d = +1.050$}).
+    \item \textbf{Statistical Tie with Fixed Champion:} \texttt{Trainable Strongly} ($0.6922$) only ties statistically with \texttt{Fixed random\_L1} ($0.6912 \pm 0.0071, \Delta = +0.0010, p = 0.8875$, ns; Cohen's $d = +0.046$).
 \end{enumerate}
 
 \subsection{Optimization Dynamics \& Gradient Health}
@@ -381,7 +381,7 @@ Key computational insights include:
 \subsection{Decoupling Data Regimes: Capacity Bottleneck vs. Regularization}
 The divergent outcomes between BreastMNIST and OCTMNIST highlight a fundamental architectural principle:
 \begin{itemize}
-    \item \textbf{Small Data Regime (BreastMNIST --- 546 train samples, binary):} Classical convolutions with unconstrained weights readily overfit spurious artifacts. The fixed 4-qubit quantum transformation acts as a rigid \textbf{Structural Regularizer} in Hilbert space, compressing the optimization search space and resulting in a $\sim 2.7\times$ reduction in variance ($0.0090$ vs. $0.0246$) and peak ROC-AUC ($0.8521$).
+    \item \textbf{Small Data Regime (BreastMNIST --- 546 train samples, binary):} Classical convolutions with unconstrained weights readily overfit spurious artifacts. The fixed 4-qubit quantum transformation acts as a rigid \textbf{Structural Regularizer} in Hilbert space, compressing the optimization search space and resulting in a $\sim 2.7\times$ reduction in variance ($0.0095$ vs. $0.0259$) and peak ROC-AUC ($0.8521$).
     \item \textbf{Large Multi-Class Regime (OCTMNIST --- 3,500 train samples, 4 classes):} Separating 4 subtle retinal pathologies requires high spatial feature flexibility. Shallow 4-qubit kernels hit an \textbf{Expressibility Bottleneck}, whereas classical convolutions scale effectively to dominate the task ($0.7505$ vs. $0.6922$).
 \end{itemize}
 
@@ -389,7 +389,7 @@ The divergent outcomes between BreastMNIST and OCTMNIST highlight a fundamental 
 A major finding is that zero-parameter fixed quantum circuits (\texttt{Fixed Basic} and \texttt{Fixed Strongly}) achieved top-tier performance on BreastMNIST, outperforming heavily parameterized trainable counterparts. This confirms that adding trainable parameters to the quantum circuit does not guarantee improved generalization in low-data regimes; an appropriately designed fixed circuit already provides sufficient inductive bias.
 
 \subsection{Clinical Relevance in Medical Diagnosis}
-In screening scenarios, false negatives are vastly more costly than false positives. Thus, PR-AUC under class imbalance serves as the critical clinical metric. The fact that \texttt{Fixed Strongly Quanvolution} reaches a PR-AUC of $\mathbf{0.9182 \pm 0.0067}$ ($d = +1.332$ over Classical CNN at $0.9041$) demonstrates the unique sensitivity of quantum kernel representations in isolating rare pathological cases.
+In screening scenarios, false negatives are vastly more costly than false positives. Thus, PR-AUC under class imbalance serves as the critical clinical metric. The fact that \texttt{Fixed Strongly Quanvolution} reaches a PR-AUC of $\mathbf{0.9182 \pm 0.0071}$ ($d = +1.332$ over Classical CNN at $0.9041$) demonstrates the unique sensitivity of quantum kernel representations in isolating rare pathological cases.
 
 \section{Threats to Validity \& Limitations}
 We explicitly note four methodological boundaries of this benchmark:
@@ -421,17 +421,17 @@ We summarize three primary conclusions:
 \bibitem{cerezo2021variational} Cerezo, M., et al.: Variational quantum algorithms. Nature Reviews Physics \textbf{3}(9), 625--644 (2021)
 \bibitem{henderson2020quanvolutional} Henderson, M., Shakya, S., Pradhan, S., Cook, T.: Quanvolutional neural networks: powering image recognition with quantum circuits. Quantum Machine Intelligence \textbf{2}(1), 2 (2020)
 \bibitem{huang2021power} Huang, H.Y., et al.: Power of data in quantum machine learning. Nature Communications \textbf{12}(1), 2631 (2021)
-\bibitem{vu2024exploring} Vu, T.H., Le, H.L., Pham, T.B.: Exploring the features of quanvolutional neural networks for improved image classification. Quantum Machine Intelligence \textbf{6}(1), 15 (2024)
+\bibitem{vu2024exploring} Vu, T.H., Le, H.L., Pham, T.B.: Exploring the features of quanvolutional neural networks for improved image classification. Quantum Machine Intelligence \textbf{6}(1), 29 (2024)
 \bibitem{altares2021automatic} Altares-L{\'o}pez, F.M., Ribeiro, A., Garc{\'i}a-Ripoll, J.J.: Automatic design of quantum feature maps. Quantum Science and Technology \textbf{6}(4), 045015 (2021)
-\bibitem{azevedo2022quantum} Azevedo, F.S., Silva, A., Oliveira, I.C.: Quantum transfer learning for breast cancer detection. Quantum Information Processing \textbf{21}(3), 112 (2022)
+\bibitem{azevedo2022quantum} Azevedo, V., Silva, C., Dutra, I.: Quantum transfer learning for breast cancer detection. Quantum Machine Intelligence \textbf{4}(1), 5 (2022)
 \bibitem{hoang2023efficient} Hoang, Q.N., Pham, T.T., Dang, D.N.M.: Efficient hybrid quantum-classical convolutional neural network with feature propagation layer for multi-class image classification. In: Proc. Int. Conf. Adv. Eng. Theory Appl. (AETA), pp. 1--10 (2023)
 \bibitem{kubler2021inductive} K{\"u}bler, J., Buchholz, S., Sch{\"o}lkopf, B.: The inductive bias of quantum kernels. In: Advances in Neural Information Processing Systems (NeurIPS), vol. 34, pp. 12661--12673 (2021)
 \bibitem{cong2019quantum} Cong, I., Choi, S., Lukin, M.D.: Quantum convolutional neural networks. Nature Physics \textbf{15}(12), 1273--1278 (2019)
 \bibitem{bergholm2018pennylane} Bergholm, V., et al.: PennyLane: Automatic differentiation of quantum machine learning circuits. arXiv:1811.04968 (2018)
 \bibitem{schuld2019evaluating} Schuld, M., Bergholm, V., Gogolin, C., Izaac, J., Killoran, N.: Evaluating analytic gradients on quantum hardware. Physical Review A \textbf{99}(3), 032331 (2019)
 \bibitem{mcclean2018barren} McClean, J.R., Boixo, S., Smelyanskiy, V.N., Babbush, R., Neven, H.: Barren plateaus in quantum neural network training landscapes. Nature Communications \textbf{9}(1), 4812 (2018)
-\bibitem{sannakki2026medmnist} Sannakki, S.S., Rajpurohit, V.S., Kulkarni, V.B.: Benchmarking medical image classification with variational quantum circuits on NISQ hardware. Scientific Reports \textbf{16}(1), 1042 (2026)
-\bibitem{schuld2024needqml} Schuld, M., Killoran, N.: Is quantum machine learning really classical with extra steps? A critical empirical assessment. Quantum Machine Intelligence \textbf{6}(2), 42 (2024)
+\bibitem{matondo2024breast} Matondo-Mvula, N., Elleithy, K.: Breast cancer detection with quanvolutional neural networks. Entropy \textbf{26}(8), 630 (2024)
+\bibitem{schuld2022advantage} Schuld, M., Killoran, N.: Is quantum advantage the right goal for quantum machine learning? PRX Quantum \textbf{3}(3), 030101 (2022)
 \end{thebibliography}
 
 \end{document}

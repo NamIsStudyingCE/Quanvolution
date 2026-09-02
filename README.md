@@ -33,12 +33,12 @@ Dự án được triển khai và đóng gói độc lập theo từng mốc (m
 ## 🔬 3. Bảng Kết quả Thực nghiệm Tổng hợp (10 Seeds Độc lập)
 
 ### A. BreastMNIST (780 mẫu, Nhị phân, Lệch lớp nặng, $L=2$)
-* **Quán quân ROC-AUC:** `Fixed Basic L2` đạt **$0.8521 \pm 0.0090$** (vượt Classical CNN $0.8336$, $p=0.0309 < 0.05$).
-* **Quán quân PR-AUC:** `Fixed Strongly L2` đạt **$0.9182 \pm 0.0067$** (chứng minh *Quantum Inductive Bias* của mạch tĩnh).
+* **Quán quân ROC-AUC:** `Fixed Basic L2` đạt **$0.8521 \pm 0.0095$** (vượt Classical CNN $0.8336$, $p=0.0309 < 0.05$).
+* **Quán quân PR-AUC:** `Fixed Strongly L2` đạt **$0.9182 \pm 0.0071$** (chứng minh *Quantum Inductive Bias* của mạch tĩnh).
 * **Độ ổn định:** Độ lệch chuẩn (std) của Lượng tử nhỏ hơn Cổ điển gấp **~2.5x – 3x**.
 
 ### B. OCTMNIST (5.000 mẫu, 4 lớp bệnh lý, Dữ liệu lớn, $L=1$)
-* **Quán quân:** `Classical CNN` dẫn đầu áp đảo (**ROC-AUC $0.7505 \pm 0.0227$** vs QNN $\sim 0.69$).
+* **Quán quân:** `Classical CNN` dẫn đầu áp đảo (**ROC-AUC $0.7505 \pm 0.0240$** vs QNN $\sim 0.69$).
 * **Ranh giới ứng dụng (Quantum Boundary):** Mạch lượng tử 4-qubit bộc lộ giới hạn dung lượng tham số trên bài toán dữ liệu lớn, khẳng định ưu thế cổ điển ở quy mô lớn.
 
 ### C. Hiệu quả Tham số & Độ trễ Suy luận (CPU)

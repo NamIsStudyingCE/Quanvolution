@@ -10,6 +10,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
 env.bak/
 venv.bak/
@@ -27,6 +28,7 @@ venv.bak/
 # Results & Artifacts nặng (trừ hình ảnh demo)
 results/checkpoints/
 results/logs/
+results/archive/
 
 # IDE / Editor config
 .vscode/
@@ -35,3 +37,13 @@ results/logs/
 
 # Reference repositories
 PAPER/references/academic-phrasebank/
+
+# Confidential / Reviewer reports & Submission PDFs
+*.pdf
+
+# Temporary audit & patching scripts
+PAPER/scripts/patch*.py
+PAPER/scripts/batch_fix.py
+PAPER/scripts/final_*.py
+PAPER/scripts/full_table_audit.py
+PAPER/scripts/reconcile_verify.py

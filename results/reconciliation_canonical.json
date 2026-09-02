@@ -1,0 +1,734 @@
+{
+ "breastmnist": {
+  "meta": {
+   "dataset": "breastmnist",
+   "num_epochs": 20,
+   "seeds": [
+    0,
+    42,
+    100,
+    2023,
+    777,
+    999,
+    1234,
+    5678,
+    1111,
+    2222
+   ],
+   "progress": "50/50 completed"
+  },
+  "models": {
+   "classical_cnn": {
+    "acc": {
+     "mean": 0.8103,
+     "std": 0.0279,
+     "ci_lo": 0.7903,
+     "ci_hi": 0.8302
+    },
+    "bacc": {
+     "mean": 0.6875,
+     "std": 0.0473,
+     "ci_lo": 0.6537,
+     "ci_hi": 0.7213
+    },
+    "f1": {
+     "mean": 0.8802,
+     "std": 0.0172,
+     "ci_lo": 0.8679,
+     "ci_hi": 0.8926
+    },
+    "mcc": {
+     "mean": 0.4702,
+     "std": 0.0865,
+     "ci_lo": 0.4083,
+     "ci_hi": 0.5321
+    },
+    "auc": {
+     "mean": 0.8336,
+     "std": 0.0259,
+     "ci_lo": 0.815,
+     "ci_hi": 0.8521
+    },
+    "pr_auc": {
+     "mean": 0.9041,
+     "std": 0.01,
+     "ci_lo": 0.897,
+     "ci_hi": 0.9113
+    }
+   },
+   "fixed_basic": {
+    "acc": {
+     "mean": 0.8083,
+     "std": 0.0204,
+     "ci_lo": 0.7938,
+     "ci_hi": 0.8229
+    },
+    "bacc": {
+     "mean": 0.6816,
+     "std": 0.0517,
+     "ci_lo": 0.6447,
+     "ci_hi": 0.7186
+    },
+    "f1": {
+     "mean": 0.8796,
+     "std": 0.01,
+     "ci_lo": 0.8724,
+     "ci_hi": 0.8867
+    },
+    "mcc": {
+     "mean": 0.4626,
+     "std": 0.0711,
+     "ci_lo": 0.4118,
+     "ci_hi": 0.5134
+    },
+    "auc": {
+     "mean": 0.8521,
+     "std": 0.0095,
+     "ci_lo": 0.8453,
+     "ci_hi": 0.8589
+    },
+    "pr_auc": {
+     "mean": 0.911,
+     "std": 0.0051,
+     "ci_lo": 0.9073,
+     "ci_hi": 0.9146
+    }
+   },
+   "trainable_basic": {
+    "acc": {
+     "mean": 0.7917,
+     "std": 0.0251,
+     "ci_lo": 0.7737,
+     "ci_hi": 0.8097
+    },
+    "bacc": {
+     "mean": 0.6732,
+     "std": 0.0403,
+     "ci_lo": 0.6444,
+     "ci_hi": 0.7021
+    },
+    "f1": {
+     "mean": 0.8668,
+     "std": 0.0178,
+     "ci_lo": 0.8541,
+     "ci_hi": 0.8795
+    },
+    "mcc": {
+     "mean": 0.4224,
+     "std": 0.0749,
+     "ci_lo": 0.3688,
+     "ci_hi": 0.476
+    },
+    "auc": {
+     "mean": 0.8406,
+     "std": 0.0252,
+     "ci_lo": 0.8226,
+     "ci_hi": 0.8586
+    },
+    "pr_auc": {
+     "mean": 0.9173,
+     "std": 0.0194,
+     "ci_lo": 0.9033,
+     "ci_hi": 0.9312
+    }
+   },
+   "fixed_strongly": {
+    "acc": {
+     "mean": 0.7846,
+     "std": 0.0187,
+     "ci_lo": 0.7713,
+     "ci_hi": 0.798
+    },
+    "bacc": {
+     "mean": 0.6602,
+     "std": 0.0213,
+     "ci_lo": 0.6449,
+     "ci_hi": 0.6754
+    },
+    "f1": {
+     "mean": 0.8631,
+     "std": 0.0131,
+     "ci_lo": 0.8537,
+     "ci_hi": 0.8724
+    },
+    "mcc": {
+     "mean": 0.3942,
+     "std": 0.0536,
+     "ci_lo": 0.3559,
+     "ci_hi": 0.4326
+    },
+    "auc": {
+     "mean": 0.8139,
+     "std": 0.015,
+     "ci_lo": 0.8032,
+     "ci_hi": 0.8246
+    },
+    "pr_auc": {
+     "mean": 0.9182,
+     "std": 0.0071,
+     "ci_lo": 0.9131,
+     "ci_hi": 0.9232
+    }
+   },
+   "trainable_strongly": {
+    "acc": {
+     "mean": 0.8019,
+     "std": 0.03,
+     "ci_lo": 0.7805,
+     "ci_hi": 0.8234
+    },
+    "bacc": {
+     "mean": 0.6945,
+     "std": 0.0451,
+     "ci_lo": 0.6623,
+     "ci_hi": 0.7268
+    },
+    "f1": {
+     "mean": 0.8724,
+     "std": 0.0193,
+     "ci_lo": 0.8586,
+     "ci_hi": 0.8862
+    },
+    "mcc": {
+     "mean": 0.4549,
+     "std": 0.0945,
+     "ci_lo": 0.3873,
+     "ci_hi": 0.5225
+    },
+    "auc": {
+     "mean": 0.8306,
+     "std": 0.0294,
+     "ci_lo": 0.8096,
+     "ci_hi": 0.8516
+    },
+    "pr_auc": {
+     "mean": 0.9167,
+     "std": 0.0166,
+     "ci_lo": 0.9048,
+     "ci_hi": 0.9286
+    }
+   }
+  }
+ },
+ "octmnist": {
+  "meta": {
+   "dataset": "octmnist",
+   "num_epochs": 20,
+   "seeds": [
+    0,
+    42,
+    100,
+    2023,
+    777,
+    999,
+    1234,
+    5678,
+    1111,
+    2222
+   ],
+   "progress": "60/60 completed"
+  },
+  "models": {
+   "classical_cnn": {
+    "acc": {
+     "mean": 0.4433,
+     "std": 0.0135,
+     "ci_lo": 0.4336,
+     "ci_hi": 0.453
+    },
+    "bacc": {
+     "mean": 0.4433,
+     "std": 0.0135,
+     "ci_lo": 0.4336,
+     "ci_hi": 0.453
+    },
+    "f1": {
+     "mean": 0.3206,
+     "std": 0.0175,
+     "ci_lo": 0.3081,
+     "ci_hi": 0.3332
+    },
+    "mcc": {
+     "mean": 0.3156,
+     "std": 0.0198,
+     "ci_lo": 0.3014,
+     "ci_hi": 0.3297
+    },
+    "auc": {
+     "mean": 0.7505,
+     "std": 0.024,
+     "ci_lo": 0.7333,
+     "ci_hi": 0.7676
+    },
+    "pr_auc": {
+     "mean": 0.4991,
+     "std": 0.0297,
+     "ci_lo": 0.4778,
+     "ci_hi": 0.5203
+    }
+   },
+   "fixed_basic": {
+    "acc": {
+     "mean": 0.4075,
+     "std": 0.0042,
+     "ci_lo": 0.4045,
+     "ci_hi": 0.4105
+    },
+    "bacc": {
+     "mean": 0.4075,
+     "std": 0.0042,
+     "ci_lo": 0.4045,
+     "ci_hi": 0.4105
+    },
+    "f1": {
+     "mean": 0.2971,
+     "std": 0.0075,
+     "ci_lo": 0.2917,
+     "ci_hi": 0.3024
+    },
+    "mcc": {
+     "mean": 0.2566,
+     "std": 0.0072,
+     "ci_lo": 0.2514,
+     "ci_hi": 0.2617
+    },
+    "auc": {
+     "mean": 0.6711,
+     "std": 0.0042,
+     "ci_lo": 0.6681,
+     "ci_hi": 0.6741
+    },
+    "pr_auc": {
+     "mean": 0.4186,
+     "std": 0.0074,
+     "ci_lo": 0.4133,
+     "ci_hi": 0.4239
+    }
+   },
+   "trainable_basic": {
+    "acc": {
+     "mean": 0.3955,
+     "std": 0.0161,
+     "ci_lo": 0.384,
+     "ci_hi": 0.407
+    },
+    "bacc": {
+     "mean": 0.3955,
+     "std": 0.0161,
+     "ci_lo": 0.384,
+     "ci_hi": 0.407
+    },
+    "f1": {
+     "mean": 0.2837,
+     "std": 0.0203,
+     "ci_lo": 0.2692,
+     "ci_hi": 0.2983
+    },
+    "mcc": {
+     "mean": 0.2394,
+     "std": 0.0203,
+     "ci_lo": 0.2249,
+     "ci_hi": 0.2539
+    },
+    "auc": {
+     "mean": 0.6704,
+     "std": 0.0106,
+     "ci_lo": 0.6628,
+     "ci_hi": 0.678
+    },
+    "pr_auc": {
+     "mean": 0.4102,
+     "std": 0.0131,
+     "ci_lo": 0.4008,
+     "ci_hi": 0.4195
+    }
+   },
+   "fixed_champion_gd2": {
+    "acc": {
+     "mean": 0.4048,
+     "std": 0.013,
+     "ci_lo": 0.3955,
+     "ci_hi": 0.4141
+    },
+    "bacc": {
+     "mean": 0.4048,
+     "std": 0.013,
+     "ci_lo": 0.3955,
+     "ci_hi": 0.4141
+    },
+    "f1": {
+     "mean": 0.2997,
+     "std": 0.0202,
+     "ci_lo": 0.2853,
+     "ci_hi": 0.3141
+    },
+    "mcc": {
+     "mean": 0.253,
+     "std": 0.0144,
+     "ci_lo": 0.2427,
+     "ci_hi": 0.2633
+    },
+    "auc": {
+     "mean": 0.6912,
+     "std": 0.0071,
+     "ci_lo": 0.6862,
+     "ci_hi": 0.6963
+    },
+    "pr_auc": {
+     "mean": 0.4443,
+     "std": 0.0088,
+     "ci_lo": 0.438,
+     "ci_hi": 0.4506
+    }
+   },
+   "fixed_strongly": {
+    "acc": {
+     "mean": 0.4034,
+     "std": 0.0046,
+     "ci_lo": 0.4001,
+     "ci_hi": 0.4067
+    },
+    "bacc": {
+     "mean": 0.4034,
+     "std": 0.0046,
+     "ci_lo": 0.4001,
+     "ci_hi": 0.4067
+    },
+    "f1": {
+     "mean": 0.305,
+     "std": 0.013,
+     "ci_lo": 0.2957,
+     "ci_hi": 0.3143
+    },
+    "mcc": {
+     "mean": 0.2421,
+     "std": 0.0064,
+     "ci_lo": 0.2375,
+     "ci_hi": 0.2467
+    },
+    "auc": {
+     "mean": 0.669,
+     "std": 0.0055,
+     "ci_lo": 0.665,
+     "ci_hi": 0.6729
+    },
+    "pr_auc": {
+     "mean": 0.4175,
+     "std": 0.0047,
+     "ci_lo": 0.4142,
+     "ci_hi": 0.4209
+    }
+   },
+   "trainable_strongly": {
+    "acc": {
+     "mean": 0.402,
+     "std": 0.0148,
+     "ci_lo": 0.3914,
+     "ci_hi": 0.4126
+    },
+    "bacc": {
+     "mean": 0.402,
+     "std": 0.0148,
+     "ci_lo": 0.3914,
+     "ci_hi": 0.4126
+    },
+    "f1": {
+     "mean": 0.2949,
+     "std": 0.0188,
+     "ci_lo": 0.2815,
+     "ci_hi": 0.3084
+    },
+    "mcc": {
+     "mean": 0.2481,
+     "std": 0.0232,
+     "ci_lo": 0.2315,
+     "ci_hi": 0.2647
+    },
+    "auc": {
+     "mean": 0.6922,
+     "std": 0.0199,
+     "ci_lo": 0.678,
+     "ci_hi": 0.7065
+    },
+    "pr_auc": {
+     "mean": 0.4365,
+     "std": 0.0289,
+     "ci_lo": 0.4158,
+     "ci_hi": 0.4571
+    }
+   }
+  }
+ },
+ "tests": {
+  "BREAST CNN vs FixedBasic": {
+   "acc": {
+    "delta": 0.0019,
+    "p_ttest": 0.7417,
+    "p_wilcoxon": 0.8945,
+    "cohens_d": 0.107
+   },
+   "bacc": {
+    "delta": 0.0058,
+    "p_ttest": 0.6257,
+    "p_wilcoxon": 0.7695,
+    "cohens_d": 0.16
+   },
+   "f1": {
+    "delta": 0.0006,
+    "p_ttest": 0.8702,
+    "p_wilcoxon": 0.625,
+    "cohens_d": 0.053
+   },
+   "mcc": {
+    "delta": 0.0076,
+    "p_ttest": 0.6775,
+    "p_wilcoxon": 0.6953,
+    "cohens_d": 0.136
+   },
+   "auc": {
+    "delta": -0.0186,
+    "p_ttest": 0.0298,
+    "p_wilcoxon": 0.0254,
+    "cohens_d": -0.815
+   },
+   "pr_auc": {
+    "delta": -0.0069,
+    "p_ttest": 0.0557,
+    "p_wilcoxon": 0.1309,
+    "cohens_d": -0.694
+   }
+  },
+  "BREAST CNN vs FixedStrongly": {
+   "acc": {
+    "delta": 0.0256,
+    "p_ttest": 0.0528,
+    "p_wilcoxon": 0.0469,
+    "cohens_d": 0.705
+   },
+   "bacc": {
+    "delta": 0.0273,
+    "p_ttest": 0.1614,
+    "p_wilcoxon": 0.1934,
+    "cohens_d": 0.483
+   },
+   "f1": {
+    "delta": 0.0171,
+    "p_ttest": 0.0426,
+    "p_wilcoxon": 0.0371,
+    "cohens_d": 0.746
+   },
+   "mcc": {
+    "delta": 0.076,
+    "p_ttest": 0.0573,
+    "p_wilcoxon": 0.084,
+    "cohens_d": 0.689
+   },
+   "auc": {
+    "delta": 0.0197,
+    "p_ttest": 0.0467,
+    "p_wilcoxon": 0.0488,
+    "cohens_d": 0.729
+   },
+   "pr_auc": {
+    "delta": -0.014,
+    "p_ttest": 0.0023,
+    "p_wilcoxon": 0.0059,
+    "cohens_d": -1.332
+   }
+  },
+  "BREAST CNN vs TrainStrongly": {
+   "acc": {
+    "delta": 0.0083,
+    "p_ttest": 0.4352,
+    "p_wilcoxon": 0.5703,
+    "cohens_d": 0.258
+   },
+   "bacc": {
+    "delta": -0.0071,
+    "p_ttest": 0.6701,
+    "p_wilcoxon": 0.7695,
+    "cohens_d": -0.139
+   },
+   "f1": {
+    "delta": 0.0078,
+    "p_ttest": 0.2811,
+    "p_wilcoxon": 0.3223,
+    "cohens_d": 0.363
+   },
+   "mcc": {
+    "delta": 0.0153,
+    "p_ttest": 0.6518,
+    "p_wilcoxon": 0.8457,
+    "cohens_d": 0.148
+   },
+   "auc": {
+    "delta": 0.003,
+    "p_ttest": 0.8378,
+    "p_wilcoxon": 1.0,
+    "cohens_d": 0.067
+   },
+   "pr_auc": {
+    "delta": -0.0126,
+    "p_ttest": 0.1178,
+    "p_wilcoxon": 0.1602,
+    "cohens_d": -0.547
+   }
+  },
+  "BREAST FixedStrongly vs TrainStrongly": {
+   "acc": {
+    "delta": -0.0173,
+    "p_ttest": 0.1823,
+    "p_wilcoxon": 0.1152,
+    "cohens_d": -0.457
+   },
+   "bacc": {
+    "delta": -0.0344,
+    "p_ttest": 0.0611,
+    "p_wilcoxon": 0.0879,
+    "cohens_d": -0.677
+   },
+   "f1": {
+    "delta": -0.0093,
+    "p_ttest": 0.2792,
+    "p_wilcoxon": 0.2324,
+    "cohens_d": -0.364
+   },
+   "mcc": {
+    "delta": -0.0607,
+    "p_ttest": 0.1278,
+    "p_wilcoxon": 0.084,
+    "cohens_d": -0.53
+   },
+   "auc": {
+    "delta": -0.0167,
+    "p_ttest": 0.2485,
+    "p_wilcoxon": 0.2324,
+    "cohens_d": -0.39
+   },
+   "pr_auc": {
+    "delta": 0.0015,
+    "p_ttest": 0.8278,
+    "p_wilcoxon": 0.9219,
+    "cohens_d": 0.071
+   }
+  },
+  "OCT CNN vs TrainStrongly": {
+   "acc": {
+    "delta": 0.0413,
+    "p_ttest": 0.0002,
+    "p_wilcoxon": 0.002,
+    "cohens_d": 1.874
+   },
+   "bacc": {
+    "delta": 0.0413,
+    "p_ttest": 0.0002,
+    "p_wilcoxon": 0.002,
+    "cohens_d": 1.874
+   },
+   "f1": {
+    "delta": 0.0257,
+    "p_ttest": 0.0073,
+    "p_wilcoxon": 0.0059,
+    "cohens_d": 1.09
+   },
+   "mcc": {
+    "delta": 0.0675,
+    "p_ttest": 0.0001,
+    "p_wilcoxon": 0.002,
+    "cohens_d": 2.009
+   },
+   "auc": {
+    "delta": 0.0583,
+    "p_ttest": 0.0001,
+    "p_wilcoxon": 0.002,
+    "cohens_d": 2.108
+   },
+   "pr_auc": {
+    "delta": 0.0626,
+    "p_ttest": 0.0016,
+    "p_wilcoxon": 0.0039,
+    "cohens_d": 1.402
+   }
+  },
+  "OCT TrainStrongly vs FixedStrongly": {
+   "acc": {
+    "delta": -0.0014,
+    "p_ttest": 0.7314,
+    "p_wilcoxon": 0.6113,
+    "cohens_d": -0.112
+   },
+   "bacc": {
+    "delta": -0.0014,
+    "p_ttest": 0.7314,
+    "p_wilcoxon": 0.6055,
+    "cohens_d": -0.112
+   },
+   "f1": {
+    "delta": -0.0101,
+    "p_ttest": 0.0641,
+    "p_wilcoxon": 0.084,
+    "cohens_d": -0.667
+   },
+   "mcc": {
+    "delta": 0.006,
+    "p_ttest": 0.3913,
+    "p_wilcoxon": 0.375,
+    "cohens_d": 0.285
+   },
+   "auc": {
+    "delta": 0.0232,
+    "p_ttest": 0.009,
+    "p_wilcoxon": 0.0098,
+    "cohens_d": 1.05
+   },
+   "pr_auc": {
+    "delta": 0.0189,
+    "p_ttest": 0.081,
+    "p_wilcoxon": 0.1055,
+    "cohens_d": 0.621
+   }
+  },
+  "OCT TrainStrongly vs FixedChamp": {
+   "acc": {
+    "delta": -0.0028,
+    "p_ttest": 0.6702,
+    "p_wilcoxon": 0.9004,
+    "cohens_d": -0.139
+   },
+   "bacc": {
+    "delta": -0.0028,
+    "p_ttest": 0.6702,
+    "p_wilcoxon": 0.8652,
+    "cohens_d": -0.139
+   },
+   "f1": {
+    "delta": -0.0048,
+    "p_ttest": 0.627,
+    "p_wilcoxon": 0.9219,
+    "cohens_d": -0.159
+   },
+   "mcc": {
+    "delta": -0.0049,
+    "p_ttest": 0.5713,
+    "p_wilcoxon": 0.5566,
+    "cohens_d": -0.186
+   },
+   "auc": {
+    "delta": 0.001,
+    "p_ttest": 0.8875,
+    "p_wilcoxon": 0.625,
+    "cohens_d": 0.046
+   },
+   "pr_auc": {
+    "delta": -0.0078,
+    "p_ttest": 0.4415,
+    "p_wilcoxon": 0.4922,
+    "cohens_d": -0.255
+   }
+  }
+ },
+ "variance_ratios": {
+  "roc_auc_ddof1": 2.7263,
+  "pr_auc_ddof1": 1.4085
+ }
+}

@@ -57,7 +57,7 @@
 
 ## 🔬 Gradient Dynamics & Chi Phí Phần Cứng
 
-- Gradient norm: $\|\nabla_\theta \mathcal{L}\|_2 \in [0.05, 0.25]$ — Xác nhận không có hiện tượng triệt tiêu gradient.
+- Gradient norm: $\|\nabla_\theta \mathcal{L}\|_2 \approx 0.2$--$0.5$ (seed-mean; peak $\approx 1.3$) — Xác nhận không có hiện tượng triệt tiêu gradient.
 - $\theta(t)$ hội tụ sau 12–15 epochs trên cả 2 datasets.
 - Độ trễ suy luận trên CPU: Classical CNN = $0.310\text{ ms/ảnh}$; Quanvolution = $220.22\text{ ms/ảnh}$ (~710x chậm hơn).
 - Hiệu quả tham số: Tầng đặc trưng lượng tử tĩnh dùng đúng **0 tham số học** (tiết kiệm 20 tham số conv).
