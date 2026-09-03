@@ -44,6 +44,8 @@ PAPER/references/academic-phrasebank/
 # Temporary audit & patching scripts
 PAPER/scripts/patch*.py
 PAPER/scripts/batch_fix.py
-PAPER/scripts/final_*.py
 PAPER/scripts/full_table_audit.py
-PAPER/scripts/reconcile_verify.py
+# NOTE: reconcile_verify.py + final_gate_audit.py are LONG-LIVED QA tools
+# (thesis GĐ4 checks C8/F3) and stay tracked, see exceptions below.
+!PAPER/scripts/reconcile_verify.py
+!PAPER/scripts/final_gate_audit.py
