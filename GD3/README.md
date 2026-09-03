@@ -1,3 +1,5 @@
+> [!NOTE] **Báo cáo lịch sử GĐ3.** Toàn bộ số liệu chính thức cuối cùng (sample std ddof=1, p-value chuẩn) được chuẩn hóa tại `results/reconciliation_canonical.json` từ raw per-seed JSON, và được phản ánh đồng bộ trong Luận văn (GĐ4) và bài báo SOICT 2026. File này đã được chuẩn hóa theo canonical.
+
 # GĐ3 — Tích chập Lượng tử Tự học & Ma trận Đối sánh 3 Tầng (Mốc M4 — 19/10)
 
 > **Đề tài Luận văn Tốt nghiệp:** Nghiên cứu và ứng dụng lớp tích chập lượng tử (Quanvolutional Layer) trong bài toán phân loại ảnh y tế (MedMNIST), so sánh công bằng với các kiến trúc cổ điển (Classical CNN).
@@ -33,23 +35,23 @@
 ### BreastMNIST (10 seeds, L=2)
 | Mô hình | ROC-AUC | PR-AUC | Balanced Acc |
 | :--- | :---: | :---: | :---: |
-| Classical CNN | 0.8336 ± 0.0246 | 0.9041 ± 0.0095 | 0.6875 ± 0.0448 |
-| **Fixed Basic L2** *(Quán quân ROC-AUC)* | **0.8521 ± 0.0090** | 0.9110 ± 0.0049 | 0.6816 ± 0.0490 |
-| Trainable Basic L2 | 0.8406 ± 0.0239 | 0.9173 ± 0.0184 | 0.6732 ± 0.0382 |
-| **Fixed Strongly L2** *(Quán quân PR-AUC)* | 0.8139 ± 0.0142 | **0.9182 ± 0.0067** | 0.6602 ± 0.0202 |
-| Trainable Strongly L2 *(Thắng mạch cùng họ)* | 0.8306 ± 0.0279 | 0.9167 ± 0.0157 | **0.6945 ± 0.0428** |
+| Classical CNN | 0.8336 ± 0.0259 | 0.9041 ± 0.0100 | 0.6875 ± 0.0473 |
+| **Fixed Basic L2** *(Quán quân ROC-AUC)* | **0.8521 ± 0.0095** | 0.9110 ± 0.0051 | 0.6816 ± 0.0517 |
+| Trainable Basic L2 | 0.8406 ± 0.0252 | 0.9173 ± 0.0194 | 0.6732 ± 0.0403 |
+| **Fixed Strongly L2** *(Quán quân PR-AUC)* | 0.8139 ± 0.0150 | **0.9182 ± 0.0071** | 0.6602 ± 0.0213 |
+| Trainable Strongly L2 *(Thắng mạch cùng họ)* | 0.8306 ± 0.0294 | 0.9167 ± 0.0166 | **0.6945 ± 0.0451** |
 
 *👉 Kết luận trung thực: Khả năng tự học (Trainability) giúp mạch 3 trục đánh bại phiên bản tĩnh của chính nó (Fixed Strongly). Mạch tĩnh `Fixed Basic L2` và `Fixed Strongly L2` đạt hiệu năng hàng đầu về ROC-AUC và PR-AUC với chi phí 0 tham số kernel.*
 
 ### OCTMNIST (10 seeds, L=1)
 | Mô hình | ROC-AUC | PR-AUC | Balanced Acc |
 | :--- | :---: | :---: | :---: |
-| **Classical CNN** *(Dẫn đầu áp đảo)* | **0.7505 ± 0.0227** | **0.4991 ± 0.0282** | **0.4433 ± 0.0128** |
-| Fixed Basic L1 | 0.6711 ± 0.0040 | 0.4186 ± 0.0070 | 0.4075 ± 0.0040 |
-| Trainable Basic L1 | 0.6704 ± 0.0101 | 0.4102 ± 0.0124 | 0.3955 ± 0.0152 |
-| Fixed Champion GĐ2 (`random_L1`) | 0.6912 ± 0.0067 | 0.4443 ± 0.0084 | 0.4048 ± 0.0123 |
-| Fixed Strongly L1 | 0.6690 ± 0.0052 | 0.4175 ± 0.0044 | 0.4034 ± 0.0044 |
-| Trainable Strongly L1 *(Thắng mạch cùng họ)* | 0.6922 ± 0.0189 | 0.4365 ± 0.0274 | 0.4020 ± 0.0141 |
+| **Classical CNN** *(Dẫn đầu áp đảo)* | **0.7505 ± 0.0240** | **0.4991 ± 0.0297** | **0.4433 ± 0.0135** |
+| Fixed Basic L1 | 0.6711 ± 0.0042 | 0.4186 ± 0.0074 | 0.4075 ± 0.0042 |
+| Trainable Basic L1 | 0.6704 ± 0.0106 | 0.4102 ± 0.0131 | 0.3955 ± 0.0161 |
+| Fixed Champion GĐ2 (`random_L1`) | 0.6912 ± 0.0071 | 0.4443 ± 0.0088 | 0.4048 ± 0.0130 |
+| Fixed Strongly L1 | 0.6690 ± 0.0055 | 0.4175 ± 0.0047 | 0.4034 ± 0.0046 |
+| Trainable Strongly L1 *(Thắng mạch cùng họ)* | 0.6922 ± 0.0199 | 0.4365 ± 0.0289 | 0.4020 ± 0.0148 |
 
 *👉 Xác định Ranh giới Lợi thế Lượng tử (Quantum Boundary): QNN thể hiện ưu thế ở dữ liệu nhỏ/lệch lớp (tính ổn định cao ~3x, 0 tham số ở tầng đặc trưng), nhưng bộc lộ giới hạn dung lượng trước Classical CNN ở dữ liệu lớn/đa lớp.*
 

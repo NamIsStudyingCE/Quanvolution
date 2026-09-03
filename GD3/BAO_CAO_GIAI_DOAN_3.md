@@ -1,3 +1,5 @@
+> [!NOTE] **Báo cáo lịch sử GĐ3.** Toàn bộ số liệu chính thức cuối cùng (sample std ddof=1, p-value chuẩn) được chuẩn hóa tại `results/reconciliation_canonical.json` từ raw per-seed JSON, và được phản ánh đồng bộ trong Luận văn (GĐ4) và bài báo SOICT 2026. File này đã được chuẩn hóa theo canonical.
+
 # BÁO CÁO NGHIỆM THU THỰC NGHIỆM GIAI ĐOẠN 3 (MỐC M4)
 
 > **Tiêu đề bài báo định hướng:** Trainable vs. Fixed Quanvolutional Filters for Medical Image Classification: A Fair, Reproducible Benchmark on MedMNIST
@@ -28,15 +30,15 @@ Báo cáo giai đoạn 3 này chuẩn hóa lại toàn bộ số liệu và lu�
 
 | Mô hình | Feature Params | ROC-AUC | PR-AUC | Balanced Acc | F1-Score |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Classical CNN** | 20 | 0.8336 ± 0.0246 | 0.9041 ± 0.0095 | 0.6875 ± 0.0448 | 0.8802 ± 0.0145 |
-| **Fixed Basic L2** | **0** | **0.8521 ± 0.0090** | 0.9110 ± 0.0049 | 0.6816 ± 0.0490 | 0.8796 ± 0.0093 |
-| **Trainable Basic L2** | 8 | 0.8406 ± 0.0239 | 0.9173 ± 0.0184 | 0.6732 ± 0.0382 | 0.8668 ± 0.0205 |
-| **Fixed Strongly L2** | **0** | 0.8139 ± 0.0142 | **0.9182 ± 0.0067** | 0.6602 ± 0.0202 | 0.8631 ± 0.0175 |
-| **Trainable Strongly L2** | 24 | 0.8306 ± 0.0279 | 0.9167 ± 0.0157 | **0.6945 ± 0.0428** | 0.8724 ± 0.0188 |
+| **Classical CNN** | 20 | 0.8336 ± 0.0259 | 0.9041 ± 0.0100 | 0.6875 ± 0.0473 | 0.8802 ± 0.0172 |
+| **Fixed Basic L2** | **0** | **0.8521 ± 0.0095** | 0.9110 ± 0.0051 | 0.6816 ± 0.0517 | 0.8796 ± 0.0100 |
+| **Trainable Basic L2** | 8 | 0.8406 ± 0.0252 | 0.9173 ± 0.0194 | 0.6732 ± 0.0403 | 0.8668 ± 0.0178 |
+| **Fixed Strongly L2** | **0** | 0.8139 ± 0.0150 | **0.9182 ± 0.0071** | 0.6602 ± 0.0213 | 0.8631 ± 0.0131 |
+| **Trainable Strongly L2** | 24 | 0.8306 ± 0.0294 | 0.9167 ± 0.0166 | **0.6945 ± 0.0451** | 0.8724 ± 0.0193 |
 
 **💡 Phân tích khoa học (BreastMNIST):**
 1. **Trainability phát huy tác dụng trong cùng họ mạch:** `Trainable Strongly` lật ngược thế cờ đánh bại `Fixed Strongly` cùng họ trên mọi chỉ số ($\Delta \text{BAcc} = +0.0343$, $p=0.061$). 
-2. **Quán quân ROC-AUC Toàn bảng:** `Fixed Basic L2` đạt ROC-AUC cao nhất ($0.8521 \pm 0.0095$, vượt Classical CNN $0.8336$, $p=0.0309 < 0.05$).
+2. **Quán quân ROC-AUC Toàn bảng:** `Fixed Basic L2` đạt ROC-AUC cao nhất ($0.8521 \pm 0.0095$, vượt Classical CNN $0.8336$, $p=0.0298 < 0.05$).
 3. **Quán quân PR-AUC Toàn bảng:** `Fixed Strongly L2` đạt PR-AUC cao nhất toàn bảng ($0.9182 \pm 0.0071$), củng cố thêm bằng chứng về *Quantum Inductive Bias* vượt trội của mạch lượng tử tĩnh trên dữ liệu mất cân bằng.
 4. **Đánh giá Trainable Basic:** `Trainable Basic L2` đạt PR-AUC cao ($0.9173 \pm 0.0184$), tuy nhiên mức chênh lệch so với Classical CNN ($0.9041$) chưa đạt ngưỡng ý nghĩa thống kê nghiêm ngặt ($p = 0.0512$, ns), phản ánh năng lực phân giải của kích thước mẫu thử nghiệm.
 5. **Đánh giá Balanced Acc của Trainable Strongly:** `Trainable Strongly` đạt Balanced Acc $0.6945 \pm 0.0451$ (nhỉnh hơn Classical CNN $0.6875$), tuy nhiên mức chênh lệch này chưa đạt ý nghĩa thống kê ($p = 0.670$, ns).
@@ -49,12 +51,12 @@ Báo cáo giai đoạn 3 này chuẩn hóa lại toàn bộ số liệu và lu�
 
 | Mô hình | Feature Params | ROC-AUC | PR-AUC | Balanced Acc | F1-Score |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Classical CNN** | 20 | **0.7505 ± 0.0227** | **0.4991 ± 0.0282** | **0.4433 ± 0.0128** | **0.3206 ± 0.0166** |
-| **Fixed Basic L1** | **0** | 0.6711 ± 0.0040 | 0.4186 ± 0.0070 | 0.4075 ± 0.0040 | 0.2971 ± 0.0071 |
-| **Trainable Basic L1** | 4 | 0.6704 ± 0.0101 | 0.4102 ± 0.0124 | 0.3955 ± 0.0152 | 0.2837 ± 0.0193 |
-| **Fixed Champion (`random_L1`)** | **0** | 0.6912 ± 0.0067 | **0.4443 ± 0.0084** | **0.4048 ± 0.0123** | 0.2997 ± 0.0191 |
-| **Fixed Strongly L1** | **0** | 0.6690 ± 0.0052 | 0.4175 ± 0.0044 | 0.4034 ± 0.0044 | **0.3050 ± 0.0123** |
-| **Trainable Strongly L1** | 12 | **0.6922 ± 0.0189** | 0.4365 ± 0.0274 | 0.4020 ± 0.0141 | 0.2949 ± 0.0178 |
+| **Classical CNN** | 20 | **0.7505 ± 0.0240** | **0.4991 ± 0.0297** | **0.4433 ± 0.0135** | **0.3206 ± 0.0175** |
+| **Fixed Basic L1** | **0** | 0.6711 ± 0.0042 | 0.4186 ± 0.0074 | 0.4075 ± 0.0042 | 0.2971 ± 0.0075 |
+| **Trainable Basic L1** | 4 | 0.6704 ± 0.0106 | 0.4102 ± 0.0131 | 0.3955 ± 0.0161 | 0.2837 ± 0.0203 |
+| **Fixed Champion (`random_L1`)** | **0** | 0.6912 ± 0.0071 | **0.4443 ± 0.0088** | **0.4048 ± 0.0130** | 0.2997 ± 0.0202 |
+| **Fixed Strongly L1** | **0** | 0.6690 ± 0.0055 | 0.4175 ± 0.0047 | 0.4034 ± 0.0046 | **0.3050 ± 0.0130** |
+| **Trainable Strongly L1** | 12 | **0.6922 ± 0.0199** | 0.4365 ± 0.0289 | 0.4020 ± 0.0148 | 0.2949 ± 0.0188 |
 
 **💡 Phân tích khoa học (OCTMNIST):**
 1. **Kiểm định Thống kê Wilcoxon Hợp lệ ($n=10$):** Với 10 seeds độc lập, sự chênh lệch giữa `Trainable Strongly` và `Fixed Strongly` (ROC-AUC $0.6922$ vs $0.6690$, $\Delta = +0.0232$) đạt ý nghĩa thống kê rõ ràng ($p_{\text{ttest}} = 0.0090$, $p_{\text{wilcoxon}} = 0.0098 < 0.05$).  

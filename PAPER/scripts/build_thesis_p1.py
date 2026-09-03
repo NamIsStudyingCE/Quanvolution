@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
-"""build_thesis_p1.py — Luận văn FULL draft, phần 1: front matter + Tóm tắt + Ch1 + Ch2 + Ch3.
-Format theo Phụ lục 2/3 UIT: TNR 13, giãn 1.5, lề 3/3.5/3.5/2."""
+"""build_thesis_p1.py — Luận văn FULL draft, phần 1 (v2):
+front matter + Tóm tắt + Ch1 + Ch2 + Ch3.
+v2 fixes theo audit Gemini: bảng 3.1/3.2/3.3 thành bảng Word thật; nhúng Hình 3.2;
+tách Section để đánh số trang từ Tóm tắt; ô ký CBPB trên bìa phụ; caption nguồn."""
 from pathlib import Path
 from docx import Document
 from docx.shared import Pt, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.section import WD_SECTION_START
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
 
 OUT = Path('GD4/KLTN_draft_full.docx')
 FIG = Path('PAPER/figures')
@@ -21,7 +26,7 @@ st.paragraph_format.line_spacing = 1.5
 def para(text, size=13, bold=False, align='justify', italic=False, after=6):
     p = doc.add_paragraph()
     p.alignment = {'left': WD_ALIGN_PARAGRAPH.LEFT, 'center': WD_ALIGN_PARAGRAPH.CENTER,
-                   'justify': WD_ALIGN_PARAGRAPH.JUSTIFY}[align]
+                   'justify': WD_ALIGN_PARAGRAPH.JUSTIFY, 'right': WD_ALIGN_PARAGRAPH.RIGHT}[align]
     p.paragraph_format.space_after = Pt(after)
     r = p.add_run(text)
     r.font.name = TNR; r.font.size = Pt(size); r.bold = bold; r.italic = italic
@@ -30,13 +35,31 @@ def para(text, size=13, bold=False, align='justify', italic=False, after=6):
 def h1(text): return para(text, 14, bold=True, align='left', after=10)
 def h2(text): return para(text, 13, bold=True, align='left', after=6)
 def caption(text): return para(text, 12, bold=True, align='center', italic=True, after=10)
+
+def table(headers, rows, cap_text, size=11):
+    caption(cap_text)
+    t = doc.add_table(rows=1, cols=len(headers))
+    t.style = 'Table Grid'
+    for j, h in enumerate(headers):
+        c = t.rows[0].cells[j]; c.text = ''
+        r = c.paragraphs[0].add_run(h)
+        r.font.name = TNR; r.font.size = Pt(size); r.bold = True
+    for row in rows:
+        cells = t.add_row().cells
+        for j, v in enumerate(row):
+            cells[j].text = ''
+            r = cells[j].paragraphs[0].add_run(str(v))
+            r.font.name = TNR; r.font.size = Pt(size)
+
 def pic(path, width_cm=15.5, cap=None):
     if Path(path).exists():
         doc.add_picture(str(path), width=Cm(width_cm))
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    else:
+        print('MISSING FIG:', path)
     if cap: caption(cap)
 
-# ================= FRONT MATTER =================
+# ================= FRONT MATTER (Section 1 — không đánh số trang) =================
 para('ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH', 14, bold=True, align='center')
 para('TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN', 16, bold=True, align='center')
 para('KHOA KỸ THUẬT MÁY TÍNH', 16, bold=True, align='center')
@@ -60,6 +83,9 @@ para('NGHIÊN CỨU VÀ ỨNG DỤNG LỚP TÍCH CHẬP LƯỢNG TỬ (QUANVOLUT
 para('GIẢNG VIÊN HƯỚNG DẪN', 14, bold=True, align='center')
 para('TS. Nguyen Duy Xuan Bach', 13, align='center')
 para('TP. HỒ CHÍ MINH, 2026', 14, bold=True, align='center')
+para('')
+para('Chữ ký xác nhận của Cán bộ phản biện (CBPB) sau bảo vệ — theo yêu cầu chỉnh sửa của Hội đồng:', 12, italic=True, align='justify')
+para('………………………………………', 13, align='right')
 doc.add_page_break()
 para('THÔNG TIN HỘI ĐỒNG CHẤM KHÓA LUẬN TỐT NGHIỆP', 16, bold=True, align='center')
 para('Hội đồng chấm khóa luận tốt nghiệp, thành lập theo Quyết định số ……… ngày ……… của Hiệu trưởng Trường Đại học Công nghệ Thông tin.', align='justify')
@@ -90,7 +116,7 @@ for line in [
     'Bảng 3.3: Thành phần mã nguồn và vai trò trong pipeline',
     'Bảng 4.1: Kết quả 10-seed BreastMNIST (mean ± sample std, CI 95%)',
     'Bảng 4.2: Kết quả 10-seed OCTMNIST (mean ± sample std, CI 95%)',
-    'Bảng 4.3: Kiểm định thống kê cặp then chốt',
+    'Bảng 4.3: Kiểm định thống kê các cặp so sánh then chốt',
     'Bảng 4.4: Circuit ablation — ROC-AUC 6 cấu hình mạch',
     'Bảng 4.5: Độ trễ suy luận CPU và chi phí tính toán',
 ]:
@@ -104,9 +130,20 @@ for line in ['QML: Quantum Machine Learning', 'QNN: Quanvolutional Neural Networ
              'PR-AUC: Area Under the Precision-Recall Curve', 'MCC: Matthews Correlation Coefficient',
              'CI: Confidence Interval', 'BN: Batch Normalization']:
     para(line)
-doc.add_page_break()
 
-# ================= TÓM TẮT =================
+# ================= SECTION 2 — bắt đầu đánh số trang từ Tóm tắt =================
+new_sec = doc.add_section(WD_SECTION_START.NEW_PAGE)
+new_sec.top_margin, new_sec.bottom_margin = Cm(3), Cm(3.5)
+new_sec.left_margin, new_sec.right_margin = Cm(3.5), Cm(2)
+new_sec.footer.is_linked_to_previous = False
+fp = new_sec.footer.paragraphs[0]
+fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+fld = OxmlElement('w:fldSimple'); fld.set(qn('w:instr'), 'PAGE')
+_r = OxmlElement('w:r'); _t = OxmlElement('w:t'); _t.text = '1'
+_r.append(_t); fld.append(_r); fp._p.append(fld)
+pg = OxmlElement('w:pgNumType'); pg.set(qn('w:start'), '1')
+new_sec._sectPr.append(pg)
+
 para('TÓM TẮT KHÓA LUẬN', 16, bold=True, align='center')
 para('Chẩn đoán hỗ trợ bằng máy học (CAD) trên ảnh y tế thường phải đối mặt với hai ràng buộc cùng lúc: '
      'dữ liệu có nhãn khan hiếm và mất cân bằng lớp, trong khi các kiến trúc CNN cổ điển với hàng triệu '
@@ -258,38 +295,56 @@ para('Pipeline end-to-end gồm bốn giai đoạn tuần tự: (1) phân mảnh
      'nguyên toàn bộ giai đoạn (4).', align='justify')
 pic(FIG / 'Fig1_quanvolution_pipeline.png', 15.5,
     'Hình 3.1: Sơ đồ pipeline Quanvolution đối xứng — head cổ điển giống hệt nhau giữa hai phía '
-    '(Nguồn: tài liệu dự án)')
+    '(Nguồn: tác giả tổng hợp từ tài liệu dự án)')
 h2('3.2. Công thức mã hóa và phép đo')
 para('Patch x = (x₀, x₁, x₂, x₃), x_i ∈ [0,1] được mã hóa: |ψ(x)⟩ = ⊗ᵢ R_Y(π·x_i)|0⟩. Mạch biến phân '
      'U(θ) biến đổi |Φ(x,θ)⟩ = U(θ)|ψ(x)⟩. Feature map ở tọa độ (u,v), kênh i: F_i(u,v) = '
      '⟨Φ(x,θ)|Z_i|Φ(x,θ)⟩ ∈ [−1,1]. Với ảnh 28×28, đầu ra là 4×14×14 = 784 chiều — đúng bằng số chiều '
-     'đầu ra của baseline conv đối xứng, đảm bảo head hai phía cùng kiến trúc.', align='justify')
+     'đầu ra của baseline conv đối xứng, đảm bảo head hai phía cùng kiến trúc. Hình 3.2 so sánh trực '
+     'quan feature map tạo bởi tích chập cổ điển và bởi phép đo kỳ vọng lượng tử trên cùng một ảnh.', align='justify')
+pic(FIG / 'Fig2_feature_comparison.png', 15.5,
+    'Hình 3.2: So sánh feature map — tích chập cổ điển và expectation value lượng tử '
+    '(Nguồn: tác giả tổng hợp từ kết quả thực nghiệm đề tài)')
 h2('3.3. Ba họ ansatz và đối xứng tham số')
-para('Ba họ mạch được khảo sát: (i) Basic Entangling — quay 1 trục R_Y(θ_i) + thang CNOT vòng, 4L tham '
-     'số cho L tầng; (ii) Strongly Entangling — quay 3 trục R_Z(ω)R_Y(θ)R_Z(φ) kiểu U₃ + rối tuần hoàn, '
-     '12L tham số; (iii) Random — cổng quay 3 trục ngẫu nhiên Haar + cặp CNOT ngẫu nhiên, đóng băng 0 '
-     'tham số học.', align='justify')
-caption('Bảng 3.1: Ba họ ansatz và số tham số tương ứng (N_q = 4)')
+para('Ba họ mạch được khảo sát, tóm tắt tại Bảng 3.1:', align='justify')
+table(
+    ['Họ ansatz', 'Cổng quay', 'Lớp rối (entangling)', 'Tham số/tầng', 'Tham số (L=2 / L=1)'],
+    [
+        ['Basic Entangling', 'R_Y(θ_i) — 1 trục', 'CNOT vòng q0→q1→q2→q3→q0', '4L', '8 / 4'],
+        ['Strongly Entangling', 'U₃ = R_Z(ω)R_Y(θ)R_Z(φ) — 3 trục', 'Rối tuần hoàn các cặp qubit', '12L', '24 / 12'],
+        ['Random (đóng băng)', 'Cổng quay 3 trục ngẫu nhiên Haar', 'Cặp CNOT ngẫu nhiên', '0 (frozen)', '0 / 0'],
+    ],
+    'Bảng 3.1: Ba họ ansatz và số tham số tương ứng (N_q = 4)')
 para('Bảng 3.2 phân rã tham số theo thành phần. Điểm mấu chốt của thiết kế đối xứng: tổng tham số giữa '
      'baseline CNN (1,598 với K=2) và quanvolution tĩnh (1,578) chênh lệch đúng 20 tham số của lớp conv '
      'cổ điển — trong khi head phân loại (1,570 + 8 BatchNorm) giống hệt nhau. Như vậy bất kỳ chênh lệch '
      'hiệu năng nào đều có thể quy về bản chất của phép biến đổi đặc trưng, không phải dung lượng tham số.', align='justify')
-caption('Bảng 3.2: Phân rã tham số giữa feature extractor và classifier head')
-para('Kernel (L=2/1): Classical 20 (conv có bias) — Fixed 0 — Trainable Basic 8/4 — Trainable Strongly '
-     '24/12. BatchNorm2d(4): 8. Head Linear(784→K): 1,570 (K=2) / 3,140 (K=4). '
-     'Tổng: Classical 1,598/3,168 — Fixed 1,578/3,148 — Trainable Basic 1,586/3,152 — Trainable Strongly 1,602/3,160.', align='justify')
+table(
+    ['Mô hình', 'Kernel (L=2 / L=1)', 'BatchNorm2d(4)', 'Head (K=2)', 'Head (K=4)', 'Tổng (K=2, L=2 / K=4, L=1)'],
+    [
+        ['Classical CNN', '20 (conv có bias)', '8', '1,570', '3,140', '1,598 / 3,168'],
+        ['Fixed (mọi ansatz)', '0', '8', '1,570', '3,140', '1,578 / 3,148'],
+        ['Trainable Basic', '8 / 4', '8', '1,570', '3,140', '1,586 / 3,152'],
+        ['Trainable Strongly', '24 / 12', '8', '1,570', '3,140', '1,602 / 3,160'],
+    ],
+    'Bảng 3.2: Phân rã tham số giữa feature extractor và classifier head (Nguồn: đếm tự động từ '
+    'instantiation PyTorch — measure_params_cost.py)')
 h2('3.4. Hồ sơ thiết kế phần mềm')
-para('Pipeline phần mềm tổ chức theo bốn mô-đun, mỗi mô-đun một trách nhiệm đơn nhất, toàn bộ mã nguồn '
-     'đặt trên GitHub với seed cố định và gắn tag phiên bản nộp hội nghị (soict-submission-v4):', align='justify')
-caption('Bảng 3.3: Thành phần mã nguồn và vai trò trong pipeline')
-para('(1) src/data — nạp MedMNIST, chuẩn hóa [0,1], chia split cố định, precompute quantum features '
-     'cho các mạch tĩnh; (2) src/models — circuits.py định nghĩa 6 mạch (3 ansatz × L=1,2) và hàm quét '
-     'patch; trainable_quanv.py gói TorchLayer differentiable; quantum_model.py và classical_cnn.py định '
-     'nghĩa hai mạng có head giống hệt nhau; (3) src/experiments — vòng lặp 10 seeds, huấn luyện, đánh '
-     'giá 6 metrics, kiểm định thống kê, xuất JSON có cấu trúc; (4) src/visual — vẽ biểu đồ 300 DPI. '
-     'Luồng dữ liệu: run_gd3.py → thí nghiệm 50 runs (BreastMNIST) / 60 runs (OCTMNIST) → full_trainable_'
-     '*.json → reconcile_verify.py → biểu đồ. Mọi thay đổi số liệu phải đi qua kịch bản kiểm định tự động '
-     'để loại trừ lỗi sao chép tay.', align='justify')
+para('Pipeline phần mềm tổ chức theo bốn mô-đun, mỗi mô-đun một trách nhiệm đơn nhất (Bảng 3.3), toàn '
+     'bộ mã nguồn đặt trên GitHub với seed cố định và gắn tag phiên bản nộp hội nghị '
+     '(soict-submission-v4). Luồng dữ liệu chuẩn: run_gd3.py → thí nghiệm 50 runs (BreastMNIST) / '
+     '60 runs (OCTMNIST) → full_trainable_*.json → reconcile_verify.py (kiểm định số liệu) → '
+     'regenerate_figs_bigfont.py (biểu đồ 300 DPI). Mọi thay đổi số liệu phải đi qua kịch bản kiểm định '
+     'tự động để loại trừ lỗi sao chép tay.', align='justify')
+table(
+    ['Mô-đun', 'Thành phần chính', 'Vai trò trong pipeline'],
+    [
+        ['src/data', 'medmnist_loader.py, precompute_features.py', 'Nạp MedMNIST, chuẩn hóa [0,1], chia split cố định, precompute quantum features cho mạch tĩnh'],
+        ['src/models', 'circuits.py, trainable_quanv.py, quantum_model.py, classical_cnn.py', 'Định nghĩa 6 mạch (3 ansatz × L=1,2), TorchLayer differentiable, hai mạng có head giống hệt nhau'],
+        ['src/experiments', 'run_gd3.py, trainable_experiment.py', 'Vòng lặp 10 seeds, huấn luyện, đánh giá 6 metrics, kiểm định thống kê, xuất JSON có cấu trúc'],
+        ['src/utils + src/visual', 'metrics.py, plot_gd3_dynamics.py', 'Bộ 6 metrics y tế, seed utils, vẽ biểu đồ 300 DPI'],
+    ],
+    'Bảng 3.3: Thành phần mã nguồn và vai trò trong pipeline (Nguồn: tài liệu dự án)')
 h2('3.5. Huấn luyện và hai chiến lược tính toán')
 para('Protocol huấn luyện chung: CrossEntropy loss, Adam với learning rate kép (0.001 cho tham số cổ '
      'điển, 0.01 cho góc lượng tử), batch 32, 20 epochs, chọn checkpoint theo best val ROC-AUC. Với mạch '
@@ -302,4 +357,4 @@ para('Để bảo đảm tính đúng đắn vật lý của gradient analytic s
      'tuyệt đối đo được |Δ| < 4.1×10⁻⁸ — cấp độ sai số số học float, xác nhận hai đường tính gradient '
      'tương đương về mặt vật lý.', align='justify')
 doc.save(str(OUT))
-print('PART 1 saved:', OUT)
+print('PART 1 (v2) saved:', OUT)

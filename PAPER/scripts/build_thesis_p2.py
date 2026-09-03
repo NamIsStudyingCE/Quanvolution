@@ -65,6 +65,12 @@ def mstdci(m, model, k):
     v = m[model][k]
     return f"{v['mean']:.4f} ± {v['std']:.4f}\n[{v['ci_lo']:.4f}, {v['ci_hi']:.4f}]"
 
+def np_row(T, key, metric):
+    v = T[key][metric]
+    pt = f"{v['p_ttest']:.4f}" if v['p_ttest'] >= 0.0001 else f"{v['p_ttest']:.1e}"
+    pw = f"{v['p_wilcoxon']:.4f}" if v['p_wilcoxon'] >= 0.0001 else f"{v['p_wilcoxon']:.1e}"
+    return [f"{v['delta']:+.4f}", pt, pw, f"{v['cohens_d']:+.3f}"]
+
 doc.add_page_break()
 # ================= CHƯƠNG 4 =================
 h1('CHƯƠNG 4. KẾT QUẢ THỰC NGHIỆM VÀ ĐÁNH GIÁ')
@@ -94,8 +100,9 @@ table(
         ['Trainable Strongly (L2)', mstd(B,'trainable_strongly','acc'), mstdci(B,'trainable_strongly','bacc'), mstd(B,'trainable_strongly','f1'),
          mstd(B,'trainable_strongly','mcc'), mstdci(B,'trainable_strongly','auc'), mstdci(B,'trainable_strongly','pr_auc')],
     ],
-    'Bảng 4.1: Kết quả 10-seed BreastMNIST (mean ± sample std; [CI 95%] cho BAcc/ROC-AUC/PR-AUC)', size=10)
-pic(FIG / 'Fig3_breastmnist_benchmark.png', 15.0, 'Hình 4.1: Kết quả 10-seed BreastMNIST trên 6 metrics')
+    'Bảng 4.1: Kết quả 10-seed BreastMNIST (mean ± sample std; [CI 95%] cho BAcc/ROC-AUC/PR-AUC) — Nguồn: tác giả tổng hợp từ kết quả thực nghiệm đề tài', size=10)
+pic(FIG / 'Fig3_breastmnist_benchmark.png', 15.0,
+    'Hình 4.1: Kết quả 10-seed BreastMNIST trên 6 metrics (Nguồn: tác giả tổng hợp từ kết quả thực nghiệm đề tài)')
 para('Bốn phát hiện chính: (1) Fixed Basic L2 đạt ROC-AUC cao nhất 0.8521 ± 0.0095, vượt Classical CNN '
      '0.8336 ± 0.0259 với ý nghĩa thống kê (p_ttest = 0.0298, p_wilcoxon = 0.0254) và hiệu ứng lớn '
      '(Cohen\u2019s d = +0.815). (2) Fixed Strongly L2 đạt PR-AUC cao nhất 0.9182 ± 0.0071, vượt CNN '
@@ -124,8 +131,24 @@ table(
         ['Trainable Strongly (L1)', mstd(O,'trainable_strongly','acc'), mstdci(O,'trainable_strongly','bacc'), mstd(O,'trainable_strongly','f1'),
          mstd(O,'trainable_strongly','mcc'), mstdci(O,'trainable_strongly','auc'), mstdci(O,'trainable_strongly','pr_auc')],
     ],
-    'Bảng 4.2: Kết quả 10-seed OCTMNIST (mean ± sample std; [CI 95%])', size=10)
-pic(FIG / 'Fig3_octmnist_benchmark.png', 15.0, 'Hình 4.2: Kết quả 10-seed OCTMNIST trên 6 metrics')
+    'Bảng 4.2: Kết quả 10-seed OCTMNIST (mean ± sample std; [CI 95%]) — Nguồn: tác giả tổng hợp từ kết quả thực nghiệm đề tài', size=10)
+pic(FIG / 'Fig3_octmnist_benchmark.png', 15.0,
+    'Hình 4.2: Kết quả 10-seed OCTMNIST trên 6 metrics (Nguồn: tác giả tổng hợp từ kết quả thực nghiệm đề tài)')
+para('Bảng 4.3 tổng hợp kiểm định thống kê cho các cặp so sánh then chốt của toàn bộ benchmark.', align='justify')
+T = CANON['tests']
+_key = lambda a, b: f'{a} vs {b}'
+stat_rows = [
+    ['Breast: Classical CNN vs Fixed Basic', 'ROC-AUC'] + list(np_row(T, 'BREAST CNN vs FixedBasic', 'auc')),
+    ['Breast: Classical CNN vs Fixed Strongly', 'PR-AUC'] + list(np_row(T, 'BREAST CNN vs FixedStrongly', 'pr_auc')),
+    ['Breast: Fixed Strongly vs Trainable Strongly', 'BAcc'] + list(np_row(T, 'BREAST FixedStrongly vs TrainStrongly', 'bacc')),
+    ['OCT: Classical CNN vs Trainable Strongly', 'ROC-AUC'] + list(np_row(T, 'OCT CNN vs TrainStrongly', 'auc')),
+    ['OCT: Trainable Strongly vs Fixed Strongly', 'ROC-AUC'] + list(np_row(T, 'OCT TrainStrongly vs FixedStrongly', 'auc')),
+    ['OCT: Trainable Strongly vs Fixed Champion', 'ROC-AUC'] + list(np_row(T, 'OCT TrainStrongly vs FixedChamp', 'auc')),
+]
+table(['Cặp so sánh', 'Metric', 'Δ (mean diff)', 'p (t-test)', 'p (Wilcoxon)', "Cohen's d"],
+      stat_rows,
+      'Bảng 4.3: Kiểm định thống kê các cặp so sánh then chốt — Nguồn: tác giả tính toán từ dữ liệu '
+      '10-seed (paired t-test, Wilcoxon signed-rank, Cohen\u2019s d)', size=10)
 para('Ba phát hiện: (1) Classical CNN dẫn đầu tuyệt đối cả 6 metrics (ROC-AUC 0.7505 ± 0.0240, PR-AUC '
      '0.4991 ± 0.0297), vượt mô hình lượng tử tốt nhất với p < 0.001 và hiệu ứng khổng lồ (d = +2.108 '
      'ROC-AUC; d = +1.874 BAcc) — mạch 4-qubit nông chạm trần biểu diễn (expressibility bottleneck) trên '
@@ -139,9 +162,12 @@ para('Phân tích động học (Hình 4.3–4.5) cho thấy: mọi mô hình đ
      'gradient L2 của mạch trainable strongly-entangling duy trì xấp xỉ 0.2–0.5 trên đường trung bình '
      'theo seed (đỉnh từng seed gần 1.3), ở mức cao hơn nhiều so với ngưỡng triệt tiêu gradient — loại '
      'trừ Barren Plateaus như một sanity check thực nghiệm trên mạch 4-qubit nông [14].', align='justify')
-pic(FIG / 'Fig4a_breastmnist_curves.png', 15.0, 'Hình 4.3: Đường hội tụ train/val trên BreastMNIST (trái) và OCTMNIST (phải)')
-pic(FIG / 'Fig4c_theta_trajectories.png', 15.0, 'Hình 4.4: Quỹ đạo góc quay θ(t) qua 20 epochs (seed 1–3)')
-pic(FIG / 'Fig4d_gradient_norms.png', 12.5, 'Hình 4.5: Động học chuẩn gradient L2 (trainable_strongly)')
+pic(FIG / 'Fig4a_breastmnist_curves.png', 15.0,
+    'Hình 4.3: Đường hội tụ train/val trên BreastMNIST (trái) và OCTMNIST (phải) — Nguồn: tác giả tổng hợp từ kết quả thực nghiệm đề tài')
+pic(FIG / 'Fig4c_theta_trajectories.png', 15.0,
+    'Hình 4.4: Quỹ đạo góc quay θ(t) qua 20 epochs — Nguồn: tác giả tổng hợp từ kết quả thực nghiệm đề tài')
+pic(FIG / 'Fig4d_gradient_norms.png', 12.5,
+    'Hình 4.5: Động học chuẩn gradient L2 (trainable_strongly) — Nguồn: tác giả tổng hợp từ kết quả thực nghiệm đề tài')
 h2('4.5. Circuit ablation (khảo sát GĐ2)')
 para('Trước khi dựng ma trận ba tầng, giai đoạn khảo sát đã ablation sáu cấu hình mạch tĩnh trên cả '
      'hai dataset. Bảng 4.4 tổng hợp ROC-AUC; cấu hình basic_L2 cho ROC-AUC tốt nhất trên BreastMNIST '
@@ -157,9 +183,10 @@ for c in order:
     oc = abl['octmnist'][c]['summary']['auc']
     rows.append([c, f"{br['mean']:.4f} ± {br.get('std', 0):.4f}", f"{oc['mean']:.4f} ± {oc.get('std', 0):.4f}"])
 table(['Cấu hình mạch', 'ROC-AUC BreastMNIST', 'ROC-AUC OCTMNIST'], rows,
-      'Bảng 4.4: Circuit ablation — ROC-AUC 6 cấu hình mạch tĩnh (mean ± std)', size=11)
+      'Bảng 4.4: Circuit ablation — ROC-AUC 6 cấu hình mạch tĩnh (mean ± std) — Nguồn: run khảo sát '
+      'GĐ2, tài liệu dự án', size=11)
 pic(str(ROOT / 'results' / 'figures' / 'circuit_ablation_breastmnist.png'), 15.0,
-    'Hình 4.6: Biểu đồ circuit ablation 6 cấu hình trên BreastMNIST (GĐ2)')
+    'Hình 4.6: Biểu đồ circuit ablation 6 cấu hình trên BreastMNIST (GĐ2) — Nguồn: tài liệu dự án')
 h2('4.6. Chi phí tính toán')
 para('Bảng 4.5 đo độ trễ suy luận trên CPU Intel. Phần lớn thời gian (~99.98%) nằm ở mô phỏng 196 '
      'statevector cho một ảnh; chiến lược precompute feature maps một lần cho toàn bộ dataset giúp '
@@ -173,7 +200,8 @@ table(
         ['Fixed Quanv', 'End-to-end', '220.221 ms', '710.4×', '0'],
         ['Trainable Quanv', 'End-to-end', '~220.25 ms', '~710.5×', '12 – 24'],
     ],
-    'Bảng 4.5: Độ trễ suy luận CPU và chi phí tính toán', size=11)
+    'Bảng 4.5: Độ trễ suy luận CPU và chi phí tính toán — Nguồn: đo bằng measure_params_cost.py '
+    '(tài liệu dự án)', size=11)
 doc.add_page_break()
 
 # ================= CHƯƠNG 5 =================
@@ -186,10 +214,10 @@ para('Khóa luận đã trình bày một benchmark đối xứng, khả tái l�
      'cao nhất trên BreastMNIST mà không cần huấn luyện kernel; (3) Khả năng tự học chỉ cục bộ trong '
      'cùng họ mạch và không vượt được mạch tĩnh được chọn tối ưu.', align='justify')
 h2('5.2. Những đóng góp mới')
-para('(1) Khung benchmark đối xứng 1:1 với kiểm định thống kê kép — khắc phục L1/L2 của literature; '
-     '(2) Phân định thực nghiệm ranh giới data-regime cho quanvolution 4-qubit; (3) Bộ tài liệu tái lập '
-     'tự động: mã nguồn seed-cố định, ground truth JSON, kịch bản kiểm định số liệu; (4) Bản thảo bài '
-     'báo quốc tế đã nộp tại SOICT 2026 (Springer CCIS).', align='justify')
+para('(1) Khung benchmark đối xứng 1:1 với kiểm định thống kê kép — khắc phục ba giới hạn L1–L3 của '
+     'literature; (2) Phân định thực nghiệm ranh giới data-regime cho quanvolution 4-qubit; (3) Bộ tài liệu '
+     'tái lập tự động: mã nguồn seed-cố định, ground truth JSON, kịch bản kiểm định số liệu; (4) Bản thảo '
+     'bài báo quốc tế đã hoàn thiện, nộp và đang trong quá trình bình duyệt tại SOICT 2026 (Springer CCIS).', align='justify')
 doc.add_page_break()
 
 # ================= CHƯƠNG 6 =================
@@ -214,7 +242,7 @@ refs = [
  'M. Cerezo et al., "Variational quantum algorithms," Nature Reviews Physics, 3(9), 625–644, 2021.',
  'I. Cong, S. Choi, M. D. Lukin, "Quantum convolutional neural networks," Nature Physics, 15(12), 1273–1278, 2019.',
  'A. Esteva et al., "A guide to deep learning in healthcare," Nature Medicine, 25(1), 24–29, 2019.',
- 'M. Henderson, S. Shakya, S. Pradhan, S. Cook, "Quanvolutional neural networks: Powering image recognition with quantum circuits," Quantum Machine Intelligence, 2(1), 2, 2020.',
+ 'M. Henderson, S. Shakya, S. Pradhan, T. Cook, "Quanvolutional neural networks: Powering image recognition with quantum circuits," Quantum Machine Intelligence, 2(1), 2, 2020.',
  'Q. N. Hoang, T. T. Pham, D. N. M. Dang, "Efficient hybrid quantum-classical convolutional neural network with feature propagation layer for multi-class image classification," in Proc. Int. Conf. Adv. Eng. Theory Appl. (AETA), 2023.',
  'H.-Y. Huang et al., "Power of data in quantum machine learning," Nature Communications, 12(1), 2631, 2021.',
  'J. Kübler, S. Buchholz, B. Schölkopf, "The inductive bias of quantum kernels," in NeurIPS, vol. 34, pp. 12661–12673, 2021.',
