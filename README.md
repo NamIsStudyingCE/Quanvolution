@@ -1,7 +1,7 @@
 # Quanvolutional Neural Networks for Medical Image Classification
 
 > **Đề tài Luận văn Tốt nghiệp:** Nghiên cứu và ứng dụng lớp tích chập lượng tử (Quanvolutional Layer) trong bài toán phân loại ảnh y tế (MedMNIST), so sánh công bằng với các kiến trúc cổ điển (Classical CNN).  
-> **Định hướng công bố bài báo:** *"Trainable vs. Fixed Quanvolutional Filters for Medical Image Classification: A Fair, Reproducible Benchmark on MedMNIST"*
+> **Bài báo hội nghị (đã nộp SOICT 2026, EasyChair):** *"Symmetrical Empirical Evaluation of Trainable versus Fixed Quanvolutional Filters in Medical Image Classification: A Rigorous, Reproducible Benchmark on MedMNIST"* — phiên bản nộp được đóng băng tại git tag `soict-submission-v4`.
 
 ---
 
@@ -33,7 +33,7 @@ Dự án được triển khai và đóng gói độc lập theo từng mốc (m
 ## 🔬 3. Bảng Kết quả Thực nghiệm Tổng hợp (10 Seeds Độc lập)
 
 ### A. BreastMNIST (780 mẫu, Nhị phân, Lệch lớp nặng, $L=2$)
-* **Quán quân ROC-AUC:** `Fixed Basic L2` đạt **$0.8521 \pm 0.0095$** (vượt Classical CNN $0.8336$, $p=0.0309 < 0.05$).
+* **Quán quân ROC-AUC:** `Fixed Basic L2` đạt **$0.8521 \pm 0.0095$** (vượt Classical CNN $0.8336 \pm 0.0259$, $p_{\text{ttest}} = 0.0298$, $p_{\text{wilcoxon}} = 0.0254$).
 * **Quán quân PR-AUC:** `Fixed Strongly L2` đạt **$0.9182 \pm 0.0071$** (chứng minh *Quantum Inductive Bias* của mạch tĩnh).
 * **Độ ổn định:** Độ lệch chuẩn (std) của Lượng tử nhỏ hơn Cổ điển gấp **~2.5x – 3x**.
 
@@ -88,7 +88,30 @@ python measure_params_cost.py
 
 # 4. Tái hiện toàn bộ thực nghiệm Giai đoạn 3 (Ma trận 3 tầng 10 seeds)
 python run_gd3.py
+
+# 5. Tái tạo toàn bộ biểu đồ của bài báo từ JSON ground truth
+python PAPER/scripts/regenerate_all_figures.py
+python PAPER/scripts/regenerate_figs_bigfont.py   # phiên bản font lớn dùng trong bản nộp
 ```
+
+## ✅ 6. Kiểm định Số liệu (QA Scripts)
+
+Mọi số liệu của bài báo và luận văn phải reconcile với nguồn chân lý
+`results/full_trainable_breastmnist.json` + `results/full_trainable_octmnist.json`
+(10 seeds × 20 epochs). Số chuẩn hoá (mean, sample std ddof=1, CI 95%, p-value,
+Cohen's d) được tính lại độc lập bởi:
+
+```bash
+# 1. Tính lại toàn bộ thống kê từ raw per-seed JSON -> results/reconciliation_canonical.json
+python PAPER/scripts/reconcile_verify.py
+
+# 2. Đối chiếu từng cặp mean±std/CI trong một file PDF bất kỳ với canonical
+python PAPER/scripts/final_gate_audit.py <duong_dan_den_file.pdf>
+```
+
+> ⚠️ `results/archive/final_ground_truth_SUPERSEDED.json` là bản composite **cũ,
+> không dùng cho bài báo/luận văn** (entry classical/fixed_basic lấy từ run cũ).
+> Nguồn chân lý duy nhất là 2 file `full_trainable_*.json` ở trên.
 
 ---
 
