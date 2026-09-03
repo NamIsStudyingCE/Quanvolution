@@ -89,15 +89,23 @@ body(doc, '4. Các nội dung chính và giới hạn của đề tài: hai bộ
           'chạy live — nạp ảnh siêu âm → trích xuất feature map bằng mạch lượng tử → dự đoán kèm xác suất.')
 para(doc, '')
 h2(doc, 'Kế hoạch thực hiện')
-body(doc, 'GĐ0 (11/08–24/08): nền tảng & demo — hoàn thành. GĐ1 (25/08–07/09): pipeline dữ liệu & baseline '
-          'CNN công bằng — hoàn thành. GĐ2 (08/09–28/09): khảo sát mạch lượng tử tĩnh, circuit ablation — '
-          'hoàn thành. GĐ3 (29/09–19/10): ma trận 3 tầng, mạch tự học, kiểm định thống kê — hoàn thành; '
-          'bản thảo bài báo đã nộp hội nghị SOICT 2026 (Springer CCIS). GĐ4 (20/10–09/11): viết luận văn, '
-          'demo, chuẩn bị bảo vệ — đang thực hiện.')
+for line in [
+    'GĐ0 (11/08 – 24/08) — Nền tảng & môi trường: lý thuyết quanvolution, cài đặt PennyLane/PyTorch, demo MNIST. Trạng thái: hoàn thành (mốc M1).',
+    'GĐ1 (25/08 – 07/09) — Pipeline dữ liệu MedMNIST & baseline CNN công bằng, 10 seeds. Trạng thái: hoàn thành (mốc M2).',
+    'GĐ2 (08/09 – 28/09) — Khảo sát mạch lượng tử tĩnh, circuit ablation 6 cấu hình. Trạng thái: hoàn thành (mốc M3).',
+    'GĐ3 (29/09 – 19/10) — Ma trận 3 tầng (fixed/trainable/champion), mạch tự học, kiểm định thống kê; bản thảo bài báo nộp SOICT 2026. Trạng thái: hoàn thành (mốc M4).',
+    'GĐ4 (20/10 – 09/11) — Viết luận văn, demo notebook, slide bảo vệ. Trạng thái: đang thực hiện.',
+]:
+    para(doc, '• ' + line, 13, align='justify')
 para(doc, '')
 para(doc, 'TP. HCM, ngày … tháng … năm 2026', 13, align='right')
 para(doc, 'Xác nhận của CBHD (ký, ghi rõ họ tên)          Sinh viên (ký, ghi rõ họ tên)', 13)
-doc.save(OUT_DIR / 'de_cuong_chi_tiet_filled.docx')
+OUT2 = OUT_DIR / 'de_cuong_chi_tiet_filled_v2.docx'
+try:
+    doc.save(OUT_DIR / 'de_cuong_chi_tiet_filled.docx')
+except PermissionError:
+    doc.save(OUT2)
+    print('saved', OUT2, '(bản cũ đang mở trong Word)')
 print('saved', OUT_DIR / 'de_cuong_chi_tiet_filled.docx')
 
 # ============ FILE 2: KHUNG LUẬN VĂN ============
