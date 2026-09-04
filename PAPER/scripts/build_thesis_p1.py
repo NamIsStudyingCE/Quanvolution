@@ -100,6 +100,7 @@ para('DANH MỤC HÌNH', 16, bold=True, align='center')
 for line in [
     'Hình 3.1: Sơ đồ pipeline Quanvolution đối xứng (mạch 4-qubit + head cổ điển)',
     'Hình 3.2: So sánh feature map — tích chập cổ điển và expectation value lượng tử',
+    'Hình 3.3: Kiến trúc phần mềm hệ thống (4 tầng: dữ liệu → mô hình → thí nghiệm → đầu ra)',
     'Hình 4.1: Kết quả 10-seed BreastMNIST trên 6 metrics (5 mô hình)',
     'Hình 4.2: Kết quả 10-seed OCTMNIST trên 6 metrics (6 mô hình)',
     'Hình 4.3: Đường hội tụ train/val trên BreastMNIST và OCTMNIST',
@@ -114,6 +115,7 @@ for line in [
     'Bảng 3.1: Ba họ ansatz và số tham số tương ứng',
     'Bảng 3.2: Phân rã tham số giữa feature extractor và classifier head',
     'Bảng 3.3: Thành phần mã nguồn và vai trò trong pipeline',
+    'Bảng 3.4: Cấu hình huấn luyện chi tiết (hyperparameter)',
     'Bảng 4.1: Kết quả 10-seed BreastMNIST (mean ± sample std, CI 95%)',
     'Bảng 4.2: Kết quả 10-seed OCTMNIST (mean ± sample std, CI 95%)',
     'Bảng 4.3: Kiểm định thống kê các cặp so sánh then chốt',
@@ -266,15 +268,31 @@ para('Cần phân biệt rõ quanvolution với QCNN của Cong et al. [6]. QCNN
      'này quyết định quanvolution khả thi trên hạ tầng mô phỏng CPU hiện tại với ảnh 28×28, và cũng là '
      'lý do đề tài chọn quanvolution thay vì QCNN.', align='justify')
 h2('2.5. Các nghiên cứu liên quan trên dữ liệu y tế')
-para('Azevedo et al. [2] ứng dụng quantum transfer learning với backbone ResNet18 trên ảnh mammography '
-     'BCDR cho phát hiện ung thư vú. Matondo-Mvula và Elleithy [13] thử nghiệm quanvolution 9-qubit với '
-     'kernel 3×3 trên chính BreastMNIST nhưng chỉ chạy đơn lẻ không seed, hạ độ phân giải xuống 14×14, '
-     'và không có baseline đối xứng. Vu et al. [18] khảo sát ảnh hưởng của các thành phần feature trong '
-     'quanvolution cho phân loại ảnh tổng quát. Hoang et al. [9] đề xuất lớp truyền đặc trưng (feature '
-     'propagation) cho HQCNN đa lớp. Altares-López et al. [1] tự động thiết kế quantum feature maps bằng '
-     'thuật toán di truyền. Tổng hợp các công trình cho thấy ba giới hạn lặp lại: thiếu baseline đối '
-     'xứng tham số (L1), thiếu đa seed và kiểm định thống kê (L2), và chưa có nghiên cứu nào đối chiếu '
-     'trực tiếp mạch tĩnh với mạch tự học trong cùng một thiết lập (L3).', align='justify')
+para('Azevedo et al. [2] ứng dụng quantum transfer learning cho phát hiện ung thư vú trên bộ mammography '
+     'BCDR (825 ảnh, nhị phân). Kiến trúc dùng ResNet18 pretrained trích 512 đặc trưng, nạp vào mạch '
+     'lượng tử 4-qubit dạng dressed quantum circuit, thử nghiệm cả trên simulator và máy IBM ibm_lagos. '
+     'Đóng góp chính là chứng minh tính khả thi của transfer learning lượng tử trên dữ liệu vú; điểm '
+     'yếu so với đề tài này là chỉ đánh giá trên một split duy nhất, không đa seed, và baseline so sánh '
+     'không được đối xứng tham số với mạch lượng tử.', align='justify')
+para('Matondo-Mvula và Elleithy [13] là công trình gần đề tài nhất: quanvolution 9-qubit với kernel '
+     '3×3 (15 tham số học mỗi kernel) trên chính BreastMNIST, hạ độ phân giải 28×28 về 14×14 để giảm '
+     'chi phí. Kết quả QCNN 67% test accuracy, thấp hơn CNN baseline 83.33% validation. Công trình này '
+     'xác nhận hai điều: quanvolution chạy được trên dữ liệu siêu âm vú thực tế, và việc thiếu đa seed '
+     'cùng baseline đối xứng khiến kết luận không thể suy rộng — chính là hai giới hạn đề tài này khắc phục.', align='justify')
+para('Vu, Le và Pham [18] khảo sát hệ thống ảnh hưởng của các thành phần feature trong quanvolution '
+     'cho phân loại ảnh tổng quát, chỉ ra rằng lựa chọn số qubit và cấu trúc mạch ảnh hưởng đáng kể '
+     'đến chất lượng đặc trưng. Công trình đặt nền phương pháp luận cho việc ablation cấu hình mạch — '
+     'đề tài kế thừa tư tưởng này ở quy mô GĐ2 (6 cấu hình) và mở rộng sang cả chế độ dữ liệu.', align='justify')
+para('Hoang et al. [9] đề xuất lớp truyền đặc trưng (feature propagation layer) cho HQCNN đa lớp, '
+     'giải quyết vấn đề batching khi tích hợp mạch lượng tử vào CNN. Altares-López et al. [1] tự động '
+     'thiết kế quantum feature maps bằng thuật toán di truyền, cho thấy không gian thiết kế mạch rất '
+     'lớn và việc chọn mạch ngẫu nhiên/cố định có cấu trúc là một quyết định thiết kế quan trọng — '
+     'cơ sở lý thuyết cho trục so sánh fixed-vs-trainable của đề tài.', align='justify')
+para('Kübler et al. [11] chứng minh quantum kernel có thiên kiến quy nạp phụ thuộc cấu trúc dữ liệu; '
+     'Schuld và Killoran [15] đưa ra góc nhìn phản biện rằng quantum advantage không phải mục tiêu '
+     'duy nhất đáng theo đuổi. Hai công trình này định hình triết lý đánh giá của đề tài: thay vì '
+     'tìm kiếm lợi thế tuyệt đối, hãy xác định chính xác điều kiện dữ liệu mà thành phần lượng tử '
+     'đóng góp tích cực — và đo bằng protocol công bằng nhất có thể.', align='justify')
 h2('2.6. Vị trí của đề tài')
 para('Đề tài khác biệt ở bốn điểm: (i) baseline CNN được thiết kế đối xứng 1:1 — cùng head, cùng số '
      'chiều đặc trưng 784, tổng tham số chênh lệch không quá 24; (ii) 10 seeds độc lập với kiểm định '
@@ -335,7 +353,10 @@ para('Pipeline phần mềm tổ chức theo bốn mô-đun, mỗi mô-đun mộ
      '(soict-submission-v4). Luồng dữ liệu chuẩn: run_gd3.py → thí nghiệm 50 runs (BreastMNIST) / '
      '60 runs (OCTMNIST) → full_trainable_*.json → reconcile_verify.py (kiểm định số liệu) → '
      'regenerate_figs_bigfont.py (biểu đồ 300 DPI). Mọi thay đổi số liệu phải đi qua kịch bản kiểm định '
-     'tự động để loại trừ lỗi sao chép tay.', align='justify')
+     'tự động để loại trừ lỗi sao chép tay. Hình 3.3 trực quan hóa kiến trúc bốn tầng của hệ thống.', align='justify')
+pic(str(Path('GD4') / 'fig_software_architecture.png'), 15.5,
+    'Hình 3.3: Kiến trúc phần mềm hệ thống — bốn tầng từ dữ liệu đến tài liệu/demo '
+    '(Nguồn: tác giả thiết kế từ cấu trúc mã nguồn src/)')
 table(
     ['Mô-đun', 'Thành phần chính', 'Vai trò trong pipeline'],
     [
@@ -351,6 +372,36 @@ para('Protocol huấn luyện chung: CrossEntropy loss, Adam với learning rate
      'tĩnh, feature map được precompute một lần cho toàn bộ dataset (10 seeds chỉ tốn ~18 giây huấn '
      'luận head); với mạch tự học, mạch lượng tử được vi phân bằng backprop statevector tích hợp '
      'PyTorch (Bergholm et al. [3]) và các góc θ cập nhật đồng thời head với learning rate riêng.', align='justify')
+caption('Bảng 3.4: Cấu hình huấn luyện chi tiết (hyperparameter)')
+table(
+    ['Hyperparameter', 'Giá trị', 'Ghi chú'],
+    [
+        ['Optimizer', 'Adam', 'Tách nhóm tham số lượng tử / cổ điển'],
+        ['Learning rate (cổ điển)', '0.001', 'Head + BatchNorm'],
+        ['Learning rate (lượng tử θ)', '0.01', 'Learning rate kép, góc quay hội tụ nhanh hơn'],
+        ['Loss', 'CrossEntropy', 'Nhãn nhị phân / 4 lớp'],
+        ['Batch size', '32', 'BreastMNIST 546 train → 18 batch/epoch'],
+        ['Epochs', '20', 'Plateau hội tụ 12–15 (xem Chương 4)'],
+        ['Seeds', '10 (S = {0, 42, 100, 2023, 777, 999, 1234, 5678, 1111, 2222})', 'Độc lập toàn phần (data split, init, shuffle)'],
+        ['Checkpoint', 'Best val ROC-AUC', 'Đánh giá test trên checkpoint tốt nhất'],
+        ['Mô phỏng', 'default.qubit (statevector, không nhiễu)', 'Analytic backprop + kiểm chứng Parameter-Shift'],
+    ],
+    'Bảng 3.4: Cấu hình huấn luyện chi tiết (Nguồn: tài liệu dự án — protocol đồng nhất mọi mô hình)')
+para('Vòng lặp huấn luyện một epoch của mạch tự học tóm tắt bằng mã giả như sau (protocol giống hệt '
+     'baseline CNN, chỉ khác khối trích xuất đặc trưng là mạch lượng tử differentiable):', align='justify')
+for line in [
+    'set_seed(SEED); head ← QuanvolutionClassifier(784→K); θ ← init_uniform(0, 2π)',
+    'for epoch in 1..20:',
+    '    for (x_img, y) in train_loader:',
+    '        f ← QuanvLayer(x_img)                  # 196 patches × mạch 4-qubit (differentiable)',
+    '        logits ← BN → ReLU → Linear(f)          # head cổ điển đối xứng',
+    '        loss ← CrossEntropy(logits, y); backward(); Adam.step()   # lr kép 0.01(θ) / 0.001(head)',
+    '    va_auc ← evaluate(val_loader)',
+    '    if va_auc > best: best ← va_auc; checkpoint ← state_dict()',
+    'test_metrics ← evaluate(test_loader, checkpoint=best)',
+]:
+    p = para(line, 11, after=1)
+    p.runs[0].font.name = 'Courier New'
 h2('3.6. Kiểm chứng đạo hàm')
 para('Để bảo đảm tính đúng đắn vật lý của gradient analytic statevector, đạo hàm được đối chứng với '
      'Parameter-Shift Rule [16]: ∂F_i/∂θ_j = [F_i(θ_j + π/2) − F_i(θ_j − π/2)]/2. Sai lệch trung bình '

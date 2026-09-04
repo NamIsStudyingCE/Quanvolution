@@ -112,6 +112,14 @@ para('Bốn phát hiện chính: (1) Fixed Basic L2 đạt ROC-AUC cao nhất 0.
      'động khởi tạo. (4) Trainable Strongly đạt Balanced Accuracy cao nhất 0.6945 ± 0.0451 (+0.0344 so '
      'với Fixed Strongly, d = +0.677, p = 0.0611) nhưng khác biệt với CNN không có ý nghĩa thống kê '
      '(p = 0.6701, d = +0.139) — thêm một by-chứng cứ cho việc thêm tham số tự học không tự động tốt hơn.', align='justify')
+para('Cơ chế giải thích: trên vùng dữ liệu 546 mẫu, head phân loại với 1,578 tham số dễ khớp nhiễu '
+     '(noise-fitting) khi nhận đặc trưng tự do từ conv cổ điển; mạch tĩnh đóng vai trò cấu trúc ràng '
+     'buộc (structural regularizer) — đặc trưng đầu ra bị giới hạn trong khoảng [−1,1] bởi phép đo kỳ '
+     'vọng, không gian tìm kiếm của head bị thu hẹp, nên mô hình tổng thể ít nhạy với thay đổi seed. '
+     'Điều này thể hiện rõ nhất ở PR-AUC — metric nhạy với sắp xếp thứ tự các mẫu thiểu số — nơi mạch '
+     'strongly-entangling với không gian Hilbert giàu rối lượng tử giữ vững thứ tự xếp hạng các ca ác '
+     'tính hiếm gặp. Đây là biểu hiện của Quantum Inductive Bias: cấu trúc của phép biến đổi lượng tử, '
+     'chứ không phải số lượng tham số, là yếu tố mang lại lợi thế.', align='justify')
 h2('4.3. Kết quả trên OCTMNIST (chế độ lớn, đa lớp)')
 para('Bảng 4.2 và Hình 4.2 trình bày kết quả OCTMNIST với 6 cấu hình (thêm quán quân tĩnh random_L1 '
      'từ giai đoạn khảo sát).', align='justify')
@@ -156,6 +164,15 @@ para('Ba phát hiện: (1) Classical CNN dẫn đầu tuyệt đối cả 6 metr
      '± 0.0199 so với 0.6690 ± 0.0055, Δ = +0.0232, p_wilcoxon = 0.0098, d = +1.050. (3) Tuy vậy, mạch '
      'tự học chỉ hòa với quán quân tĩnh random_L1 (0.6912 ± 0.0071, Δ = +0.0010, p = 0.8875, d = +0.046) '
      '— tự học không tự động vượt một mạch tĩnh được chọn hợp lý.', align='justify')
+para('Cơ chế giải thích: phân loại 4 bệnh lý võng mạc đòi hỏi đặc trưng không gian có độ phân giải '
+     'tinh — ranh giới giữa các giai đoạn bệnh chỉ khác biệt ở vài pixel. Mạch 4-qubit với L=1 nén thông '
+     'tin 4 pixel xuống 4 số thực trong [−1,1] qua một tầng biến phân, đồng thời head chỉ có 1,570 tham '
+     'số tuyến tính trên nền BatchNorm — tổng dung lượng biểu diễn nhỏ so với tính mảnh của bài toán. '
+     'Ngược lại, CNN cổ điển học trực tiếp 784 đặc trưng pixel với kernel có trọng số tự do, giữ được '
+     'gradient không gian ở mức cần thiết. Kết quả này nhất quán với mệnh đề "power of data" [10]: khi '
+     'dữ liệu đủ lớn, mô hình cổ điển được huấn luyện tốt sẽ vượt mô hình lượng tử nông; và nhất quán '
+     'với cảnh báo của Schuld và Killoran [15] rằng so sánh thiếu công bằng dễ tạo ra kỳ vọng sai lầm '
+     'về lợi thế lượng tử.', align='justify')
 h2('4.4. Động học tối ưu và kiểm chứng gradient')
 para('Phân tích động học (Hình 4.3–4.5) cho thấy: mọi mô hình đạt plateau loss trong 12–15 epochs '
      'không phân kỳ; quỹ đạo góc quay θ(t) dịch chuyển trơn và bị hút về vùng giá trị ổn định; chuẩn '
@@ -187,6 +204,14 @@ table(['Cấu hình mạch', 'ROC-AUC BreastMNIST', 'ROC-AUC OCTMNIST'], rows,
       'GĐ2, tài liệu dự án', size=11)
 pic(str(ROOT / 'results' / 'figures' / 'circuit_ablation_breastmnist.png'), 15.0,
     'Hình 4.6: Biểu đồ circuit ablation 6 cấu hình trên BreastMNIST (GĐ2) — Nguồn: tài liệu dự án')
+para('Diễn giải kết quả ablation: trên BreastMNIST, mạch basic_L2 (0.8508) vượt mọi cấu hình strongly '
+     '(0.8104–0.8322) — tăng số trục quay và độ sâu trong dữ liệu nhỏ làm tăng dung lượng mô hình mà '
+     'thiếu dữ liệu để khống chế, phản tác dụng; thứ hạng này nhất quán với kết quả cuối cùng của ma '
+     'trận ba tầng ở Bảng 4.1. Trên OCTMNIST, khoảng cách giữa các cấu hình thu hẹp đáng kể '
+     '(0.6628–0.6905) và random_L1 dẫn đầu — khi biểu diễn bị chặn bởi capacity bottleneck, lựa chọn '
+     'ansatz ít quan trọng hơn việc dữ liệu có đủ lớn hay không. Hai quan sát này cùng chỉ về một kết '
+     'luận thiết kế: với mạch nông 4-qubit, cấu trúc mạch đơn giản có cấu trúc (basic) phù hợp dữ liệu '
+     'nhỏ, và lợi thế ansatz phai nhạt khi dữ liệu lớn.', align='justify')
 h2('4.6. Chi phí tính toán')
 para('Bảng 4.5 đo độ trễ suy luận trên CPU Intel. Phần lớn thời gian (~99.98%) nằm ở mô phỏng 196 '
      'statevector cho một ảnh; chiến lược precompute feature maps một lần cho toàn bộ dataset giúp '
@@ -280,6 +305,24 @@ for j, m in enumerate(['classical_cnn', 'fixed_basic', 'trainable_basic', 'fixed
     for i, v in enumerate(vals):
         rows[i].append(f'{v:.4f}')
 table(tbl_hdr, rows, 'Bảng PHỤ LỤC B.1: ROC-AUC theo seed — BreastMNIST (basic_L2 quy ước trình bày Fixed/Trainable Strongly = L2)', size=10)
+
+raw_o = json.load(open(ROOT / 'results' / 'full_trainable_octmnist.json', encoding='utf-8'))['raw_results']
+oct_models = ['classical_cnn', 'fixed_basic', 'trainable_basic', 'fixed_champion_gd2', 'fixed_strongly', 'trainable_strongly']
+o_h = ['Seed'] + [m.replace('_', ' ')[:16] for m in oct_models]
+o_rows = []
+for i, s in enumerate(seeds):
+    o_rows.append([str(s)] + [f"{raw_o[m]['test_metrics'][i]['auc']:.4f}" for m in oct_models])
+table(o_h, o_rows, 'Bảng PHỤ LỤC B.2: ROC-AUC theo seed — OCTMNIST (6 cấu hình, đúng nguồn raw JSON)', size=10)
+
+h2('Phụ lục D. Hồ sơ hệ thống demo bảo vệ')
+para('Demo chạy live: notebook gd4_defense_demo.ipynb — nạp một ảnh siêu âm vú từ test set, trích xuất '
+     'feature map LIVE bằng ba mạch basic_L2/strongly_L2/random_L2, huấn luyện head đối xứng ngay trong '
+     'notebook (20 epochs, ~1.3 giây trên feature precompute), dự đoán kèm xác suất và so sánh chi phí '
+     'suy luận. Ảnh demo được chọn công khai theo tiêu chí in trong notebook: trường hợp ác tính được '
+     'phân loại đúng với xác suất cao nhất (idx 6, p = 0.884). Tính nhất quán feature LIVE so với '
+     'precompute: sai lệch tối đa 1.47×10⁻⁸. Video dự phòng không lời kèm phụ đề tiếng Việt '
+     '(demo_defense_backup.mp4, 104 giây) render từ cùng pipeline; script render_demo_video.py tái tạo '
+     'video khi demo thay đổi.', align='justify')
 h2('Phụ lục C. Quy trình kiểm định số liệu')
 para('Mọi số liệu của luận văn và bài báo đều được tính lại độc lập từ raw per-seed JSON bởi script '
      'reconcile_verify.py (mean, sample std ddof=1, CI 95%, paired t-test, Wilcoxon, Cohen\u2019s d), '
