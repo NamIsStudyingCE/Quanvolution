@@ -38,10 +38,10 @@ Báo cáo giai đoạn 3 này chuẩn hóa lại toàn bộ số liệu và lu�
 
 **💡 Phân tích khoa học (BreastMNIST):**
 1. **Trainability phát huy tác dụng trong cùng họ mạch:** `Trainable Strongly` lật ngược thế cờ đánh bại `Fixed Strongly` cùng họ trên mọi chỉ số ($\Delta \text{BAcc} = +0.0343$, $p=0.061$). 
-2. **Quán quân ROC-AUC Toàn bảng:** `Fixed Basic L2` đạt ROC-AUC cao nhất ($0.8521 \pm 0.0095$, vượt Classical CNN $0.8336$, $p=0.0298 < 0.05$).
-3. **Quán quân PR-AUC Toàn bảng:** `Fixed Strongly L2` đạt PR-AUC cao nhất toàn bảng ($0.9182 \pm 0.0071$), củng cố thêm bằng chứng về *Quantum Inductive Bias* vượt trội của mạch lượng tử tĩnh trên dữ liệu mất cân bằng.
-4. **Đánh giá Trainable Basic:** `Trainable Basic L2` đạt PR-AUC cao ($0.9173 \pm 0.0184$), tuy nhiên mức chênh lệch so với Classical CNN ($0.9041$) chưa đạt ngưỡng ý nghĩa thống kê nghiêm ngặt ($p = 0.0512$, ns), phản ánh năng lực phân giải của kích thước mẫu thử nghiệm.
-5. **Đánh giá Balanced Acc của Trainable Strongly:** `Trainable Strongly` đạt Balanced Acc $0.6945 \pm 0.0451$ (nhỉnh hơn Classical CNN $0.6875$), tuy nhiên mức chênh lệch này chưa đạt ý nghĩa thống kê ($p = 0.670$, ns).
+2. **Quán quân ROC-AUC Toàn bảng:** `Fixed Basic L2` đạt ROC-AUC cao nhất ($0.8521 ± 0.0095$, vượt Classical CNN $0.8336$, $p=0.0298 < 0.05$).
+3. **Quán quân PR-AUC Toàn bảng:** `Fixed Strongly L2` đạt PR-AUC cao nhất toàn bảng ($0.9182 ± 0.0071$), củng cố thêm bằng chứng về *Quantum Inductive Bias* vượt trội của mạch lượng tử tĩnh trên dữ liệu mất cân bằng.
+4. **Đánh giá Trainable Basic:** `Trainable Basic L2` đạt PR-AUC cao ($0.9173 ± 0.0194$), tuy nhiên mức chênh lệch so với Classical CNN ($0.9041$) chưa đạt ngưỡng ý nghĩa thống kê nghiêm ngặt ($p = 0.0512$, ns), phản ánh năng lực phân giải của kích thước mẫu thử nghiệm.
+5. **Đánh giá Balanced Acc của Trainable Strongly:** `Trainable Strongly` đạt Balanced Acc $0.6945 ± 0.0451$ (nhỉnh hơn Classical CNN $0.6875$), tuy nhiên mức chênh lệch này chưa đạt ý nghĩa thống kê ($p = 0.670$, ns).
 
 ---
 

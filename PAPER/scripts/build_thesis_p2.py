@@ -166,13 +166,13 @@ para('Ba phát hiện: (1) Classical CNN dẫn đầu tuyệt đối cả 6 metr
      '— tự học không tự động vượt một mạch tĩnh được chọn hợp lý.', align='justify')
 para('Cơ chế giải thích: phân loại 4 bệnh lý võng mạc đòi hỏi đặc trưng không gian có độ phân giải '
      'tinh — ranh giới giữa các giai đoạn bệnh chỉ khác biệt ở vài pixel. Mạch 4-qubit với L=1 nén thông '
-     'tin 4 pixel xuống 4 số thực trong [−1,1] qua một tầng biến phân, đồng thời head chỉ có 1,570 tham '
-     'số tuyến tính trên nền BatchNorm — tổng dung lượng biểu diễn nhỏ so với tính mảnh của bài toán. '
-     'Ngược lại, CNN cổ điển học trực tiếp 784 đặc trưng pixel với kernel có trọng số tự do, giữ được '
-     'gradient không gian ở mức cần thiết. Kết quả này nhất quán với mệnh đề "power of data" [10]: khi '
-     'dữ liệu đủ lớn, mô hình cổ điển được huấn luyện tốt sẽ vượt mô hình lượng tử nông; và nhất quán '
-     'với cảnh báo của Schuld và Killoran [15] rằng so sánh thiếu công bằng dễ tạo ra kỳ vọng sai lầm '
-     'về lợi thế lượng tử.', align='justify')
+     'tin 4 pixel xuống 4 số thực trong [−1,1] qua một tầng biến phân, đồng thời head chỉ có 3,140 tham '
+     'số tuyến tính trên nền BatchNorm (Linear 784→4 với K = 4) — tổng dung lượng biểu diễn nhỏ so với '
+     'tính mảnh của bài toán. Ngược lại, CNN cổ điển học trực tiếp 784 đặc trưng pixel với kernel có '
+     'trọng số tự do, giữ được gradient không gian ở mức cần thiết. Kết quả này nhất quán với mệnh đề '
+     '"power of data" [10]: khi dữ liệu đủ lớn, mô hình cổ điển được huấn luyện tốt sẽ vượt mô hình '
+     'lượng tử nông; và nhất quán với cảnh báo của Schuld và Killoran [15] rằng so sánh thiếu công bằng '
+     'dễ tạo ra kỳ vọng sai lầm về lợi thế lượng tử.', align='justify')
 h2('4.4. Động học tối ưu và kiểm chứng gradient')
 para('Phân tích động học (Hình 4.3–4.5) cho thấy: mọi mô hình đạt plateau loss trong 12–15 epochs '
      'không phân kỳ; quỹ đạo góc quay θ(t) dịch chuyển trơn và bị hút về vùng giá trị ổn định; chuẩn '
@@ -314,6 +314,13 @@ for i, s in enumerate(seeds):
     o_rows.append([str(s)] + [f"{raw_o[m]['test_metrics'][i]['auc']:.4f}" for m in oct_models])
 table(o_h, o_rows, 'Bảng PHỤ LỤC B.2: ROC-AUC theo seed — OCTMNIST (6 cấu hình, đúng nguồn raw JSON)', size=10)
 
+h2('Phụ lục C. Quy trình kiểm định số liệu')
+para('Mọi số liệu của luận văn và bài báo đều được tính lại độc lập từ raw per-seed JSON bởi script '
+     'reconcile_verify.py (mean, sample std ddof=1, CI 95%, paired t-test, Wilcoxon, Cohen\u2019s d), '
+     'kết quả lưu tại results/reconciliation_canonical.json. Kịch bản final_gate_audit.py đối chiếu '
+     'ngược từng cặp mean±std/CI trong file PDF với canonical. File final_ground_truth.json cũ (chứa '
+     'số liệu giai đoạn đầu) đã được cách ly vào results/archive/ để loại trừ nhầm lẫn nguồn.', align='justify')
+
 h2('Phụ lục D. Hồ sơ hệ thống demo bảo vệ')
 para('Demo chạy live: notebook gd4_defense_demo.ipynb — nạp một ảnh siêu âm vú từ test set, trích xuất '
      'feature map LIVE bằng ba mạch basic_L2/strongly_L2/random_L2, huấn luyện head đối xứng ngay trong '
@@ -323,12 +330,6 @@ para('Demo chạy live: notebook gd4_defense_demo.ipynb — nạp một ảnh si
      'precompute: sai lệch tối đa 1.47×10⁻⁸. Video dự phòng không lời kèm phụ đề tiếng Việt '
      '(demo_defense_backup.mp4, 104 giây) render từ cùng pipeline; script render_demo_video.py tái tạo '
      'video khi demo thay đổi.', align='justify')
-h2('Phụ lục C. Quy trình kiểm định số liệu')
-para('Mọi số liệu của luận văn và bài báo đều được tính lại độc lập từ raw per-seed JSON bởi script '
-     'reconcile_verify.py (mean, sample std ddof=1, CI 95%, paired t-test, Wilcoxon, Cohen\u2019s d), '
-     'kết quả lưu tại results/reconciliation_canonical.json. Kịch bản final_gate_audit.py đối chiếu '
-     'ngược từng cặp mean±std/CI trong file PDF với canonical. File final_ground_truth.json cũ (chứa '
-     'số liệu giai đoạn đầu) đã được cách ly vào results/archive/ để loại trừ nhầm lẫn nguồn.', align='justify')
 
 doc.save(str(OUT))
 print('PART 2 saved:', OUT)

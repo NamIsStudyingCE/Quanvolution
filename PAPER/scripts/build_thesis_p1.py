@@ -372,7 +372,6 @@ para('Protocol huấn luyện chung: CrossEntropy loss, Adam với learning rate
      'tĩnh, feature map được precompute một lần cho toàn bộ dataset (10 seeds chỉ tốn ~18 giây huấn '
      'luận head); với mạch tự học, mạch lượng tử được vi phân bằng backprop statevector tích hợp '
      'PyTorch (Bergholm et al. [3]) và các góc θ cập nhật đồng thời head với learning rate riêng.', align='justify')
-caption('Bảng 3.4: Cấu hình huấn luyện chi tiết (hyperparameter)')
 table(
     ['Hyperparameter', 'Giá trị', 'Ghi chú'],
     [
