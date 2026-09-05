@@ -49,3 +49,4 @@ PAPER/scripts/full_table_audit.py
 # (thesis GĐ4 checks C8/F3) and stay tracked, see exceptions below.
 !PAPER/scripts/reconcile_verify.py
 !PAPER/scripts/final_gate_audit.py
+.skills/
