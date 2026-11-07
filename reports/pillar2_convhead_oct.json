@@ -1,0 +1,51 @@
+{
+  "full_100pct": {
+    "Classical CNN": {
+      "acc_mean": 0.7712,
+      "acc_std": 0.0108,
+      "auc_mean": 0.9381,
+      "auc_std": 0.004,
+      "f1_mean": 0.7642,
+      "train_sec_mean": 17.86
+    },
+    "Pure Quanvolution": {
+      "acc_mean": 0.7138,
+      "acc_std": 0.0084,
+      "auc_mean": 0.9117,
+      "auc_std": 0.0029,
+      "f1_mean": 0.6984,
+      "train_sec_mean": 17.33
+    },
+    "Proposed GR-Quanv": {
+      "acc_mean": 0.774,
+      "acc_std": 0.006782329983125268,
+      "auc_mean": 0.9419421333333333,
+      "auc_std": 0.0035294205857493485,
+      "f1_mean": 0.7659884008175805,
+      "train_sec_mean": 36.874371819995574
+    }
+  },
+  "lowdata_1pct_imbalanced": {
+    "Classical CNN (Standard)": {
+      "acc_mean": 0.5682,
+      "acc_std": 0.015892136420255113,
+      "auc_mean": 0.8244274666666667,
+      "auc_std": 0.02062982118692367,
+      "f1_mean": 0.5054651748140313
+    },
+    "Pure Quanvolution": {
+      "acc_mean": 0.5474000000000001,
+      "acc_std": 0.025247574140895193,
+      "auc_mean": 0.8141746666666666,
+      "auc_std": 0.009107532101386104,
+      "f1_mean": 0.4799373991768699
+    },
+    "Proposed GR-Quanv": {
+      "acc_mean": 0.6264000000000001,
+      "acc_std": 0.013937001112147488,
+      "auc_mean": 0.8537018666666667,
+      "auc_std": 0.006950347871709541,
+      "f1_mean": 0.5989651627451282
+    }
+  }
+}
