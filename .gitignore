@@ -50,3 +50,8 @@ PAPER/scripts/full_table_audit.py
 !PAPER/scripts/reconcile_verify.py
 !PAPER/scripts/final_gate_audit.py
 .skills/
+
+# Rust target build artifacts
+rust_qlut/target/
+weights/*.bin
+weights/*.pt

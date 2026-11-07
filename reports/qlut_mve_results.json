@@ -1,0 +1,454 @@
+{
+  "meta": {
+    "circuit": "strongly_L2",
+    "n_images": 100,
+    "seed": 42,
+    "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "platform": "Windows-10-10.0.26300-SP0",
+    "torch": "2.5.1+cu121",
+    "torch_threads_default": 8,
+    "table_MiB": {
+      "4bit": 1.0,
+      "5bit": 16.0
+    },
+    "timestamp": "2026-11-07 14:30:34"
+  },
+  "datasets": {
+    "breastmnist": {
+      "fidelity": {
+        "ExactBatched(PennyLane vec)": {
+          "MAE": 1.0961187513203186e-08,
+          "RMSE": 1.868776422497831e-08,
+          "nRMSE": 9.41290974286067e-08,
+          "Cosine": 1.0,
+          "MaxAbsErr": 1.341104507446289e-07,
+          "P99AbsErr": 5.960464477539063e-08
+        },
+        "QLUT-4bit-nearest": {
+          "MAE": 0.01974751427769661,
+          "RMSE": 0.027174171060323715,
+          "nRMSE": 0.1368745969012141,
+          "Cosine": 0.9905192852020264,
+          "MaxAbsErr": 0.1099781021475792,
+          "P99AbsErr": 0.08098602294921875
+        },
+        "QLUT-4bit-interp": {
+          "MAE": 0.0014809244312345982,
+          "RMSE": 0.002020245185121894,
+          "nRMSE": 0.01017584840918727,
+          "Cosine": 0.9999929666519165,
+          "MaxAbsErr": 0.008833348751068115,
+          "P99AbsErr": 0.006029547192156315
+        },
+        "QLUT-5bit-nearest": {
+          "MAE": 0.009607730433344841,
+          "RMSE": 0.013171565718948841,
+          "nRMSE": 0.06634435119793848,
+          "Cosine": 0.9977630376815796,
+          "MaxAbsErr": 0.05858781188726425,
+          "P99AbsErr": 0.03920726478099823
+        },
+        "QLUT-5bit-interp": {
+          "MAE": 0.0003512351249810308,
+          "RMSE": 0.00047708270722068846,
+          "nRMSE": 0.0024030357023370327,
+          "Cosine": 0.9999995231628418,
+          "MaxAbsErr": 0.0021074414253234863,
+          "P99AbsErr": 0.001410220516845584
+        }
+      },
+      "latency": {
+        "threads_default": {
+          "PennyLane naive (repo)": {
+            "b1": {
+              "ms_per_img_median": 276.52125,
+              "ms_per_img_p95": 589.8252749999998,
+              "FPS_median": 3.6163585981185893,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 276.52125,
+              "ms_per_img_p95": 589.8252749999998,
+              "FPS_median": 3.6163585981185893,
+              "calls": 100
+            }
+          },
+          "PennyLane vectorized": {
+            "b1": {
+              "ms_per_img_median": 4.23905,
+              "ms_per_img_p95": 4.918505,
+              "FPS_median": 235.90191198499667,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 1.56552,
+              "ms_per_img_p95": 1.7645184999999994,
+              "FPS_median": 638.7653942460014,
+              "calls": 30
+            }
+          },
+          "Classical Conv2d 2x2": {
+            "b1": {
+              "ms_per_img_median": 0.05475,
+              "ms_per_img_p95": 0.107915,
+              "FPS_median": 18264.8401826484,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.001766,
+              "ms_per_img_p95": 0.005944649999999996,
+              "FPS_median": 566251.415628539,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-nearest (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.1112,
+              "ms_per_img_p95": 0.21261999999999986,
+              "FPS_median": 8992.805755395684,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.0415615,
+              "ms_per_img_p95": 0.04531009999999999,
+              "FPS_median": 24060.729280704498,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-interp (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.3274,
+              "ms_per_img_p95": 0.5681399999999998,
+              "FPS_median": 3054.3677458766033,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.133771,
+              "ms_per_img_p95": 0.15215244999999997,
+              "FPS_median": 7475.4617966524875,
+              "calls": 30
+            }
+          },
+          "QLUT-5bit-nearest (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.1495,
+              "ms_per_img_p95": 0.22988499999999998,
+              "FPS_median": 6688.963210702341,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.0369545,
+              "ms_per_img_p95": 0.04388979999999999,
+              "FPS_median": 27060.303887212653,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-nearest (numpy)": {
+            "b1": {
+              "ms_per_img_median": 0.0149,
+              "ms_per_img_p95": 0.016204999999999997,
+              "FPS_median": 67114.09395973154,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.007428000000000001,
+              "ms_per_img_p95": 0.00874545,
+              "FPS_median": 134625.74044157242,
+              "calls": 30
+            }
+          }
+        },
+        "threads_1": {
+          "Classical Conv2d 2x2": {
+            "b1": {
+              "ms_per_img_median": 0.012,
+              "ms_per_img_p95": 0.013,
+              "FPS_median": 83333.33333333333,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.0017275,
+              "ms_per_img_p95": 0.0027142,
+              "FPS_median": 578871.2011577423,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-nearest (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.05665,
+              "ms_per_img_p95": 0.10132999999999999,
+              "FPS_median": 17652.2506619594,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.007066,
+              "ms_per_img_p95": 0.00863965,
+              "FPS_median": 141522.7851684121,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-interp (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.25970000000000004,
+              "ms_per_img_p95": 0.36166499999999996,
+              "FPS_median": 3850.596842510589,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.197424,
+              "ms_per_img_p95": 0.2114337,
+              "FPS_median": 5065.240294999595,
+              "calls": 30
+            }
+          },
+          "QLUT-5bit-nearest (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.0598,
+              "ms_per_img_p95": 0.07637499999999997,
+              "FPS_median": 16722.408026755853,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.0073675,
+              "ms_per_img_p95": 0.010155149999999996,
+              "FPS_median": 135731.2521208008,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-nearest (numpy)": {
+            "b1": {
+              "ms_per_img_median": 0.0149,
+              "ms_per_img_p95": 0.015805,
+              "FPS_median": 67114.09395973154,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.005816,
+              "ms_per_img_p95": 0.007605549999999999,
+              "FPS_median": 171939.47730398897,
+              "calls": 30
+            }
+          }
+        }
+      }
+    },
+    "octmnist": {
+      "fidelity": {
+        "ExactBatched(PennyLane vec)": {
+          "MAE": 6.937287189145991e-09,
+          "RMSE": 1.3365895057404487e-08,
+          "nRMSE": 7.613286074882352e-08,
+          "Cosine": 1.0,
+          "MaxAbsErr": 1.1920928955078125e-07,
+          "P99AbsErr": 5.960464477539063e-08
+        },
+        "QLUT-4bit-nearest": {
+          "MAE": 0.02155858650803566,
+          "RMSE": 0.030593691393733025,
+          "nRMSE": 0.17426331993989633,
+          "Cosine": 0.9848329424858093,
+          "MaxAbsErr": 0.11435675621032715,
+          "P99AbsErr": 0.09565877169370651
+        },
+        "QLUT-4bit-interp": {
+          "MAE": 0.0012763442937284708,
+          "RMSE": 0.0017847970593720675,
+          "nRMSE": 0.010166300528508719,
+          "Cosine": 0.9999920725822449,
+          "MaxAbsErr": 0.008319586515426636,
+          "P99AbsErr": 0.005792353302240372
+        },
+        "QLUT-5bit-nearest": {
+          "MAE": 0.010399139486253262,
+          "RMSE": 0.01452232338488102,
+          "nRMSE": 0.08271993901358903,
+          "Cosine": 0.9966078400611877,
+          "MaxAbsErr": 0.05606089532375336,
+          "P99AbsErr": 0.04601696878671646
+        },
+        "QLUT-5bit-interp": {
+          "MAE": 0.0003024209290742874,
+          "RMSE": 0.00041917862836271524,
+          "nRMSE": 0.002387664126117915,
+          "Cosine": 0.9999995231628418,
+          "MaxAbsErr": 0.002081930637359619,
+          "P99AbsErr": 0.0013525194954127073
+        }
+      },
+      "latency": {
+        "threads_default": {
+          "PennyLane naive (repo)": {
+            "b1": {
+              "ms_per_img_median": 248.8965,
+              "ms_per_img_p95": 267.61719,
+              "FPS_median": 4.017734279107983,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 248.8965,
+              "ms_per_img_p95": 267.61719,
+              "FPS_median": 4.017734279107983,
+              "calls": 100
+            }
+          },
+          "PennyLane vectorized": {
+            "b1": {
+              "ms_per_img_median": 3.8783000000000003,
+              "ms_per_img_p95": 4.471169999999999,
+              "FPS_median": 257.8449320578604,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 1.5819695000000003,
+              "ms_per_img_p95": 1.71652725,
+              "FPS_median": 632.1234385365836,
+              "calls": 30
+            }
+          },
+          "Classical Conv2d 2x2": {
+            "b1": {
+              "ms_per_img_median": 0.05235,
+              "ms_per_img_p95": 0.06357999999999998,
+              "FPS_median": 19102.196752626554,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.0016854999999999997,
+              "ms_per_img_p95": 0.0023845499999999996,
+              "FPS_median": 593295.7579353309,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-nearest (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.0985,
+              "ms_per_img_p95": 0.16658499999999998,
+              "FPS_median": 10152.28426395939,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.033312499999999995,
+              "ms_per_img_p95": 0.0353339,
+              "FPS_median": 30018.7617260788,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-interp (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.30565,
+              "ms_per_img_p95": 0.5206999999999999,
+              "FPS_median": 3271.716015049894,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.12320699999999998,
+              "ms_per_img_p95": 0.13121229999999998,
+              "FPS_median": 8116.421956544677,
+              "calls": 30
+            }
+          },
+          "QLUT-5bit-nearest (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.11510000000000001,
+              "ms_per_img_p95": 0.21498499999999995,
+              "FPS_median": 8688.097306689835,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.0396795,
+              "ms_per_img_p95": 0.07125745,
+              "FPS_median": 25201.930467873837,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-nearest (numpy)": {
+            "b1": {
+              "ms_per_img_median": 0.015,
+              "ms_per_img_p95": 0.025214999999999998,
+              "FPS_median": 66666.66666666667,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.0068925,
+              "ms_per_img_p95": 0.009301849999999995,
+              "FPS_median": 145085.23757707654,
+              "calls": 30
+            }
+          }
+        },
+        "threads_1": {
+          "Classical Conv2d 2x2": {
+            "b1": {
+              "ms_per_img_median": 0.0097,
+              "ms_per_img_p95": 0.010894999999999995,
+              "FPS_median": 103092.78350515464,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.00144,
+              "ms_per_img_p95": 0.0020346999999999987,
+              "FPS_median": 694444.4444444444,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-nearest (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.0519,
+              "ms_per_img_p95": 0.06987999999999998,
+              "FPS_median": 19267.822736030826,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.006763,
+              "ms_per_img_p95": 0.00940185,
+              "FPS_median": 147863.3742422002,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-interp (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.2561,
+              "ms_per_img_p95": 0.41517499999999974,
+              "FPS_median": 3904.724716907458,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.2026285,
+              "ms_per_img_p95": 0.22460339999999998,
+              "FPS_median": 4935.139923554683,
+              "calls": 30
+            }
+          },
+          "QLUT-5bit-nearest (torch)": {
+            "b1": {
+              "ms_per_img_median": 0.0518,
+              "ms_per_img_p95": 0.15469499999999994,
+              "FPS_median": 19305.019305019305,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.0072015,
+              "ms_per_img_p95": 0.0096563,
+              "FPS_median": 138859.9597306117,
+              "calls": 30
+            }
+          },
+          "QLUT-4bit-nearest (numpy)": {
+            "b1": {
+              "ms_per_img_median": 0.0145,
+              "ms_per_img_p95": 0.01704,
+              "FPS_median": 68965.5172413793,
+              "calls": 100
+            },
+            "bN": {
+              "ms_per_img_median": 0.006273,
+              "ms_per_img_p95": 0.008834049999999996,
+              "FPS_median": 159413.35883947075,
+              "calls": 30
+            }
+          }
+        }
+      }
+    }
+  }
+}
