@@ -1,0 +1,136 @@
+{
+  "A_param_matched": {
+    "octmnist_canonical_3500": {
+      "Classical Baseline": {
+        "params": 3168,
+        "acc": 45.72,
+        "acc_std": 3.249246066397558,
+        "auc": 75.03338666666666,
+        "auc_std": 3.318187424456645,
+        "f1": 39.43791721726286
+      },
+      "Classical MS-Gated FULL mixer (0% quantum)": {
+        "params": 11076,
+        "acc": 62.85999999999999,
+        "acc_std": 3.317589486359037,
+        "auc": 87.84693333333334,
+        "auc_std": 1.823955089115715,
+        "f1": 59.5771191385078
+      },
+      "Proposed GR-Quanv (quantum)": {
+        "params": 10976,
+        "acc": 62.3,
+        "acc_std": 2.731300056749534,
+        "auc": 86.88829333333334,
+        "auc_std": 1.4794739855622818,
+        "f1": 58.54458726557543
+      }
+    },
+    "octmnist_full_109k": {
+      "Classical Baseline": {
+        "params": 3168,
+        "acc": 52.94000000000001,
+        "acc_std": 1.333566646253573,
+        "auc": 81.52261333333334,
+        "auc_std": 1.0867118668718025,
+        "f1": 47.61981779256134
+      },
+      "Classical MS-Gated FULL mixer (0% quantum)": {
+        "params": 11076,
+        "acc": 73.34,
+        "acc_std": 1.4235167719419437,
+        "auc": 93.21248,
+        "auc_std": 0.4092943269145608,
+        "f1": 71.71884955467684
+      },
+      "Proposed GR-Quanv (quantum)": {
+        "params": 10976,
+        "acc": 73.58,
+        "acc_std": 1.3570556362949904,
+        "auc": 92.84696,
+        "auc_std": 0.29432756838446256,
+        "f1": 71.91336041497291
+      }
+    }
+  },
+  "B_fewshot_final_epoch": {
+    "960_imgs": {
+      "Classical Baseline": {
+        "acc": 40.379999999999995,
+        "acc_std": 5.235417843878365,
+        "auc": 70.37528
+      },
+      "Classical MS-Gated FULL mixer (0% quantum)": {
+        "acc": 60.0,
+        "acc_std": 4.216633728461602,
+        "auc": 84.08456000000001
+      },
+      "Proposed GR-Quanv (quantum)": {
+        "acc": 59.82000000000001,
+        "acc_std": 0.7704544113703281,
+        "auc": 83.53753333333334
+      }
+    },
+    "4800_imgs": {
+      "Classical Baseline": {
+        "acc": 47.5,
+        "acc_std": 3.1730111881302925,
+        "auc": 76.67613333333334
+      },
+      "Classical MS-Gated FULL mixer (0% quantum)": {
+        "acc": 65.24000000000001,
+        "acc_std": 3.8338492406457543,
+        "auc": 87.74429333333333
+      },
+      "Proposed GR-Quanv (quantum)": {
+        "acc": 64.68,
+        "acc_std": 0.9495261976375373,
+        "auc": 87.28829333333334
+      }
+    }
+  },
+  "C_speckle_5seeds": {
+    "0.00": {
+      "Classical Baseline": {
+        "acc": 46.2,
+        "acc_std": 3.0113120064184664
+      },
+      "Classical MS-Gated FULL mixer (0% quantum)": {
+        "acc": 63.32000000000001,
+        "acc_std": 3.213347164562213
+      },
+      "Proposed GR-Quanv (quantum)": {
+        "acc": 62.92,
+        "acc_std": 1.9579581200832679
+      }
+    },
+    "0.10": {
+      "Classical Baseline": {
+        "acc": 32.980000000000004,
+        "acc_std": 3.502227862375604
+      },
+      "Classical MS-Gated FULL mixer (0% quantum)": {
+        "acc": 51.86,
+        "acc_std": 5.424610585101937
+      },
+      "Proposed GR-Quanv (quantum)": {
+        "acc": 60.739999999999995,
+        "acc_std": 1.8650469162999637
+      }
+    },
+    "0.15": {
+      "Classical Baseline": {
+        "acc": 28.7,
+        "acc_std": 3.314815228636433
+      },
+      "Classical MS-Gated FULL mixer (0% quantum)": {
+        "acc": 43.92,
+        "acc_std": 6.2245963724566105
+      },
+      "Proposed GR-Quanv (quantum)": {
+        "acc": 57.55999999999999,
+        "acc_std": 3.804523623267437
+      }
+    }
+  }
+}

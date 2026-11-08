@@ -1,4 +1,4 @@
-# BÁO CÁO THỰC NGHIỆM TĂNG TỐC CỰC ĐOAN: NATIVE RUST SIMD Q-LUT (2026-11-07 17:33:57)
+# BÁO CÁO THỰC NGHIỆM TĂNG TỐC CỰC ĐOAN: NATIVE RUST SIMD Q-LUT (2026-11-07 20:28:51)
 
 - **CPU:** Intel64 Family 6 Model 186 Stepping 2, GenuineIntel (Intel Core i5-13420H, 8 Cores / 12 Threads, AVX2 + FMA)
 - **Mạch lượng tử:** `strongly_L2` (4-qubit, patch $2 \times 2$, stride 2)
@@ -19,42 +19,42 @@
 
 | Engine | Median (µs/ảnh) | Median (ms/ảnh) | Min (µs/ảnh) | P95 (µs/ảnh) | Throughput (FPS) |
 |---|---:|---:|---:|---:|---:|
-| **Classical Conv2D 2x2 (from uint8)** | **16.000 µs** | 0.016000 ms | 15.000 µs | 17.405 µs | **62,500 FPS** |
-| **Classical Conv2D 2x2 (pre-float32)** | **9.500 µs** | 0.009500 ms | 9.000 µs | 11.000 µs | **105,263 FPS** |
-| **PyTorch Q-LUT 4bit Nearest (FP32)** | **50.700 µs** | 0.050700 ms | 46.900 µs | 87.700 µs | **19,724 FPS** |
-| **PyTorch Q-LUT 4bit Interp4D (FP32)** | **250.500 µs** | 0.250500 ms | 230.100 µs | 408.720 µs | **3,992 FPS** |
-| **Rust Q-LUT INT8 NHWC (256KB, ptr)** | **0.300 µs** | 0.000300 ms | 0.200 µs | 0.400 µs | **3,333,333 FPS** |
+| **Classical Conv2D 2x2 (from uint8)** | **16.200 µs** | 0.016200 ms | 15.000 µs | 24.225 µs | **61,728 FPS** |
+| **Classical Conv2D 2x2 (pre-float32)** | **9.900 µs** | 0.009900 ms | 9.100 µs | 14.805 µs | **101,010 FPS** |
+| **PyTorch Q-LUT 4bit Nearest (FP32)** | **50.000 µs** | 0.050000 ms | 46.900 µs | 90.245 µs | **20,000 FPS** |
+| **PyTorch Q-LUT 4bit Interp4D (FP32)** | **241.000 µs** | 0.241000 ms | 225.200 µs | 431.350 µs | **4,149 FPS** |
+| **Rust Q-LUT INT8 NHWC (256KB, ptr)** | **0.300 µs** | 0.000300 ms | 0.200 µs | 0.300 µs | **3,333,333 FPS** |
 | **Rust Q-LUT INT8 NCHW (256KB, SIMD)** | **0.400 µs** | 0.000400 ms | 0.300 µs | 0.400 µs | **2,500,000 FPS** |
 | **Rust Q-LUT FP32 NCHW (1MB, SIMD)** | **0.400 µs** | 0.000400 ms | 0.300 µs | 0.400 µs | **2,500,000 FPS** |
-| **Rust Q-LUT Interp4D NCHW (SIMD FMA)** | **1.100 µs** | 0.001100 ms | 1.100 µs | 1.200 µs | **909,091 FPS** |
+| **Rust Q-LUT Interp4D NCHW (SIMD FMA)** | **1.100 µs** | 0.001100 ms | 1.000 µs | 1.200 µs | **909,091 FPS** |
 
 ### `BREASTMNIST` — Tốc độ Thực thi Phần cứng (`batch_100_single_thread`)
 
 | Engine | Median (µs/ảnh) | Median (ms/ảnh) | Min (µs/ảnh) | P95 (µs/ảnh) | Throughput (FPS) |
 |---|---:|---:|---:|---:|---:|
-| **Classical Conv2D 2x2 (from uint8)** | **1.920 µs** | 0.001920 ms | 1.832 µs | 3.070 µs | **520,833 FPS** |
-| **Classical Conv2D 2x2 (pre-float32)** | **1.363 µs** | 0.001362 ms | 1.281 µs | 2.127 µs | **733,945 FPS** |
-| **PyTorch Q-LUT 4bit Nearest (FP32)** | **6.585 µs** | 0.006585 ms | 6.052 µs | 9.358 µs | **151,872 FPS** |
-| **PyTorch Q-LUT 4bit Interp4D (FP32)** | **192.946 µs** | 0.192946 ms | 176.665 µs | 211.535 µs | **5,183 FPS** |
-| **Rust Q-LUT INT8 NHWC (256KB, 1-thread)** | **0.120 µs** | 0.000120 ms | 0.115 µs | 0.134 µs | **8,333,333 FPS** |
-| **Rust Q-LUT INT8 NCHW (256KB, 1-thread)** | **0.208 µs** | 0.000208 ms | 0.188 µs | 0.256 µs | **4,807,692 FPS** |
-| **Rust Q-LUT FP32 NCHW (1MB, 1-thread)** | **0.303 µs** | 0.000303 ms | 0.230 µs | 0.405 µs | **3,300,330 FPS** |
-| **Rust Q-LUT Interp4D NCHW (1-thread)** | **0.948 µs** | 0.000947 ms | 0.922 µs | 1.738 µs | **1,055,409 FPS** |
+| **Classical Conv2D 2x2 (from uint8)** | **1.988 µs** | 0.001988 ms | 1.892 µs | 3.109 µs | **503,018 FPS** |
+| **Classical Conv2D 2x2 (pre-float32)** | **1.421 µs** | 0.001421 ms | 1.333 µs | 2.069 µs | **703,977 FPS** |
+| **PyTorch Q-LUT 4bit Nearest (FP32)** | **7.024 µs** | 0.007024 ms | 6.113 µs | 10.720 µs | **142,379 FPS** |
+| **PyTorch Q-LUT 4bit Interp4D (FP32)** | **197.673 µs** | 0.197673 ms | 173.218 µs | 213.348 µs | **5,059 FPS** |
+| **Rust Q-LUT INT8 NHWC (256KB, 1-thread)** | **0.116 µs** | 0.000116 ms | 0.113 µs | 0.148 µs | **8,620,690 FPS** |
+| **Rust Q-LUT INT8 NCHW (256KB, 1-thread)** | **0.191 µs** | 0.000191 ms | 0.184 µs | 0.263 µs | **5,235,602 FPS** |
+| **Rust Q-LUT FP32 NCHW (1MB, 1-thread)** | **0.299 µs** | 0.000299 ms | 0.228 µs | 0.412 µs | **3,344,482 FPS** |
+| **Rust Q-LUT Interp4D NCHW (1-thread)** | **0.948 µs** | 0.000947 ms | 0.929 µs | 1.387 µs | **1,055,409 FPS** |
 
 ### `BREASTMNIST` — Tốc độ Thực thi Phần cứng (`batch_multithread`)
 
 | Engine | Median (µs/ảnh) | Median (ms/ảnh) | Min (µs/ảnh) | P95 (µs/ảnh) | Throughput (FPS) |
 |---|---:|---:|---:|---:|---:|
-| **Classical Conv2D 2x2 (from uint8, MT)** | **2.911 µs** | 0.002911 ms | 2.355 µs | 4.060 µs | **343,584 FPS** |
-| **Classical Conv2D 2x2 (pre-float32, MT)** | **1.705 µs** | 0.001705 ms | 1.544 µs | 2.333 µs | **586,510 FPS** |
-| **PyTorch Q-LUT 4bit Nearest (MT)** | **36.212 µs** | 0.036213 ms | 32.252 µs | 42.718 µs | **27,615 FPS** |
-| **Rust Q-LUT INT8 NHWC (256KB, Rayon MT)** | **0.900 µs** | 0.000900 ms | 0.411 µs | 1.323 µs | **1,111,729 FPS** |
-| **Rust Q-LUT INT8 NCHW (256KB, Rayon MT)** | **0.793 µs** | 0.000793 ms | 0.398 µs | 1.200 µs | **1,261,034 FPS** |
-| **Rust Q-LUT FP32 NCHW (1MB, Rayon MT)** | **0.807 µs** | 0.000807 ms | 0.335 µs | 1.204 µs | **1,239,926 FPS** |
-| **Rust Q-LUT Interp4D NCHW (Rayon MT)** | **1.109 µs** | 0.001109 ms | 0.638 µs | 1.579 µs | **902,120 FPS** |
-| **Rust Q-LUT INT8 NHWC (B=1000, Rayon MT)** | **0.164 µs** | 0.000164 ms | 0.083 µs | 0.219 µs | **6,093,845 FPS** |
-| **Classical Conv2D 2x2 (B=1000, from uint8, MT)** | **1.829 µs** | 0.001829 ms | 0.842 µs | 4.733 µs | **546,822 FPS** |
-| **Classical Conv2D 2x2 (B=1000, pre-float32, MT)** | **0.615 µs** | 0.000615 ms | 0.465 µs | 0.901 µs | **1,626,545 FPS** |
+| **Classical Conv2D 2x2 (from uint8, MT)** | **2.892 µs** | 0.002892 ms | 2.339 µs | 5.700 µs | **345,781 FPS** |
+| **Classical Conv2D 2x2 (pre-float32, MT)** | **1.678 µs** | 0.001678 ms | 1.517 µs | 3.703 µs | **595,948 FPS** |
+| **PyTorch Q-LUT 4bit Nearest (MT)** | **39.926 µs** | 0.039926 ms | 31.978 µs | 95.306 µs | **25,046 FPS** |
+| **Rust Q-LUT INT8 NHWC (256KB, Rayon MT)** | **0.776 µs** | 0.000776 ms | 0.342 µs | 1.150 µs | **1,288,660 FPS** |
+| **Rust Q-LUT INT8 NCHW (256KB, Rayon MT)** | **0.833 µs** | 0.000833 ms | 0.297 µs | 1.244 µs | **1,199,760 FPS** |
+| **Rust Q-LUT FP32 NCHW (1MB, Rayon MT)** | **0.842 µs** | 0.000842 ms | 0.441 µs | 1.290 µs | **1,188,354 FPS** |
+| **Rust Q-LUT Interp4D NCHW (Rayon MT)** | **1.140 µs** | 0.001140 ms | 0.629 µs | 1.587 µs | **877,193 FPS** |
+| **Rust Q-LUT INT8 NHWC (B=1000, Rayon MT)** | **0.155 µs** | 0.000155 ms | 0.092 µs | 0.204 µs | **6,453,695 FPS** |
+| **Classical Conv2D 2x2 (B=1000, from uint8, MT)** | **1.725 µs** | 0.001725 ms | 0.939 µs | 2.722 µs | **579,828 FPS** |
+| **Classical Conv2D 2x2 (B=1000, pre-float32, MT)** | **1.082 µs** | 0.001082 ms | 0.515 µs | 1.628 µs | **923,916 FPS** |
 
 ## 1. Tập dữ liệu `OCTMNIST` — Độ bảo toàn đặc trưng (Fidelity vs PennyLane Ground Truth)
 
@@ -70,39 +70,39 @@
 
 | Engine | Median (µs/ảnh) | Median (ms/ảnh) | Min (µs/ảnh) | P95 (µs/ảnh) | Throughput (FPS) |
 |---|---:|---:|---:|---:|---:|
-| **Classical Conv2D 2x2 (from uint8)** | **16.000 µs** | 0.016000 ms | 14.800 µs | 20.900 µs | **62,500 FPS** |
-| **Classical Conv2D 2x2 (pre-float32)** | **10.000 µs** | 0.010000 ms | 9.100 µs | 13.400 µs | **100,000 FPS** |
-| **PyTorch Q-LUT 4bit Nearest (FP32)** | **52.800 µs** | 0.052800 ms | 47.400 µs | 77.330 µs | **18,939 FPS** |
-| **PyTorch Q-LUT 4bit Interp4D (FP32)** | **264.500 µs** | 0.264500 ms | 227.100 µs | 415.225 µs | **3,781 FPS** |
+| **Classical Conv2D 2x2 (from uint8)** | **17.200 µs** | 0.017200 ms | 14.900 µs | 27.315 µs | **58,140 FPS** |
+| **Classical Conv2D 2x2 (pre-float32)** | **9.900 µs** | 0.009900 ms | 9.100 µs | 14.500 µs | **101,010 FPS** |
+| **PyTorch Q-LUT 4bit Nearest (FP32)** | **52.100 µs** | 0.052100 ms | 47.300 µs | 79.700 µs | **19,194 FPS** |
+| **PyTorch Q-LUT 4bit Interp4D (FP32)** | **252.450 µs** | 0.252450 ms | 226.500 µs | 448.335 µs | **3,961 FPS** |
 | **Rust Q-LUT INT8 NHWC (256KB, ptr)** | **0.300 µs** | 0.000300 ms | 0.200 µs | 0.300 µs | **3,333,333 FPS** |
-| **Rust Q-LUT INT8 NCHW (256KB, SIMD)** | **0.400 µs** | 0.000400 ms | 0.300 µs | 0.400 µs | **2,500,000 FPS** |
+| **Rust Q-LUT INT8 NCHW (256KB, SIMD)** | **0.300 µs** | 0.000300 ms | 0.300 µs | 0.400 µs | **3,333,333 FPS** |
 | **Rust Q-LUT FP32 NCHW (1MB, SIMD)** | **0.400 µs** | 0.000400 ms | 0.300 µs | 0.400 µs | **2,500,000 FPS** |
-| **Rust Q-LUT Interp4D NCHW (SIMD FMA)** | **1.000 µs** | 0.001000 ms | 1.000 µs | 1.100 µs | **1,000,000 FPS** |
+| **Rust Q-LUT Interp4D NCHW (SIMD FMA)** | **1.100 µs** | 0.001100 ms | 1.000 µs | 1.100 µs | **909,091 FPS** |
 
 ### `OCTMNIST` — Tốc độ Thực thi Phần cứng (`batch_100_single_thread`)
 
 | Engine | Median (µs/ảnh) | Median (ms/ảnh) | Min (µs/ảnh) | P95 (µs/ảnh) | Throughput (FPS) |
 |---|---:|---:|---:|---:|---:|
-| **Classical Conv2D 2x2 (from uint8)** | **2.071 µs** | 0.002070 ms | 1.903 µs | 3.443 µs | **482,975 FPS** |
-| **Classical Conv2D 2x2 (pre-float32)** | **1.524 µs** | 0.001524 ms | 1.340 µs | 2.746 µs | **656,383 FPS** |
-| **PyTorch Q-LUT 4bit Nearest (FP32)** | **7.160 µs** | 0.007160 ms | 6.130 µs | 9.583 µs | **139,665 FPS** |
-| **PyTorch Q-LUT 4bit Interp4D (FP32)** | **200.319 µs** | 0.200319 ms | 179.319 µs | 219.833 µs | **4,992 FPS** |
-| **Rust Q-LUT INT8 NHWC (256KB, 1-thread)** | **0.139 µs** | 0.000139 ms | 0.121 µs | 0.169 µs | **7,194,245 FPS** |
-| **Rust Q-LUT INT8 NCHW (256KB, 1-thread)** | **0.209 µs** | 0.000209 ms | 0.202 µs | 0.244 µs | **4,784,689 FPS** |
-| **Rust Q-LUT FP32 NCHW (1MB, 1-thread)** | **0.301 µs** | 0.000301 ms | 0.299 µs | 0.356 µs | **3,322,259 FPS** |
-| **Rust Q-LUT Interp4D NCHW (1-thread)** | **0.885 µs** | 0.000885 ms | 0.880 µs | 1.123 µs | **1,129,944 FPS** |
+| **Classical Conv2D 2x2 (from uint8)** | **2.101 µs** | 0.002101 ms | 1.877 µs | 3.251 µs | **476,077 FPS** |
+| **Classical Conv2D 2x2 (pre-float32)** | **1.440 µs** | 0.001440 ms | 1.333 µs | 2.592 µs | **694,444 FPS** |
+| **PyTorch Q-LUT 4bit Nearest (FP32)** | **7.198 µs** | 0.007198 ms | 6.173 µs | 12.372 µs | **138,927 FPS** |
+| **PyTorch Q-LUT 4bit Interp4D (FP32)** | **204.738 µs** | 0.204738 ms | 174.139 µs | 229.302 µs | **4,884 FPS** |
+| **Rust Q-LUT INT8 NHWC (256KB, 1-thread)** | **0.117 µs** | 0.000117 ms | 0.113 µs | 0.133 µs | **8,547,009 FPS** |
+| **Rust Q-LUT INT8 NCHW (256KB, 1-thread)** | **0.190 µs** | 0.000190 ms | 0.184 µs | 0.251 µs | **5,263,158 FPS** |
+| **Rust Q-LUT FP32 NCHW (1MB, 1-thread)** | **0.234 µs** | 0.000234 ms | 0.217 µs | 0.349 µs | **4,273,504 FPS** |
+| **Rust Q-LUT Interp4D NCHW (1-thread)** | **0.910 µs** | 0.000910 ms | 0.870 µs | 1.177 µs | **1,098,901 FPS** |
 
 ### `OCTMNIST` — Tốc độ Thực thi Phần cứng (`batch_multithread`)
 
 | Engine | Median (µs/ảnh) | Median (ms/ảnh) | Min (µs/ảnh) | P95 (µs/ảnh) | Throughput (FPS) |
 |---|---:|---:|---:|---:|---:|
-| **Classical Conv2D 2x2 (from uint8, MT)** | **2.736 µs** | 0.002736 ms | 2.314 µs | 3.835 µs | **365,564 FPS** |
-| **Classical Conv2D 2x2 (pre-float32, MT)** | **1.732 µs** | 0.001732 ms | 1.573 µs | 2.422 µs | **577,367 FPS** |
-| **PyTorch Q-LUT 4bit Nearest (MT)** | **37.977 µs** | 0.037977 ms | 32.890 µs | 45.786 µs | **26,332 FPS** |
-| **Rust Q-LUT INT8 NHWC (256KB, Rayon MT)** | **0.770 µs** | 0.000770 ms | 0.391 µs | 1.150 µs | **1,297,859 FPS** |
-| **Rust Q-LUT INT8 NCHW (256KB, Rayon MT)** | **0.805 µs** | 0.000806 ms | 0.416 µs | 1.180 µs | **1,241,465 FPS** |
-| **Rust Q-LUT FP32 NCHW (1MB, Rayon MT)** | **0.817 µs** | 0.000817 ms | 0.458 µs | 1.176 µs | **1,223,990 FPS** |
-| **Rust Q-LUT Interp4D NCHW (Rayon MT)** | **1.131 µs** | 0.001131 ms | 0.600 µs | 1.566 µs | **884,173 FPS** |
-| **Rust Q-LUT INT8 NHWC (B=1000, Rayon MT)** | **0.157 µs** | 0.000157 ms | 0.099 µs | 0.206 µs | **6,389,776 FPS** |
-| **Classical Conv2D 2x2 (B=1000, from uint8, MT)** | **1.377 µs** | 0.001377 ms | 0.797 µs | 2.491 µs | **726,427 FPS** |
-| **Classical Conv2D 2x2 (B=1000, pre-float32, MT)** | **0.892 µs** | 0.000892 ms | 0.490 µs | 1.342 µs | **1,121,202 FPS** |
+| **Classical Conv2D 2x2 (from uint8, MT)** | **2.950 µs** | 0.002950 ms | 2.412 µs | 5.353 µs | **338,983 FPS** |
+| **Classical Conv2D 2x2 (pre-float32, MT)** | **1.766 µs** | 0.001766 ms | 1.425 µs | 3.645 µs | **566,251 FPS** |
+| **PyTorch Q-LUT 4bit Nearest (MT)** | **37.023 µs** | 0.037023 ms | 33.408 µs | 42.751 µs | **27,010 FPS** |
+| **Rust Q-LUT INT8 NHWC (256KB, Rayon MT)** | **0.750 µs** | 0.000750 ms | 0.336 µs | 1.138 µs | **1,333,333 FPS** |
+| **Rust Q-LUT INT8 NCHW (256KB, Rayon MT)** | **0.809 µs** | 0.000809 ms | 0.311 µs | 1.179 µs | **1,236,094 FPS** |
+| **Rust Q-LUT FP32 NCHW (1MB, Rayon MT)** | **0.844 µs** | 0.000844 ms | 0.408 µs | 1.239 µs | **1,184,834 FPS** |
+| **Rust Q-LUT Interp4D NCHW (Rayon MT)** | **1.119 µs** | 0.001119 ms | 0.617 µs | 1.601 µs | **894,055 FPS** |
+| **Rust Q-LUT INT8 NHWC (B=1000, Rayon MT)** | **0.156 µs** | 0.000156 ms | 0.092 µs | 0.219 µs | **6,424,671 FPS** |
+| **Classical Conv2D 2x2 (B=1000, from uint8, MT)** | **1.613 µs** | 0.001613 ms | 0.851 µs | 2.728 µs | **619,982 FPS** |
+| **Classical Conv2D 2x2 (B=1000, pre-float32, MT)** | **0.803 µs** | 0.000803 ms | 0.507 µs | 1.410 µs | **1,244,787 FPS** |
