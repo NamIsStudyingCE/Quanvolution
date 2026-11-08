@@ -105,5 +105,91 @@
         14
       ]
     }
+  },
+  "interp4d": {
+    "breast": {
+      "train": {
+        "mode": "interp4d_fp32",
+        "n": 546,
+        "ms": 11.403299984522164,
+        "us_per_img": 20.88516480681715,
+        "shape": [
+          546,
+          16,
+          14,
+          14
+        ],
+        "dtype": "float32"
+      },
+      "val": {
+        "mode": "interp4d_fp32",
+        "n": 78,
+        "ms": 2.058600017335266,
+        "us_per_img": 26.392307914554692,
+        "shape": [
+          78,
+          16,
+          14,
+          14
+        ],
+        "dtype": "float32"
+      },
+      "test": {
+        "mode": "interp4d_fp32",
+        "n": 156,
+        "ms": 3.0184999923221767,
+        "us_per_img": 19.34935892514216,
+        "shape": [
+          156,
+          16,
+          14,
+          14
+        ],
+        "dtype": "float32"
+      },
+      "cache_roundtrip_ok": true
+    },
+    "pneumonia": {
+      "train": {
+        "mode": "interp4d_fp32",
+        "n": 4708,
+        "ms": 92.48339995974675,
+        "us_per_img": 19.64388274421129,
+        "shape": [
+          4708,
+          16,
+          14,
+          14
+        ],
+        "dtype": "float32"
+      },
+      "val": {
+        "mode": "interp4d_fp32",
+        "n": 524,
+        "ms": 15.650799963623285,
+        "us_per_img": 29.8679388618765,
+        "shape": [
+          524,
+          16,
+          14,
+          14
+        ],
+        "dtype": "float32"
+      },
+      "test": {
+        "mode": "interp4d_fp32",
+        "n": 624,
+        "ms": 11.491999961435795,
+        "us_per_img": 18.416666604865057,
+        "shape": [
+          624,
+          16,
+          14,
+          14
+        ],
+        "dtype": "float32"
+      },
+      "cache_roundtrip_ok": true
+    }
   }
 }

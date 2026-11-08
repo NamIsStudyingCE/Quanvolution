@@ -73,38 +73,43 @@ def _build_axial_u8(imgs_u8: np.ndarray) -> np.ndarray:
 def extract_multiscale_qlut(
     imgs_u8: np.ndarray,
     include_axial: bool = True,
+    interp4d: bool = False,
 ) -> Tuple[torch.Tensor, float]:
     """
     Trích xuất đặc trưng lượng tử đa tỷ lệ (Multi-Scale Quantum LUT Features)
-    bằng Native Rust SIMD (`rust_qlut.forward_int8_nchw`) từ cùng 1 bảng tra 256 KiB.
+    bằng Native Rust SIMD từ cùng 1 bảng tra Q-LUT:
+      - interp4d=False: `rust_qlut.forward_int8_nchw` (4-bit shift INT8 rời rạc)
+      - interp4d=True : `rust_qlut.forward_interp4d_nchw` (nội suy đa tuyến tính 4D SIMD FP32,
+                        Cosine 0.999993, giữ trọn vi tương phản dưới ngưỡng 6.67%)
     """
     imgs_u8 = np.ascontiguousarray(imgs_u8, dtype=np.uint8)
     N = imgs_u8.shape[0]
     t0 = time.perf_counter()
 
-    # Scale 1: Local 2x2 (d=1)
-    s1 = np.empty((N, 4, 14, 14), dtype=np.int8)
-    rust_qlut.forward_int8_nchw(imgs_u8, s1)
-
-    # Scale 2: Dilated 4x4 (d=2)
     u2 = _build_dilated_u8(imgs_u8, dilation=2)
-    s2 = np.empty((N, 4, 14, 14), dtype=np.int8)
-    rust_qlut.forward_int8_nchw(u2, s2)
-
-    # Scale 3: Dilated 6x6 (d=3)
     u3 = _build_dilated_u8(imgs_u8, dilation=3)
-    s3 = np.empty((N, 4, 14, 14), dtype=np.int8)
-    rust_qlut.forward_int8_nchw(u3, s3)
-
-    scales = [s1, s2, s3]
+    inputs = [imgs_u8, u2, u3]
     if include_axial:
-        ua = _build_axial_u8(imgs_u8)
-        sa = np.empty((N, 4, 14, 14), dtype=np.int8)
-        rust_qlut.forward_int8_nchw(ua, sa)
-        scales.append(sa)
+        inputs.append(_build_axial_u8(imgs_u8))
 
-    cat_int8 = np.concatenate(scales, axis=1)
-    q_tensor = torch.from_numpy(cat_int8).to(torch.float32) / 127.0
+    if interp4d:
+        par = N >= 64
+        scales_f32 = []
+        for u in inputs:
+            s = np.empty((N, 4, 14, 14), dtype=np.float32)
+            rust_qlut.forward_interp4d_nchw(u, s, parallel=par)
+            scales_f32.append(s)
+        cat_f32 = np.concatenate(scales_f32, axis=1)
+        q_tensor = torch.from_numpy(cat_f32)
+    else:
+        scales_i8 = []
+        for u in inputs:
+            s = np.empty((N, 4, 14, 14), dtype=np.int8)
+            rust_qlut.forward_int8_nchw(u, s)
+            scales_i8.append(s)
+        cat_int8 = np.concatenate(scales_i8, axis=1)
+        q_tensor = torch.from_numpy(cat_int8).to(torch.float32) / 127.0
+
     elapsed_ms = (time.perf_counter() - t0) * 1000.0
     return q_tensor, elapsed_ms
 

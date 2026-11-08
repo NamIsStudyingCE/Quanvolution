@@ -1,28 +1,19 @@
 """
-Wide-Fusion GR-Quanv (Tác vụ 1: gỡ nút thắt 4 kênh của biến thể Residual)
-=========================================================================
-Chẩn đoán gốc từ `gr_quanv_resblock.py` (kết quả sạch GR-Quanv kém Control
--1.25% Pneumonia / -2.42% OCT):
-  (1) Nút thắt 4 kênh: `c_stem` chỉ xuất 4 kênh và mixer ép 16 kênh đa tỷ lệ
-      Q-LUT về 4 kênh -> 75% (12/16) đặc trưng lượng tử bị vứt bỏ trước head.
-  (2) Khởi tạo gate bias = +0.5 (alpha ~ 0.62) -> ngay epoch 0, 62% tín hiệu
-      của head đến từ bộ trộn lượng tử chưa học gì, nhiễu gradient cả nhánh
-      cổ điển.
-  (3) Không gian thông lượng head quá hẹp (in_ch=4) cho nội dung 16 kênh.
-
-Kiến trúc mới trong file này:
-  - Nhánh cổ điển: `c_stem` Conv2d(1 -> 16) 2x2 stride 2 (thay vì 1 -> 4).
-  - Nhánh lượng tử: giữ trọn 16 kênh đa tỷ lệ Rust Q-LUT (d=1, d=2, d=3, axial),
-      mixer giữ nguyên số kênh (16 -> 32 -> 16), không còn phép ép 16 -> 4.
-  - Dung hợp cấp 32 kênh: f_fused = Concat[f_c(16), alpha * f_q(16)], alpha là
-      cổng không gian-kênh 16 kênh.
-  - Khởi tạo cổng an toàn: bias = -1.5 (alpha ~ 0.18) -> nhánh cổ điển tự học
-      ổn định trước, cổng tự mở dần khi bộ trộn lượng tử đã thích nghi.
-  - Head residual wide: BN(32) -> Conv3x3(48) -> Res(48) -> Res(48->64) -> GAP.
-  - Đối chứng sòng phẳng: `WideClassicalControl` thay 16 kênh Q-LUT bằng 4 nhánh
-      tích chập giãn cách cổ điển (d=1,d=2,d=3,axial; mỗi nhánh 4 kênh = 16 kênh
-      thô), dùng CÙNG cấu trúc mixer/gate/head, có nhiều hơn đúng số tham số
-      của các kernel nhánh giãn cách mà GR-Quanv không phải học.
+Wide-Fusion GR-Quanv v2 (Đòn bẩy 3 Mũi Nhọn)
+============================================
+Nâng cấp từ chẩn đoán thực nghiệm của `gr_quanv_wide.py` (v1):
+  (1) Đòn bẩy 1 - Khắc phục "Đói phương sai & Van lượng tử bị bóp nghẹt 18%":
+      - Đổi `GATE_INIT_BIAS = 0.0` (alpha_0 = 0.5 thay vì 0.182).
+      - Bổ sung Pre-Concat BatchNorm2d (`norm_c`, `norm_q` / `norm_ms`) cho cả hai
+        nhánh trước khi qua cổng và ghép kênh để bảo đảm Var(f_c) == Var(f_q) ~ 1.0.
+  (2) Đòn bẩy 2 - Khắc phục "Cắt cứng 4-bit xóa sổ vi tương phản 6.67%":
+      - Kết hợp với đặc trưng nội suy đa tuyến tính 4D SIMD (`rust_qlut.forward_interp4d_nchw`,
+        Cosine 0.999993) giữ trọn vi tương phản dưới ngưỡng 6.67%.
+  (3) Đòn bẩy 3 - Khắc phục "Mạng học đường tắt" bằng Classical Branch DropPath (p=0.15):
+      - Khi `self.training == True`, với xác suất p = 0.15 trên từng mẫu trong batch,
+        nhân nhánh cổ điển `f_c` với hệ số 0.5 để buộc mạng khai thác đặc trưng đa tỷ lệ.
+      - Áp dụng đồng nhất trên cả `WideClassicalControl` và `WideGRQuanvNet` để giữ
+        tính đối chứng sòng phẳng tuyệt đối (params(Control) >= params(GR-Quanv)).
 """
 from __future__ import annotations
 
@@ -35,19 +26,20 @@ import torch.nn as nn
 from models.gr_quanv_resblock import _ResBlock
 
 
-# Bias khởi tạo của tầng Conv1x1 cuối cổng: sigmoid(-1.5) ~ 0.1824.
-GATE_INIT_BIAS = -1.5
+# Đòn bẩy 1: Bias khởi tạo của tầng Conv1x1 cuối cổng: sigmoid(0.0) = 0.5000.
+GATE_INIT_BIAS = 0.0
 ALPHA_INIT = float(torch.sigmoid(torch.tensor(GATE_INIT_BIAS)).item())
+DEFAULT_DROP_C_PROB = 0.15
 
 NUM_Q_SCALES = 4          # d=1, d=2, d=3, axial
 CH_PER_SCALE = 4          # 4 kênh đếm chẵn CNOT mỗi tỷ lệ
-NUM_MS_CHANNELS = NUM_Q_SCALES * CH_PER_SCALE   # 16 kênh thô từ Rust Q-LUT
+NUM_MS_CHANNELS = NUM_Q_SCALES * CH_PER_SCALE   # 16 kênh đa tỷ lệ
 
 
 def _mixer_stack() -> nn.Sequential:
     """Bộ trộn đặc trưng đa tỷ lệ: giữ nguyên 16 kênh vào/ra, thông lượng nội bộ 32.
 
-    Used bởi cả nhánh lượng tử (đầu vào 16 kênh Q-LUT cố định) và nhánh đối chứng
+    Dùng chung cho cả nhánh lượng tử (đầu vào 16 kênh Q-LUT cố định) và nhánh đối chứng
     cổ điển (đầu vào 16 kênh thô từ 4 conv giãn cách) -> cấu trúc hệt nhau.
     """
     return nn.Sequential(
@@ -70,6 +62,17 @@ def _gate_stack(in_ch: int) -> nn.Sequential:
         nn.GELU(),
         nn.Conv2d(32, NUM_MS_CHANNELS, kernel_size=1),
     )
+
+
+def _apply_branch_droppath(f_c: torch.Tensor, drop_prob: float, training: bool) -> torch.Tensor:
+    """Đòn bẩy 3: Với xác suất `drop_prob` trên từng mẫu trong batch khi train,
+    nhân nhánh cổ điển `f_c` với 0.5 để chống học đường tắt (Shortcut Learning)."""
+    if not training or drop_prob <= 0.0:
+        return f_c
+    B = f_c.shape[0]
+    mask = torch.rand(B, 1, 1, 1, device=f_c.device, dtype=f_c.dtype) < drop_prob
+    scale = torch.where(mask, torch.full_like(mask, 0.5, dtype=f_c.dtype), torch.ones_like(mask, dtype=f_c.dtype))
+    return f_c * scale
 
 
 class WideResidualHead(nn.Module):
@@ -137,12 +140,13 @@ class _GateTrackerMixin(nn.Module):
 
 class WideClassicalControl(_GateTrackerMixin):
     """Đối chứng sòng phẳng 0% lượng tử: thay 16 kênh Q-LUT bằng 4 nhánh conv giãn cách
-    cổ điển sinh đúng 16 kênh thô; mixer/gate/fusion/head giống hệt `WideGRQuanvNet`.
-    Nhiều hơn_GR-Quanv đúng số tham số của 4 kernel nhánh giãn cách (GR-Quanv không học)."""
+    cổ điển sinh đúng 16 kênh thô; mixer/norm/gate/fusion/head giống hệt `WideGRQuanvNet`.
+    Nhiều hơn GR-Quanv đúng số tham số của 4 kernel nhánh giãn cách (GR-Quanv không học)."""
 
-    def __init__(self, num_classes: int = 2):
+    def __init__(self, num_classes: int = 2, drop_c_prob: float = DEFAULT_DROP_C_PROB):
         super().__init__()
         self._init_tracker()
+        self.drop_c_prob = drop_c_prob
         self.c_stem = nn.Conv2d(1, NUM_MS_CHANNELS, kernel_size=2, stride=2)
         self.classical_branches = nn.ModuleList([
             nn.Conv2d(1, CH_PER_SCALE, kernel_size=2, stride=2, padding=0, dilation=1),
@@ -151,17 +155,21 @@ class WideClassicalControl(_GateTrackerMixin):
             nn.Conv2d(1, CH_PER_SCALE, kernel_size=3, stride=2, padding=1),  # axial
         ])
         self.mixer = _mixer_stack()
-        self.gate = _gate_stack(NUM_MS_CHANNELS * 2)  # cat[f_c(16), f_ms_raw(16)]
+        # Pre-Concat Normalization cân bằng phương sai Var(f_c) == Var(f_ms) ~ 1.0
+        self.norm_c = nn.BatchNorm2d(NUM_MS_CHANNELS)
+        self.norm_ms = nn.BatchNorm2d(NUM_MS_CHANNELS)
+        self.gate = _gate_stack(NUM_MS_CHANNELS * 2)  # cat[f_c_norm(16), f_ms_norm(16)]
         nn.init.constant_(self.gate[-1].bias, GATE_INIT_BIAS)
         self.head = WideResidualHead(num_classes, in_ch=NUM_MS_CHANNELS * 2)
 
     def forward_features(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        f_c = self.c_stem(x)
+        f_c = self.norm_c(self.c_stem(x))
         f_raw = torch.cat([b(x)[:, :, :14, :14] for b in self.classical_branches], dim=1)
-        f_ms = self.mixer(f_raw)
-        alpha = torch.sigmoid(self.gate(torch.cat([f_c, f_raw], dim=1)))
+        f_ms = self.norm_ms(self.mixer(f_raw))
+        alpha = torch.sigmoid(self.gate(torch.cat([f_c, f_ms], dim=1)))
         self._track(alpha)
-        f_fused = torch.cat([f_c, alpha * f_ms], dim=1)
+        f_c_mod = _apply_branch_droppath(f_c, self.drop_c_prob, self.training)
+        f_fused = torch.cat([f_c_mod, alpha * f_ms], dim=1)
         return f_fused, alpha
 
     def forward(self, x: torch.Tensor, q_ms: Optional[torch.Tensor] = None) -> torch.Tensor:
@@ -170,26 +178,39 @@ class WideClassicalControl(_GateTrackerMixin):
 
 
 class WideGRQuanvNet(_GateTrackerMixin):
-    """Đề xuất: Wide-Fusion GR-Quanv. Nhánh cổ điển 16 kênh + 16 kênh Q-LUT đa tỷ lệ,
-    dung hợp Concat 32 kênh qua cổng alpha 16 kênh khởi tạo thấp (0.18)."""
+    """Đề xuất: Wide-Fusion GR-Quanv v2.
+    - Nhánh cổ điển 16 kênh + 16 kênh Q-LUT đa tỷ lệ (Interp4D SIMD).
+    - Pre-Concat BatchNorm2d bảo đảm Var(f_c) == Var(f_q) ~ 1.0.
+    - Cổng alpha khởi tạo cân bằng tại 0.50 (GATE_INIT_BIAS = 0.0).
+    - Classical Branch DropPath (p=0.15) chống học đường tắt trên ảnh sạch."""
 
-    def __init__(self, num_classes: int = 2, in_q_channels: int = NUM_MS_CHANNELS):
+    def __init__(
+        self,
+        num_classes: int = 2,
+        in_q_channels: int = NUM_MS_CHANNELS,
+        drop_c_prob: float = DEFAULT_DROP_C_PROB,
+    ):
         super().__init__()
         self._init_tracker()
         self.in_q_channels = in_q_channels
+        self.drop_c_prob = drop_c_prob
         self.c_stem = nn.Conv2d(1, NUM_MS_CHANNELS, kernel_size=2, stride=2)
         self.q_mixer = _mixer_stack()
-        self.gate = _gate_stack(NUM_MS_CHANNELS * 2)  # cat[f_c(16), q_raw(16)]
+        # Pre-Concat Normalization cân bằng phương sai Var(f_c) == Var(f_q) ~ 1.0
+        self.norm_c = nn.BatchNorm2d(NUM_MS_CHANNELS)
+        self.norm_q = nn.BatchNorm2d(NUM_MS_CHANNELS)
+        self.gate = _gate_stack(NUM_MS_CHANNELS * 2)  # cat[f_c_norm(16), f_q_norm(16)]
         nn.init.constant_(self.gate[-1].bias, GATE_INIT_BIAS)
         self.head = WideResidualHead(num_classes, in_ch=NUM_MS_CHANNELS * 2)
 
     def forward_features(self, x: torch.Tensor, q_ms: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         q_used = q_ms[:, : self.in_q_channels, :, :]
-        f_c = self.c_stem(x)
-        f_q = self.q_mixer(q_used)
-        alpha = torch.sigmoid(self.gate(torch.cat([f_c, q_used], dim=1)))
+        f_c = self.norm_c(self.c_stem(x))
+        f_q = self.norm_q(self.q_mixer(q_used))
+        alpha = torch.sigmoid(self.gate(torch.cat([f_c, f_q], dim=1)))
         self._track(alpha)
-        f_fused = torch.cat([f_c, alpha * f_q], dim=1)
+        f_c_mod = _apply_branch_droppath(f_c, self.drop_c_prob, self.training)
+        f_fused = torch.cat([f_c_mod, alpha * f_q], dim=1)
         return f_fused, alpha
 
     def forward(self, x: torch.Tensor, q_ms: torch.Tensor) -> torch.Tensor:
@@ -204,13 +225,13 @@ WIDE_MODEL_KINDS = [
 ]
 
 
-def build_model(kind: str, num_classes: int) -> nn.Module:
+def build_model(kind: str, num_classes: int, drop_c_prob: float = DEFAULT_DROP_C_PROB) -> nn.Module:
     if kind == "classical":
         return WideClassicalBaseline(num_classes)
     if kind == "control":
-        return WideClassicalControl(num_classes)
+        return WideClassicalControl(num_classes, drop_c_prob=drop_c_prob)
     if kind == "grquanv":
-        return WideGRQuanvNet(num_classes)
+        return WideGRQuanvNet(num_classes, drop_c_prob=drop_c_prob)
     raise ValueError(kind)
 
 
@@ -219,23 +240,21 @@ if __name__ == "__main__":
     x = torch.randn(4, 1, 28, 28)
     q = torch.randn(4, NUM_MS_CHANNELS, 14, 14)
     for kind in ("classical", "control", "grquanv"):
-        for nc in (2, 9):
+        for nc in (2, 4):
             m = build_model(kind, nc)
+            m.train()
             n_par = sum(p.numel() for p in m.parameters() if p.requires_grad)
             out = m(x, q)
             assert out.shape == (4, nc), out.shape
             out.sum().backward()
             grads = [p.grad is not None for n, p in m.named_parameters() if p.requires_grad]
             print(f"{kind:<9} nc={nc}  params={n_par:>7,d}  out={tuple(out.shape)}  backward_OK={all(grads)}")
-            if kind == "control":
-                assert sum(p.size(0) == 1 for p in m.parameters()) >= 0
             m.eval()
             m(x, q)
             summary = m.get_gate_summary() if hasattr(m, "get_gate_summary") else {}
             if summary and summary["overall_alpha"] is not None:
-                print(f"          alpha_mean={summary['overall_alpha']:.4f} (khởi tạo lý thuyết {ALPHA_INIT:.4f})")
-    # Đối chứng sòng phẳng: control phải >= grquanv (số lớp kernel nhánh giãn cách học được).
-    p_g = sum(p.numel() for p in build_model("grquanv", 9).parameters() if p.requires_grad)
-    p_c = sum(p.numel() for p in build_model("control", 9).parameters() if p.requires_grad)
+                print(f"          alpha_mean={summary['overall_alpha']:.4f} (theoretical_init={ALPHA_INIT:.4f})")
+    p_g = sum(p.numel() for p in build_model("grquanv", 4).parameters() if p.requires_grad)
+    p_c = sum(p.numel() for p in build_model("control", 4).parameters() if p.requires_grad)
     assert p_c >= p_g, (p_c, p_g)
     print(f"FAIR-PLAY OK: control {p_c:,} >= grquanv {p_g:,} (+{p_c - p_g})")

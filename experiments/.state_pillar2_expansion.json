@@ -1,0 +1,111 @@
+{
+  "steps": {
+    "step1_architecture": {
+      "completed": true,
+      "artifact": "src/models/gr_quanv_resblock.py",
+      "updated": "2026-11-07T21:50:39",
+      "params": {
+        "head_linear": "1.6k/9.5k/9.4k",
+        "head_resblock": "56.3k/64.2k/64.1k"
+      }
+    },
+    "step2_feature_extraction": {
+      "completed": true,
+      "artifact": "experiments/extract_multidataset_features.py",
+      "updated": "2026-11-07T21:51:06",
+      "cache": [
+        "data/processed/breast_qlut.npz",
+        "data/processed/pneumonia_qlut.npz"
+      ]
+    },
+    "step3_multidataset_training": {
+      "completed": true,
+      "artifact": "experiments/run_pillar2_expansion.py",
+      "updated": "2026-11-07T22:32:58",
+      "results": "reports/pillar2_expansion_results.json"
+    },
+    "step4_speckle_stress": {
+      "completed": true,
+      "artifact": "experiments/run_pillar2_expansion.py --stage speckle",
+      "updated": "2026-11-07T22:32:58",
+      "results": "reports/pillar2_expansion_results.json"
+    },
+    "step5_report_figures": {
+      "completed": true,
+      "artifact": "experiments/plot_pillar2_expansion.py",
+      "updated": "2026-11-07T22:32:58"
+    },
+    "wide1_architecture": {
+      "completed": true,
+      "updated": "2026-11-08T10:46:06",
+      "artifact": "src/models/gr_quanv_wide.py",
+      "params": "classical=116.9k control=148.3k grquanv=148.2k (C=2); fair-play: control >= grquanv (+100 params of trainable dilated stems)"
+    },
+    "wide_train_full": {
+      "completed": true,
+      "updated": "2026-11-08T12:10:47",
+      "artifact": "experiments/run_pillar2_wide.py",
+      "results": "reports/pillar2_wide_results.json"
+    },
+    "wide_lowdata": {
+      "completed": true,
+      "updated": "2026-11-08T12:33:49",
+      "artifact": "experiments/run_pillar2_wide.py --stage lowdata",
+      "results": "reports/pillar2_wide_results.json"
+    },
+    "wide_report": {
+      "completed": true,
+      "updated": "2026-11-08T12:33:51",
+      "artifact": "experiments/run_pillar2_wide.py --stage report",
+      "results": "reports/pillar2_wide_results.json"
+    },
+    "step2_interp4d_extraction": {
+      "completed": true,
+      "updated": "2026-11-08T15:51:10",
+      "cache": [
+        "data/processed/breast_qlut_interp.npz",
+        "data/processed/pneumonia_qlut_interp.npz"
+      ]
+    },
+    "wide_v2_code_ready": {
+      "completed": true,
+      "updated": "2026-11-08T15:52:41",
+      "artifact": "src/models/gr_quanv_wide.py",
+      "interp4d_caches": [
+        "data/processed/breast_qlut_interp.npz",
+        "data/processed/pneumonia_qlut_interp.npz"
+      ],
+      "gate_init_bias": 0.0,
+      "drop_c_prob": 0.15
+    },
+    "wide_v2_train_full": {
+      "completed": true,
+      "updated": "2026-11-08T17:59:18",
+      "artifact": "experiments/run_pillar2_wide.py",
+      "results": "reports/pillar2_wide_results.json",
+      "version": "v2_interp4d_bias0.0_prebn_drop0.15"
+    },
+    "wide_v2_lowdata": {
+      "completed": true,
+      "updated": "2026-11-08T18:22:38",
+      "artifact": "experiments/run_pillar2_wide.py --stage lowdata",
+      "results": "reports/pillar2_wide_results.json",
+      "version": "v2_interp4d_bias0.0_prebn_drop0.15"
+    },
+    "wide_v2_report": {
+      "completed": true,
+      "updated": "2026-11-08T18:22:40",
+      "artifact": "experiments/run_pillar2_wide.py --stage report",
+      "results": "reports/pillar2_wide_results.json",
+      "version": "v2_interp4d_bias0.0_prebn_drop0.15"
+    }
+  },
+  "notes": [
+    "2026-11-07T21:50:39 Step1 done: gr_quanv_resblock.py (ResidualQuanvHead 56k, GPUMedicalAugment, no Elastic)",
+    "2026-11-07T21:51:06 Step2 done: caches breast/pneumonia, OCT train extraction 1.75s",
+    "2026-11-07T21:54:05 Step3/4 running in background: python experiments/run_pillar2_expansion.py --stage all (log: logs/pillar2_expansion.log). Resumable: re-run same command, finished runs skipped. Step5: python experiments/plot_pillar2_expansion.py after steps 3-4 complete.",
+    "2026-11-07T22:32:58 All 5 steps completed successfully. Figures in reports/figures/, report in reports/pillar2_expansion_report.md",
+    "2026-11-08T10:46:06 TAC VU 1 DONE: Wide-Fusion GR-Quanv da xay dung & self-test pass. Thiet ke: c_stem 1->16 (thay vi 4), mixer 16->32->16 (khong con bottleneck), fusion Concat[f_c, alpha*f_q] 32 kenh, gate bias -1.5 (alpha ~ 0.18 thanh vi 0.62), WideResidualHead(in 32, 48/64). Runner:  experiments/run_pillar2_wide.py (train + lowdata 5/10/20% + report, resumable theo key JSON). Khởi chạy background: --stage all -> reports/pillar2_wide_results.json (log: logs/pillar2_wide.log)",
+    "2026-11-08T15:52:41 Wide v2 code & Interp4D caches ready. Waiting for user command to launch training."
+  ]
+}

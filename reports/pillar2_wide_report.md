@@ -1,60 +1,60 @@
-# Báo cáo Wide-Fusion (Tác vụ 1-3): gỡ nút thắt 4 kênh, warmup+cosine, sample-efficiency
+# Báo cáo Wide-Fusion v2 (Đòn bẩy 3 Mũi Nhọn): Interp4D + Gate Bias 0.0 + Pre-Concat BN + DropPath
 
-Nguồn: `reports/pillar2_wide_results.json`; mã: `experiments/run_pillar2_wide.py`, `src/models/gr_quanv_wide.py`. 5 seeds [0, 42, 100, 2023, 777], chọn epoch theo val, test đánh giá 1 lần, warmup 3 epochs + cosine.
+Nguồn: `reports/pillar2_wide_results.json`; mã: `experiments/run_pillar2_wide.py`, `src/models/gr_quanv_wide.py`. Chế độ Q-LUT: **Interp4D SIMD (Cosine 0.999993)**, `gate_bias = 0.0` (alpha_0 = 0.5), `drop_c_prob = 0.15`. 5 seeds [0, 42, 100, 2023, 777], chọn epoch theo val, test đánh giá 1 lần, warmup 3 epochs + cosine.
 
-## Sạch (full train) - breastmnist - WideResidualHead
+## Sạch (full train) - breastmnist - WideResidualHead v2
 | Mô hình | Tham số | ACC (%) | AUC (%) | F1 (%) |
 |---|---|---|---|---|
-| Wide Classical Baseline | 116882 | 84.49 ± 1.31 | 89.70 ± 1.14 | 89.71 ± 0.96 |
-| Wide Classical Control (0% quantum) | 148342 | 84.49 ± 2.27 | 88.88 ± 1.59 | 89.98 ± 1.29 |
-| Proposed Wide-GR-Quanv | 148242 | 83.72 ± 4.84 | 88.73 ± 2.83 | 89.33 ± 3.03 |
+| Wide Classical Baseline | 116882 | 84.87 ± 0.65 | 89.60 ± 0.80 | 89.81 ± 0.42 |
+| Wide Classical Control (0% quantum) | 148406 | 84.10 ± 0.94 | 88.93 ± 0.99 | 89.56 ± 0.51 |
+| Proposed Wide-GR-Quanv | 148306 | 84.74 ± 1.79 | 89.14 ± 0.97 | 90.03 ± 0.91 |
 
-**ΔACC** = -0.77 điểm (p = 0.808); **ΔAUC** = -0.15 điểm (p = 0.925) (t-test ghép cặp n=5).
+**ΔACC** = +0.64 điểm (p = 0.606); **ΔAUC** = +0.21 điểm (p = 0.601) (t-test ghép cặp n=5).
 
-## Sạch (full train) - pneumoniamnist - WideResidualHead
+## Sạch (full train) - pneumoniamnist - WideResidualHead v2
 | Mô hình | Tham số | ACC (%) | AUC (%) | F1 (%) |
 |---|---|---|---|---|
-| Wide Classical Baseline | 116882 | 89.62 ± 1.23 | 97.58 ± 0.15 | 92.28 ± 0.83 |
-| Wide Classical Control (0% quantum) | 148342 | 90.29 ± 2.13 | 97.73 ± 0.27 | 92.76 ± 1.41 |
-| Proposed Wide-GR-Quanv | 148242 | 89.04 ± 3.18 | 97.26 ± 0.29 | 91.89 ± 2.05 |
+| Wide Classical Baseline | 116882 | 90.90 ± 1.23 | 97.45 ± 0.21 | 93.09 ± 0.80 |
+| Wide Classical Control (0% quantum) | 148406 | 90.22 ± 1.65 | 97.69 ± 0.21 | 92.69 ± 1.10 |
+| Proposed Wide-GR-Quanv | 148306 | 88.94 ± 1.63 | 97.62 ± 0.25 | 91.84 ± 1.06 |
 
-**ΔACC** = -1.25 điểm (p = 0.600); **ΔAUC** = -0.47 điểm (p = 0.117) (t-test ghép cặp n=5).
+**ΔACC** = -1.28 điểm (p = 0.235); **ΔAUC** = -0.08 điểm (p = 0.523) (t-test ghép cặp n=5).
 
-## Sạch (full train) - octmnist - WideResidualHead
+## Sạch (full train) - octmnist - WideResidualHead v2
 | Mô hình | Tham số | ACC (%) | AUC (%) | F1 (%) |
 |---|---|---|---|---|
-| Wide Classical Baseline | 117012 | 80.96 ± 0.85 | 96.73 ± 0.23 | 80.07 ± 1.15 |
-| Wide Classical Control (0% quantum) | 148472 | 83.22 ± 2.00 | 97.21 ± 0.19 | 82.48 ± 2.29 |
-| Proposed Wide-GR-Quanv | 148372 | 83.58 ± 1.98 | 97.24 ± 0.24 | 82.88 ± 2.15 |
+| Wide Classical Baseline | 117012 | 81.32 ± 1.13 | 97.02 ± 0.15 | 80.24 ± 1.54 |
+| Wide Classical Control (0% quantum) | 148536 | 82.52 ± 2.61 | 97.06 ± 0.42 | 81.77 ± 2.95 |
+| Proposed Wide-GR-Quanv | 148436 | 84.04 ± 2.45 | 97.32 ± 0.25 | 83.47 ± 2.62 |
 
-**ΔACC** = +0.36 điểm (p = 0.716); **ΔAUC** = +0.03 điểm (p = 0.770) (t-test ghép cặp n=5).
+**ΔACC** = +1.52 điểm (p = 0.185); **ΔAUC** = +0.26 điểm (p = 0.321) (t-test ghép cặp n=5).
 
 ## Kịch bản ít dữ liệu (ảnh sạch; train 5/10/20%)
 
 ### pneumoniamnist
 | Tỷ lệ train | Wide Control ACC (%) | Wide-GR-Quanv ACC (%) | ΔACC | p |
 |---|---|---|---|---|
-| 5% | 86.47 ± 1.55 | 82.95 ± 3.04 | -3.53 | 0.105 |
-| 10% | 87.66 ± 1.27 | 86.60 ± 1.87 | -1.06 | 0.511 |
-| 20% | 89.68 ± 1.84 | 88.14 ± 2.60 | -1.54 | 0.373 |
-| 100% (full) | 90.29 ± 2.13 | 89.04 ± 3.18 | -1.25 | - |
+| 5% | 87.24 ± 1.90 | 84.68 ± 3.68 | -2.56 | 0.340 |
+| 10% | 87.37 ± 1.84 | 87.05 ± 2.70 | -0.32 | 0.882 |
+| 20% | 88.85 ± 2.12 | 88.75 ± 1.33 | -0.10 | 0.939 |
+| 100% (full) | 90.22 ± 1.65 | 88.94 ± 1.63 | -1.28 | - |
 
 
 ### octmnist
 | Tỷ lệ train | Wide Control ACC (%) | Wide-GR-Quanv ACC (%) | ΔACC | p |
 |---|---|---|---|---|
-| 5% | 74.80 ± 1.47 | 75.06 ± 1.95 | +0.26 | 0.795 |
-| 10% | 77.12 ± 4.93 | 73.80 ± 5.89 | -3.32 | 0.344 |
-| 20% | 81.52 ± 1.80 | 79.84 ± 1.98 | -1.68 | 0.049 |
-| 100% (full) | 83.22 ± 2.00 | 83.58 ± 1.98 | +0.36 | - |
+| 5% | 76.04 ± 2.69 | 76.04 ± 1.57 | -0.00 | 1.000 |
+| 10% | 78.82 ± 5.45 | 77.38 ± 3.39 | -1.44 | 0.585 |
+| 20% | 80.80 ± 1.31 | 79.38 ± 1.83 | -1.42 | 0.371 |
+| 100% (full) | 82.52 ± 2.61 | 84.04 ± 2.45 | +1.52 | - |
 
 ## Cổng alpha trung bình sau huấn luyện (trên test, mean 5 seeds)
 
 | Tập | Mô hình | alpha |
 |---|---|---|
-| breastmnist | control | 0.209 |
-| pneumoniamnist | control | 0.190 |
-| octmnist | control | 0.242 |
-| breastmnist | grquanv | 0.200 |
-| pneumoniamnist | grquanv | 0.186 |
-| octmnist | grquanv | 0.238 |
+| breastmnist | control | 0.483 |
+| pneumoniamnist | control | 0.440 |
+| octmnist | control | 0.422 |
+| breastmnist | grquanv | 0.480 |
+| pneumoniamnist | grquanv | 0.442 |
+| octmnist | grquanv | 0.421 |
