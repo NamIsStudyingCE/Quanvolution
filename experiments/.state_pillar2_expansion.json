@@ -98,6 +98,12 @@
       "artifact": "experiments/run_pillar2_wide.py --stage report",
       "results": "reports/pillar2_wide_results.json",
       "version": "v2_interp4d_bias0.0_prebn_drop0.15"
+    },
+    "wide_v2_speckle": {
+      "completed": true,
+      "updated": "2026-11-08T20:40:50",
+      "artifact": "experiments/eval_speckle_wide.py",
+      "results": "reports/pillar2_wide_speckle_results.json"
     }
   },
   "notes": [

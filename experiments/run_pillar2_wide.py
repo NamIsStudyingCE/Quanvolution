@@ -390,7 +390,7 @@ def load_dataset_with_cache(ds: str, interp4d: bool = True):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--stage", default="all", choices=["train", "lowdata", "report", "all"])
+    p.add_argument("--stage", default="all", choices=["train", "lowdata", "speckle", "report", "all"])
     p.add_argument("--datasets", default="breastmnist,pneumoniamnist,octmnist")
     p.add_argument("--seeds", default=",".join(map(str, SEEDS)))
     p.add_argument("--interp4d", dest="interp4d", action="store_true", default=True,
@@ -411,7 +411,7 @@ def main():
 
     global DATA
     DATA = {}
-    if a.stage != "report":
+    if a.stage not in ("report", "speckle"):
         for ds in a.datasets:
             DATA[ds] = load_dataset_with_cache(ds, interp4d=a.interp4d)
 
@@ -466,6 +466,11 @@ def main():
                                 ("Proposed Wide-GR-Quanv", "grquanv")],
                   [f"r{int(round(f * 100))}" for f in LOWDATA_FS])
         st.mark("wide_v2_lowdata", True, artifact="experiments/run_pillar2_wide.py --stage lowdata", results=a.results, version=arch_version)
+    if a.stage in ("speckle", "all"):
+        from eval_speckle_wide import run_speckle_bench
+        run_speckle_bench(datasets=a.datasets, seeds=a.seeds, ckpt_dir=a.ckpt_dir,
+                          master_results=a.results)
+        st.mark("wide_v2_speckle", True, artifact="experiments/eval_speckle_wide.py", results=a.results, version=arch_version)
     if a.stage in ("report", "all"):
         stage_report(a, R)
         st.mark("wide_v2_report", True, artifact="experiments/run_pillar2_wide.py --stage report", results=a.results, version=arch_version)
