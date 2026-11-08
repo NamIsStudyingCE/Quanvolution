@@ -39,7 +39,8 @@ DEV = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def run_speckle_bench(datasets=None, seeds=None, sigmas=None, ckpt_dir="weights/pillar2_wide",
                       out_json="reports/pillar2_wide_speckle_results.json",
                       master_results="reports/pillar2_wide_results.json",
-                      fig_path="reports/figures/wide_v2_speckle_degradation.png"):
+                      fig_path="reports/figures/wide_v2_speckle_degradation.png",
+                      phase_damping: bool = True):
     if datasets is None:
         datasets = ["breastmnist", "pneumoniamnist", "octmnist"]
     if seeds is None:
@@ -52,7 +53,8 @@ def run_speckle_bench(datasets=None, seeds=None, sigmas=None, ckpt_dir="weights/
 
     results = {
         "metadata": {
-            "version": "v2_interp4d_bias0.0_prebn_drop0.15",
+            "version": "v2_interp4d_bias0.0_prebn_drop0.15_phasedamp",
+            "phase_damping": bool(phase_damping),
             "sigmas": sigmas,
             "noise_draws": NOISE_DRAWS,
             "seeds": seeds,
@@ -109,8 +111,8 @@ def run_speckle_bench(datasets=None, seeds=None, sigmas=None, ckpt_dir="weights/
             for dr in draws:
                 t0_draw = time.perf_counter()
                 noisy_u8 = speckle(te_f, sg, dr)
-                # Compute Q-LUT features dynamically for noisy image
-                xu8, qbuf = to_gpu_wide(noisy_u8, interp4d=True)
+                # Compute Q-LUT features dynamically for noisy image (with Pre-LUT Phase Damping)
+                xu8, qbuf = to_gpu_wide(noisy_u8, interp4d=True, phase_damping=phase_damping)
                 extract_ms = (time.perf_counter() - t0_draw) * 1000
 
                 for _, kind in WIDE_MODEL_KINDS:

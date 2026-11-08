@@ -1,2 +1,12 @@
-[build]
+[target.x86_64-pc-windows-gnu]
 rustflags = ["-C", "target-cpu=native"]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-cpu=native"]
+
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-C", "target-cpu=native"]
+
+# NVIDIA Jetson Nano Target: Quad-core ARM Cortex-A57 @ 1.43 GHz + ARMv8 NEON SIMD
+[target.aarch64-unknown-linux-gnu]
+rustflags = ["-C", "target-cpu=cortex-a57", "-C", "target-feature=+neon"]

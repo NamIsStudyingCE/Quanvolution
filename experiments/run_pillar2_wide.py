@@ -55,20 +55,26 @@ WIDE_HP = {
 }
 
 
-def to_gpu_wide(u8: np.ndarray, interp4d: bool = True, cached_q: np.ndarray = None):
+def to_gpu_wide(u8: np.ndarray, interp4d: bool = True, cached_q: np.ndarray = None, phase_damping: bool = False):
     """Đưa ảnh uint8 (N,28,28) và đặc trưng Q-LUT (16 kênh) lên GPU.
     - Nếu `interp4d=True`: lưu đặc trưng ở dạng float16 trên GPU (tiết kiệm VRAM cho 97k ảnh OCT,
       giữ độ chính xác nội suy liên tục ~1e-4) và chuyển sang float32 trong `deq_wide`.
-    - Nếu `interp4d=False`: lưu ở dạng int8 và chia 127.0 trong `deq_wide`."""
+    - Nếu `interp4d=False`: lưu ở dạng int8 và chia 127.0 trong `deq_wide`.
+    - Nếu `phase_damping=True`: áp dụng bộ giảm xóc pha tiền tra bảng (Pre-LUT Phase Damping)."""
     xu8_gpu = torch.from_numpy(np.ascontiguousarray(u8, dtype=np.uint8)).to(DEV)
-    if cached_q is not None:
+    if cached_q is not None and not phase_damping:
         if interp4d:
             q_gpu = torch.from_numpy(np.ascontiguousarray(cached_q, dtype=np.float16)).to(DEV)
         else:
             q_gpu = torch.from_numpy(np.ascontiguousarray(cached_q, dtype=np.int8)).to(DEV)
         return xu8_gpu, q_gpu
 
-    q, _ = extract_multiscale_qlut(np.ascontiguousarray(u8), include_axial=True, interp4d=interp4d)
+    q, _ = extract_multiscale_qlut(
+        np.ascontiguousarray(u8),
+        include_axial=True,
+        interp4d=interp4d,
+        phase_damping=phase_damping,
+    )
     if interp4d:
         q_gpu = q.to(dtype=torch.float16, device=DEV)
     else:

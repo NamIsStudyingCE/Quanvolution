@@ -1,15 +1,24 @@
 [package]
 name = "rust_qlut"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
+description = "Native SIMD Quantum Lookup Table (Q-LUT) Inference Engine for Edge Medical Devices (x86_64 AVX2/FMA & ARM64 Cortex-A57 NEON)"
 
 [lib]
 name = "rust_qlut"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[[bin]]
+name = "medquanv-cli"
+path = "src/bin/medquanv_cli.rs"
+
+[features]
+default = ["python"]
+python = ["dep:pyo3", "dep:numpy"]
 
 [dependencies]
-pyo3 = { version = "0.22", features = ["extension-module"] }
-numpy = "0.22"
+pyo3 = { version = "0.22", features = ["extension-module"], optional = true }
+numpy = { version = "0.22", optional = true }
 rayon = "1.10"
 
 [profile.release]

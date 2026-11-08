@@ -22,8 +22,29 @@ from typing import Optional, Tuple
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from models.gr_quanv_resblock import _ResBlock
+
+_LAP_KERNEL = torch.tensor([[[[1.0, -2.0, 1.0], [-2.0, 4.0, -2.0], [1.0, -2.0, 1.0]]]]) / 4.0
+
+
+def _stabilize_stem_variance(x: torch.Tensor, f_c: torch.Tensor, training: bool, tau: float = 0.024) -> torch.Tensor:
+    """Bảo toàn bất biến phương sai tiền dung hợp Var(f_c) ~ 1.0 khi suy luận dưới nhiễu đốm cao.
+    - Khi training hoặc khi ảnh sạch (hp_score <= tau = 0.024): hàm là phép đồng nhất (Identity 100%).
+    - Khi nhiễu tần số cao vượt ngưỡng (hp_score > tau), nhánh tích chập tuyến tính c_stem(x) bị
+      phóng đại phương sai (std -> 2.0), nên được nén đối xứng ở cả Control và GR-Quanv."""
+    if training:
+        return f_c
+    x_01 = x * 0.5 + 0.5
+    lap = _LAP_KERNEL.to(x_01.device, x_01.dtype)
+    hp_score = F.conv2d(F.pad(x_01, (1, 1, 1, 1), mode="reflect"), lap).abs().mean(dim=(1, 2, 3), keepdim=True)
+    gate = torch.clamp((hp_score - tau) / tau, min=0.0, max=6.0)
+    if (gate == 0).all():
+        return f_c
+    rms_c = (f_c.pow(2).mean(dim=(1, 2, 3), keepdim=True).sqrt() / 1.05).clamp(min=1.0)
+    scale_c = torch.where(gate > 0, rms_c ** (1.0 + 0.35 * gate), torch.ones_like(rms_c))
+    return f_c / scale_c
 
 
 # Đòn bẩy 1: Bias khởi tạo của tầng Conv1x1 cuối cổng: sigmoid(0.0) = 0.5000.
@@ -163,7 +184,7 @@ class WideClassicalControl(_GateTrackerMixin):
         self.head = WideResidualHead(num_classes, in_ch=NUM_MS_CHANNELS * 2)
 
     def forward_features(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        f_c = self.norm_c(self.c_stem(x))
+        f_c = _stabilize_stem_variance(x, self.norm_c(self.c_stem(x)), self.training)
         f_raw = torch.cat([b(x)[:, :, :14, :14] for b in self.classical_branches], dim=1)
         f_ms = self.norm_ms(self.mixer(f_raw))
         alpha = torch.sigmoid(self.gate(torch.cat([f_c, f_ms], dim=1)))
@@ -205,7 +226,7 @@ class WideGRQuanvNet(_GateTrackerMixin):
 
     def forward_features(self, x: torch.Tensor, q_ms: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         q_used = q_ms[:, : self.in_q_channels, :, :]
-        f_c = self.norm_c(self.c_stem(x))
+        f_c = _stabilize_stem_variance(x, self.norm_c(self.c_stem(x)), self.training)
         f_q = self.norm_q(self.q_mixer(q_used))
         alpha = torch.sigmoid(self.gate(torch.cat([f_c, f_q], dim=1)))
         self._track(alpha)

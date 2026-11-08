@@ -26,8 +26,40 @@ from typing import Dict, Tuple, Optional
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 import rust_qlut
+
+_LAP_KERNEL = torch.tensor([[[[1.0, -2.0, 1.0], [-2.0, 4.0, -2.0], [1.0, -2.0, 1.0]]]]) / 4.0
+
+
+def phase_damping_u8(
+    imgs_u8: np.ndarray,
+    beta: float = 18.0,
+    tau: float = 0.024,
+) -> np.ndarray:
+    """
+    Bộ giảm xóc pha tiền tra bảng (SNR-Adaptive Pre-LUT Phase Damping).
+    Khi nhiễu đốm (Speckle Noise) có biên độ cao (sigma >= 0.15), biến thiên cục bộ
+    vượt quá ngưỡng đơn điệu pi/2 của cổng quay R_y(pi * x), gây hiện tượng gập pha
+    (Phase Wrapping / Aliasing) trên mặt cầu Bloch.
+    - Ước lượng nhiễu mù (blind high-frequency Laplacian score) không cần biết trước sigma.
+    - Với ảnh sạch (hp_score <= tau = 0.024): gate = 0 -> bảo toàn bit-exact 100% pixel gốc.
+    - Với ảnh nhiễu cao (hp_score > tau): nén biên độ pha về vùng tuyến tính an toàn:
+        x_calibrated = clamp(x_bar + (x - x_bar) / (1 + beta * gate * std_local), 0, 1)
+    """
+    imgs_u8 = np.ascontiguousarray(imgs_u8, dtype=np.uint8)
+    x = torch.from_numpy(imgs_u8.astype(np.float32) / 255.0).unsqueeze(1)
+    lap = _LAP_KERNEL.to(x.device, x.dtype)
+    hp_score = F.conv2d(F.pad(x, (1, 1, 1, 1), mode="reflect"), lap).abs().mean(dim=(1, 2, 3), keepdim=True)
+    gate = torch.clamp((hp_score - tau) / tau, min=0.0, max=6.0)
+    if (gate == 0).all():
+        return imgs_u8
+    x_bar = F.avg_pool2d(F.pad(x, (1, 1, 1, 1), mode="reflect"), 3, stride=1)
+    diff = x - x_bar
+    local_std = torch.sqrt(F.avg_pool2d(F.pad(diff ** 2, (1, 1, 1, 1), mode="reflect"), 3, stride=1) + 1e-8)
+    damped = torch.clamp(x_bar + diff / (1.0 + beta * gate * local_std), 0.0, 1.0)
+    return np.ascontiguousarray((damped.squeeze(1).numpy() * 255.0).round().astype(np.uint8))
 
 
 def _build_dilated_u8(imgs_u8: np.ndarray, dilation: int) -> np.ndarray:
@@ -74,6 +106,7 @@ def extract_multiscale_qlut(
     imgs_u8: np.ndarray,
     include_axial: bool = True,
     interp4d: bool = False,
+    phase_damping: bool = False,
 ) -> Tuple[torch.Tensor, float]:
     """
     Trích xuất đặc trưng lượng tử đa tỷ lệ (Multi-Scale Quantum LUT Features)
@@ -81,10 +114,15 @@ def extract_multiscale_qlut(
       - interp4d=False: `rust_qlut.forward_int8_nchw` (4-bit shift INT8 rời rạc)
       - interp4d=True : `rust_qlut.forward_interp4d_nchw` (nội suy đa tuyến tính 4D SIMD FP32,
                         Cosine 0.999993, giữ trọn vi tương phản dưới ngưỡng 6.67%)
+      - phase_damping : Kích hoạt bộ giảm xóc pha tiền tra bảng (SNR-Adaptive Pre-LUT Phase Damping)
+                        để chống gập pha (Phase Wrapping) khi nhiễu đốm cao.
     """
     imgs_u8 = np.ascontiguousarray(imgs_u8, dtype=np.uint8)
     N = imgs_u8.shape[0]
     t0 = time.perf_counter()
+
+    if phase_damping:
+        imgs_u8 = phase_damping_u8(imgs_u8)
 
     u2 = _build_dilated_u8(imgs_u8, dilation=2)
     u3 = _build_dilated_u8(imgs_u8, dilation=3)
