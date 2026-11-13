@@ -184,7 +184,9 @@ class WideClassicalControl(_GateTrackerMixin):
         self.head = WideResidualHead(num_classes, in_ch=NUM_MS_CHANNELS * 2)
 
     def forward_features(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        f_c = _stabilize_stem_variance(x, self.norm_c(self.c_stem(x)), self.training)
+        f_c = _stabilize_stem_variance(
+            x, self.norm_c(self.c_stem(x)), self.training, tau=getattr(self, "stabilize_tau", 0.024)
+        )
         f_raw = torch.cat([b(x)[:, :, :14, :14] for b in self.classical_branches], dim=1)
         f_ms = self.norm_ms(self.mixer(f_raw))
         alpha = torch.sigmoid(self.gate(torch.cat([f_c, f_ms], dim=1)))
@@ -226,7 +228,9 @@ class WideGRQuanvNet(_GateTrackerMixin):
 
     def forward_features(self, x: torch.Tensor, q_ms: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         q_used = q_ms[:, : self.in_q_channels, :, :]
-        f_c = _stabilize_stem_variance(x, self.norm_c(self.c_stem(x)), self.training)
+        f_c = _stabilize_stem_variance(
+            x, self.norm_c(self.c_stem(x)), self.training, tau=getattr(self, "stabilize_tau", 0.024)
+        )
         f_q = self.norm_q(self.q_mixer(q_used))
         alpha = torch.sigmoid(self.gate(torch.cat([f_c, f_q], dim=1)))
         self._track(alpha)

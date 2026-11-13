@@ -1,0 +1,13 @@
+{
+  "arch": "x86_64 (AVX2/FMA/SSSE3 SIMD)",
+  "num_test_samples": 624,
+  "folded_weights_kib": 577.26,
+  "folded_weights_floats": 147778,
+  "int8_l2_total_kib": 833.26,
+  "interp4d_l2_total_kib": 1601.26,
+  "modes": {
+    "int8_shift": {"rust_acc": 89.4231, "pytorch_acc": 89.4231, "max_logit_diff": 0.00000381, "qlut_4scale_us": 1.788, "e2e_us": 6937.004, "e2e_fps": 144.15},
+    "int8_grid": {"rust_acc": 89.4231, "pytorch_acc": 89.4231, "max_logit_diff": 0.00000477, "qlut_4scale_us": 1.707, "e2e_us": 6730.867, "e2e_fps": 148.57},
+    "interp4d": {"rust_acc": 90.2244, "pytorch_acc": 90.2244, "max_logit_diff": 0.00000429, "qlut_4scale_us": 20.078, "e2e_us": 6702.224, "e2e_fps": 149.20}
+  }
+}

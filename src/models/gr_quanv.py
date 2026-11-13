@@ -52,7 +52,11 @@ def phase_damping_u8(
     x = torch.from_numpy(imgs_u8.astype(np.float32) / 255.0).unsqueeze(1)
     lap = _LAP_KERNEL.to(x.device, x.dtype)
     hp_score = F.conv2d(F.pad(x, (1, 1, 1, 1), mode="reflect"), lap).abs().mean(dim=(1, 2, 3), keepdim=True)
-    gate = torch.clamp((hp_score - tau) / tau, min=0.0, max=6.0)
+    raw_gate = torch.clamp((hp_score - tau) / tau, min=0.0, max=6.0)
+    if (raw_gate == 0).all():
+        return imgs_u8
+    # Quadratic soft-start cho raw_gate < 0.65 (vùng nhiễu nhẹ sigma=0.05), giữ nguyên ở vùng nhiễu cao (sigma >= 0.10)
+    gate = raw_gate * torch.clamp((raw_gate - 0.15) / 0.50, min=0.0, max=1.0)
     if (gate == 0).all():
         return imgs_u8
     x_bar = F.avg_pool2d(F.pad(x, (1, 1, 1, 1), mode="reflect"), 3, stride=1)
