@@ -3,6 +3,8 @@
 //! (Zero Python | Zero PyTorch | Zero CUDA/GPU Dependencies).
 //! Target Reference: NVIDIA Jetson Nano (ARM Cortex-A57, 2 MB L2 Cache, 4 GB LPDDR4)
 
+mod v3_suite;
+
 use rust_qlut::{
     kernel_int8_nchw_single, kernel_interp4d_nchw_single, qlut_forward_int8_nhwc_strided_2d,
     qlut_forward_interp4d_nchw_strided_2d, qlut_table_fp32_bytes, qlut_table_int8_bytes, IMG_H,
@@ -407,26 +409,34 @@ impl WideGRQuanvNetV2 {
         }
         for oc in 0..c_out {
             let ob = oc * spatial;
+            let out_ch = &mut out[ob..ob + spatial];
             for ic in 0..c_in {
                 let ib = ic * spatial;
+                let inp_ch = &inp[ib..ib + spatial];
                 let kb = (oc * c_in + ic) * 9;
                 for kr in 0..3 {
                     let off_r = (kr * dil) as isize - pad as isize;
+                    let r_start = (-off_r).max(0).min(h as isize) as usize;
+                    let r_end = ((h as isize) - off_r).max(0).min(h as isize) as usize;
                     for kc in 0..3 {
                         let kval = wt[kb + kr * 3 + kc];
+                        if kval == 0.0 {
+                            continue;
+                        }
                         let off_c = (kc * dil) as isize - pad as isize;
-                        for r in 0..h {
-                            let ir = r as isize + off_r;
-                            if ir < 0 || ir >= h as isize {
-                                continue;
-                            }
-                            let in_row = ib + (ir as usize) * w_dim;
-                            let out_row = ob + r * w_dim;
-                            for c in 0..w_dim {
-                                let ic_pos = c as isize + off_c;
-                                if ic_pos >= 0 && ic_pos < w_dim as isize {
-                                    out[out_row + c] += inp[in_row + ic_pos as usize] * kval;
-                                }
+                        let c_start = (-off_c).max(0).min(w_dim as isize) as usize;
+                        let c_end = ((w_dim as isize) - off_c).max(0).min(w_dim as isize) as usize;
+                        let len = c_end.saturating_sub(c_start);
+                        if len == 0 {
+                            continue;
+                        }
+                        let ic_start = (c_start as isize + off_c) as usize;
+                        for r in r_start..r_end {
+                            let ir = (r as isize + off_r) as usize;
+                            let src = &inp_ch[ir * w_dim + ic_start..ir * w_dim + ic_start + len];
+                            let dst = &mut out_ch[r * w_dim + c_start..r * w_dim + c_start + len];
+                            for i in 0..len {
+                                dst[i] += src[i] * kval;
                             }
                         }
                     }
@@ -961,6 +971,10 @@ fn verify_and_benchmark_mode(
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    if args.iter().any(|a| a == "--suite-v3") {
+        v3_suite::run_v3_suite(&args);
+        return;
+    }
     let mut weights_path = "weights/wide_v2_pneumoniamnist_s42_rust.bin".to_string();
     let mut verify_path = "data/processed/pneumoniamnist_test_rust_verify.bin".to_string();
     let mut bench_highres = false;

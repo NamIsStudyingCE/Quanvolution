@@ -141,3 +141,79 @@ Theo dữ liệu kiểm định thực nghiệm `reports/pareto_int8_vs_interp4d
    - *LUT-aware / Quantization-Aware Fine-Tuning (QAT)* dùng Straight-Through Estimator (STE) cho `INT8 Shift-LUT` để thu hồi ~1.5–3.4% ACC bị mất trên OCTMNIST và PneumoniaMNIST mà vẫn giữ kích thước 256 KiB.
    - *Đối xứng hóa giảm xóc nhiễu*: Áp dụng `phase_damping_u8` cho cả nhánh `c_stem` bên trong `WideGRQuanvNet` khi triển khai thực tế (hoặc huấn luyện kết hợp nhiễu nhẹ).
    - *Tối ưu hóa toàn mạng `WideResidualHead`*: Lượng tử hóa INT8 (Weight+Activation) và/hoặc nhân ma trận SIMD (`im2col` + GEMM NEON/AVX2) cho `Conv2d` phía sau để hạ độ trễ End-to-End từ ~6.7 ms xuống ngưỡng dưới mili-giây.
+
+---
+
+# PHA B: KIẾN TRÚC `GR-QUANV V3` (TRAINABLE VARIATIONAL Q-LUT, INT8-QAT & LOW-FLOP END-TO-END)
+
+Sau khi kiểm chứng Ngưỡng A (tối ưu hóa không huấn luyện lại trên 30 checkpoint `v2` khóa cứng) cho thấy hai giới hạn cấu trúc (`reports/threshold_a_results.json`: bản `INT8 256 KiB` vẫn đạt `80.82%` < Control `82.52%` trên OCTMNIST và phần đầu `WideResidualHead` ~18.9M MACs còn cồng kềnh), Pha B triển khai dòng kiến trúc tách biệt `v3` (`src/models/gr_quanv_v3.py`, toàn bộ checkpoint lưu tại `weights/pillar3_v3/`) giải quyết đồng thời 3 nút thắt:
+
+## 7. CƠ CHẾ TOÁN HỌC & KIẾN TRÚC `GR-QUANV V3`
+
+1. **Mạch Q-LUT Biến phân Học được (`TrainableQLUTBank`) & QAT Bit-Exact**:
+   - Biểu diễn chính xác toàn bộ mạch $4$-qubit `StronglyEntanglingLayers` ($L=2$ tầng, $U(\theta) \in SU(16)$) và $4$ toán tử đo $M_k(\theta) = U^\dagger(\theta) Z_k U(\theta)$ bằng tensor PyTorch khả vi (sai số cực đại so với giải tích PennyLane đo được là **$5.43 \times 10^{-7}$**).
+   - **Lượng tử hóa Nhận thức Huấn luyện (`INT8-QAT + Straight-Through Estimator`)**: Cho phép lan truyền ngược thẳng qua các khoảng pha $4$-bit ($p \gg 4$) và biên độ `int8` ($[-127, 127]/127.0$) kết hợp bộ điều chuẩn độ trơn 4D Total Variation (`cached_smoothness_loss`). Kết quả: sau khi biên dịch mạch đã học sang bảng tra `256 KiB` `INT8 Shift-LUT`, độ lệch độ chính xác (`compile_acc_diff`) trên toàn bộ **30 lượt đánh giá lượng tử** (3 tập dữ liệu $\times$ 2 mô hình $\times$ 5 seeds) đạt chính xác **`0.0000%`**.
+   - **Tái sử dụng Tầng 2 Biệt lập Nhiễu (`_extract_stage2_qlut`, 0 KiB L2 phụ trội)**: Cổng đối xứng bảo toàn phương sai $\theta_g = \frac{\pi}{2}\alpha \Rightarrow w_c = \sqrt{2}\cos\theta_g$, $w_q = \sqrt{2}\sin\theta_g$ cô lập hoàn toàn nhánh lượng tử $w_q f_q$ khỏi nhiễu từ nhánh cổ điển `c_stem` trước khi chiếu (`s2_proj: 16 -> 4 ch`) và tra lại bảng `Table 0` (`2x2`, stride=1, thêm `16` kênh đặc trưng phi tuyến tại $0\text{ MAC}$).
+2. **Thiết kế Đầu ra Gọn nhẹ Low-FLOP (`DSResBlock` + `_dw_dilated_mixer`) & So sánh Công bằng**:
+   - Thay `WideResidualHead` (`18.90M` MACs) bằng bộ trộn `_dw_dilated_mixer(16)` + 2 khối `DSResBlock` (`width1=64, width2=96`). Tổng chi phí thực thi của `GRQuanvNetV3` giảm xuống **`4.03M` MACs** (`39,250` tham số trên Breast/Pneumonia; `4.03M / 39,444` trên OCTMNIST) — giảm **`4.69×` MACs** và **`3.78×` tham số** so với `WideClassicalControl v2` (`18.90M` MACs, `148,406` tham số).
+   - Thiết lập đối chứng công bằng ngang tầm FLOP & cấu trúc `ClassicalControlV3Light` (`4.07M` MACs, `39,470–39,664` tham số, thay Q-LUT bằng 4 nhánh `Conv2d` giãn nở + nhánh `s2_proj` tích chập cổ điển tương ứng) và cặp siêu nhỏ **Micro-Edge / TinyML** `MicroEdgeNetV3`: `micro_quanv` (`169,408–169,472` MACs, `2,002–2,068` tham số) vs `micro_ctrl` (`186,336–186,400` MACs, `2,078–2,144` tham số).
+
+---
+
+## 8. ĐỐI CHỨNG ĐỘ CHÍNH XÁC & ĐỘ BỀN NHIỄU ĐỐM 5 SEEDS (3 BỘ DỮ LIỆU MEDMNIST)
+
+Toàn bộ kết quả thực nghiệm (`reports/pillar3_v3_results.json`, 5 paired seeds `[0, 42, 100, 2023, 777]`, 3 noise draws mỗi mức $\sigma$, hình trực quan `reports/figures/v3_vs_cnn_pareto.png`) được ghi nhận nguyên trạng cho cấu hình **`INT8 Shift-LUT (256 KiB)` (tuyệt đối không dùng `Interp4D`)**:
+
+| Tập dữ liệu | Mô hình | MACs / Params | Sạch $\sigma=0.00$ (ACC% / F1%) | $\sigma=0.05$ (ACC%) | $\sigma=0.10$ (ACC%) | $\sigma=0.15$ (ACC%) | $\sigma=0.20$ (ACC% / F1%) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **BreastMNIST** | `ctrl_v2_full` (18.9M) | `18.90M / 148.4K` | $84.10 \pm 1.05$ / $89.56$ | $83.80 \pm 1.93$ | **$83.21 \pm 1.58$** | **$81.97 \pm 3.18$** | **$81.58 \pm 4.79$** / **$86.86$** |
+| **BreastMNIST** | `ctrl_v3_light` (4.1M) | `4.07M / 39.5K` | $84.49 \pm 1.94$ / $89.51$ | $84.23 \pm 1.00$ | $79.32 \pm 4.97$ | $76.37 \pm 7.01$ | $75.13 \pm 7.45$ / $80.27$ |
+| **BreastMNIST** | **`quanv_v3_int8` (256KiB)** | **`4.03M / 39.3K`** | **$85.00 \pm 1.48$ / $90.01$** | **$84.27 \pm 0.86$** | $80.47 \pm 2.82$ | $76.50 \pm 4.78$ | $75.00 \pm 5.90$ / $80.13$ |
+| **BreastMNIST** | `micro_ctrl` (0.19M) | `0.186M / 2.08K` | $83.33 \pm 1.28$ / $89.36$ | $81.20 \pm 2.08$ | $81.79 \pm 1.29$ | $77.65 \pm 3.30$ | $75.34 \pm 4.27$ / $81.27$ |
+| **BreastMNIST** | `micro_quanv` (0.17M) | `0.169M / 2.00K` | $81.92 \pm 1.39$ / $88.61$ | $80.68 \pm 1.66$ | $82.35 \pm 1.64$ | $79.70 \pm 0.96$ | $76.54 \pm 2.73$ / $82.48$ |
+| **PneumoniaMNIST** | `ctrl_v2_full` (18.9M) | `18.90M / 148.4K` | **$90.22 \pm 1.85$ / $92.69$** | **$89.48 \pm 1.71$** | **$87.79 \pm 2.31$** | **$86.65 \pm 2.09$** | $82.68 \pm 2.05$ / $86.28$ |
+| **PneumoniaMNIST** | `ctrl_v3_light` (4.1M) | `4.07M / 39.5K` | $89.23 \pm 1.70$ / $91.98$ | $87.82 \pm 1.70$ | $85.83 \pm 2.42$ | $84.97 \pm 2.50$ | $83.55 \pm 2.06$ / $87.64$ |
+| **PneumoniaMNIST** | **`quanv_v3_int8` (256KiB)** | **`4.03M / 39.3K`** | $89.36 \pm 2.09$ / $92.06$ | $88.29 \pm 1.72$ | $85.79 \pm 2.18$ | $85.04 \pm 2.37$ | **$84.13 \pm 1.81$ / $88.12$** |
+| **PneumoniaMNIST** | `micro_ctrl` (0.19M) | `0.186M / 2.08K` | $88.62 \pm 0.96$ / $91.31$ | $82.16 \pm 3.10$ | $83.87 \pm 1.31$ | $81.93 \pm 1.50$ | $74.29 \pm 3.66$ / $77.53$ |
+| **PneumoniaMNIST** | `micro_quanv` (0.17M) | `0.169M / 2.00K` | $88.24 \pm 1.18$ / $91.06$ | $85.56 \pm 1.37$ | $83.35 \pm 2.15$ | $83.60 \pm 1.48$ | $77.87 \pm 1.85$ / $81.19$ |
+| **OCTMNIST** | `ctrl_v2_full` (18.9M) | `18.90M / 148.5K` | $82.52 \pm 2.92$ / $81.77$ | **$76.47 \pm 4.32$** | $58.46 \pm 4.94$ | $44.78 \pm 3.86$ | $38.30 \pm 4.55$ / $25.88$ |
+| **OCTMNIST** | `ctrl_v3_light` (4.1M) | `4.07M / 39.7K` | $80.18 \pm 2.57$ / $79.05$ | $74.38 \pm 4.11$ | $57.32 \pm 4.80$ | $44.75 \pm 1.82$ | $38.24 \pm 1.23$ / $26.03$ |
+| **OCTMNIST** | **`quanv_v3_int8` (256KiB)** | **`4.03M / 39.4K`** | **$82.90 \pm 3.73$ / $81.93$** | $73.20 \pm 3.45$ | $51.23 \pm 2.28$ | $42.81 \pm 1.09$ | **$40.52 \pm 1.36$ / $27.21$** |
+| **OCTMNIST** | `micro_ctrl` (0.19M) | `0.186M / 2.14K` | $78.72 \pm 3.40$ / $78.13$ | $70.69 \pm 3.13$ | $51.72 \pm 4.39$ | $42.72 \pm 1.84$ | $38.98 \pm 1.77$ / $26.75$ |
+| **OCTMNIST** | `micro_quanv` (0.17M) | `0.169M / 2.07K` | $75.10 \pm 1.82$ / $73.77$ | $74.61 \pm 1.21$ | **$65.41 \pm 2.38$** | **$48.47 \pm 2.73$** | $36.97 \pm 2.73$ / $27.34$ |
+
+### Phân tích Thống kê (Paired t-test, 5 Seeds)
+1. **Khắc phục dứt điểm suy giảm lượng tử hóa Zero-shot `INT8` trên ảnh sạch**:
+   - Với QAT + Variational Q-LUT, `quanv_v3_int8` nâng độ chính xác ảnh sạch `INT8 (256 KiB)` trên **OCTMNIST** từ `80.64%` (`v2`) lên **`82.90%`**, vượt cả `ctrl_v3_light` (`+2.72%`, $p=0.1920$) lẫn mạng nặng gấp $4.69\times$ `ctrl_v2_full` (`+0.38%`, $p=0.8093$). Trên **BreastMNIST**, `quanv_v3_int8` đạt **`85.00%`** — đứng đầu cả bảng (`+0.51%` vs `ctrl_v3_light`, $p=0.2420$; `+0.90%` vs `ctrl_v2_full`, $p=0.1347$). Trên **PneumoniaMNIST**, `quanv_v3_int8` tăng từ `88.49%` (`v2 INT8`) lên **`89.36%`** (`+0.13%` vs `ctrl_v3_light`, còn kém nhẹ `-0.87%` so với `ctrl_v2_full`, $p=0.6032$).
+2. **Đảo ngược thế thua ở $\sigma=0.20$ nhưng vẫn còn điểm yếu cục bộ**:
+   - Trên **PneumoniaMNIST** ($\sigma=0.20$), `quanv_v3_int8` đạt **`84.13%`**, vượt cả `ctrl_v3_light` (`83.55%`, `+0.59%`, $p=0.4664$) lẫn `ctrl_v2_full` (`82.68%`, `+1.45%`, $p=0.3085$), lội ngược dòng hoàn toàn so với nhánh `4_grquanv_damped` Pha A (`76.62%`). Trên **OCTMNIST** ($\sigma=0.20$), `quanv_v3_int8` vượt `ctrl_v3_light` có ý nghĩa thống kê (`40.52%` vs `38.24%`, `+2.28%`, $p=0.0090$).
+   - **Kết quả tiêu cực cần ghi nhận thẳng thắn**: Tại mức nhiễu trung bình **OCTMNIST $\sigma=0.10$**, `quanv_v3_int8` tụt xuống **`51.23%`**, thấp hơn `ctrl_v3_light` (`57.32%`, $-6.09\%$, $p=0.0710$) và `ctrl_v2_full` (`58.46%`, $-7.23\%$, $p=0.0521$). Ngoài ra trên **BreastMNIST** $\sigma \ge 0.15$, `ctrl_v2_full` có dung lượng mô hình lớn hơn vẫn kháng nhiễu tốt hơn đáng kể (`81.58%` vs `75.00%` tại $\sigma=0.20$, $p=0.0145$), trong khi ở cùng ngưỡng $4\text{M}$ MACs thì `quanv_v3_int8` và `ctrl_v3_light` gần như tương đương ($p=0.97$).
+3. **Phát hiện đặc biệt ở dải Siêu biên (`Micro-Edge`, ~`0.17M` MACs)**:
+   - Khi lược bỏ các tầng tích chập nặng phía sau (`DSResBlock`), `micro_quanv` thể hiện khả năng giữ cấu trúc cực mạnh dưới nhiễu đốm: trên **OCTMNIST**, vượt `micro_ctrl` **`+13.69%`** tại $\sigma=0.10$ (**`65.41%`** vs `51.72%`, $p=0.0005$ — thậm chí cao hơn cả `ctrl_v2_full` `58.46%`) và **`+5.75%`** tại $\sigma=0.15$ (**`48.47%`** vs `42.72%`, $p=0.0058$); trên **PneumoniaMNIST**, vượt `+3.40%` tại $\sigma=0.05$ (`85.56%` vs `82.16%`) và `+3.58%` tại $\sigma=0.20$ (`77.87%` vs `74.29%`). Đánh đổi đi kèm là độ chính xác ảnh sạch giảm `-3.62%` trên OCTMNIST (`75.10%` vs `78.72%`, $p=0.1829$) và `-1.41%` trên BreastMNIST (`81.92%` vs `83.33%`, $p=0.2155$).
+
+---
+
+## 9. ĐÁNH GIÁ RUST END-TO-END THUẦN (`medquanv-cli --suite-v3`) & NHẬN ĐỊNH KHOA HỌC
+
+Toàn bộ 5 kiến trúc (xuất từ seed `42` trên PneumoniaMNIST bằng `experiments/export_v3_to_rust.py`, trọng số gộp BatchNorm FP32 + bảng `INT8 Shift-LUT` `256 KiB` riêng theo từng mô hình) đã được triển khai End-to-End bằng Rust thuần trong `rust_qlut/src/bin/v3_suite.rs` (`medquanv-cli --suite-v3 --verify data/processed/pneumoniamnist_v3_rust_verify.bin --json-out reports/medquanv_cli_v3_verification.json`). Lệnh biên dịch native dùng cờ:
+`RUSTFLAGS="-C target-cpu=native" CARGO_PROFILE_RELEASE_LTO="false" CARGO_PROFILE_RELEASE_CODEGEN_UNITS="8" cargo build --release --no-default-features --manifest-path rust_qlut/Cargo.toml --bin medquanv-cli` (biên dịch sạch trong $3.51\text{s}$).
+
+| Mô hình trong Rust (`medquanv-cli --suite-v3`) | Rust ACC Clean (624 ảnh) | Sai số Logits tối đa (Clean) | Rust ACC $\sigma=0.20$ | Khớp nhãn PyTorch | Q-LUT Stage-1 Latency | Độ trễ E2E (1 ảnh) | Thông lượng E2E (FPS) | Weights + LUT (KiB) | % L2 Cache (2 MB) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **`ctrl_v2_full` (18.9M)** | `90.71%` (`90.7051%`) | `4.77e-6` | `85.26%` | **`100.00%`** | N/A | `9,352.83 µs` | `106.92 FPS` | `577.65 + 0.00` | `28.21%` |
+| **`ctrl_v3_light` (4.07M)** | `86.54%` (`86.5385%`) | `5.25e-6` | `83.49%` | **`100.00%`** | N/A | **`1,114.03 µs`** | **`897.65 FPS`** | **`151.79 + 0.00`** | **`7.41%`** |
+| **`quanv_v3_int8` (4.03M)** | `87.98%` (`87.9808%`) | `5.25e-6` | `82.53%` | **`100.00%`** | `3.16 µs` (4 tỷ lệ) | `1,126.38 µs` | `887.80 FPS` | `150.90 + 256.00 = 406.90` | `19.87%` |
+| **`micro_ctrl` (0.19M)** | `90.06%` (`90.0641%`) | `3.81e-6` | `67.95%` | **`100.00%`** | N/A | `47.59 µs` | `21,014.16 FPS` | `7.68 + 0.00` | `0.37%` |
+| **`micro_quanv` (0.17M)** | `87.34%` (`87.3397%`) | `1.91e-6` | `79.49%` | **`100.00%`** | `3.16 µs` (4 tỷ lệ) | **`46.18 µs`** | **`21,656.70 FPS`** | `7.29 + 256.00 = 263.29` | `12.86%` |
+
+*(Ghi chú kỹ thuật về sai số logits ở $\sigma=0.20$: `max_logit_diff_s20 = 1.21e-2` trên `quanv_v3_int8` do 1 pixel trung gian tại Stage-2 rơi đúng ranh giới lượng tử hóa $4$-bit $1/16$ giữa đường tính FP32 PyTorch và Rust; toàn bộ `624/624` ảnh đều khớp nhãn dự đoán `100.00%`.)*
+
+### Nhận định Tổng kết Công tâm
+1. **Bước nhảy vọt thực chất so với `v2` (`WideClassicalControl`)**: `quanv_v3_int8` chạy thuần trên CPU Rust đạt **`887.80 FPS` (`1.13 ms/ảnh`)** — tăng tốc **`8.30×`** so với `ctrl_v2_full` (`106.92 FPS` / `9.35 ms`), chỉ chiếm **`406.90 KiB` (`19.87%` L2 Cache 2 MB của Jetson Nano)**, và vượt `ctrl_v2_full` về độ chính xác ảnh sạch trên BreastMNIST (`+0.90%`), OCTMNIST (`+0.38%`), cũng như độ bền $\sigma=0.20$ trên PneumoniaMNIST (`+1.45%`) và OCTMNIST (`+2.22%`) mà hoàn toàn **không cần `Interp4D`**.
+2. **So sánh sòng phẳng với mạng cổ điển đồng hạng MAC (`ctrl_v3_light`)**:
+   - Về **độ chính xác**: `quanv_v3_int8` thắng `ctrl_v3_light` trên **ảnh sạch cả 3 tập dữ liệu** (`+0.51%` Breast, `+0.13%` Pneumonia, **`+2.72%` OCTMNIST**), thắng tại $\sigma=0.20$ trên PneumoniaMNIST (`+0.59%`) và OCTMNIST (**`+2.28%`, $p=0.0090$**), nhưng chưa thắng áp đảo ở mọi mức nhiễu giữa (nhất là OCTMNIST $\sigma=0.10$ bị tụt $-6.09\%$).
+   - Về **tốc độ Rust E2E ở ngưỡng $4\text{M}$ MACs**: `quanv_v3_int8` (`1,126.38 µs` / `887.80 FPS`) đạt **ngang bằng thực chất (chỉ chậm hơn `1.1%` / `12.4 µs`, nằm trong sai số đo)** so với `ctrl_v3_light` (`1,114.03 µs` / `897.65 FPS`) nhưng bộ nhớ L2 lớn hơn (`406.9 KiB` vs `151.8 KiB` do bảng tra $256\text{ KiB}$ Q-LUT), vì chi phí `DSResBlock` + `_dw_dilated_mixer` (`~4.0M` MACs) chiếm áp đảo cả hai mô hình và phần Stage-2 Q-LUT có bước chiếu + `sigmoid` + re-quantize.
+   - **Nơi tầng Q-LUT thực sự bứt tốc và giữ bản sắc lượng tử rõ rệt nhất** là phân khúc **Micro-Edge ($0.17\text{M}$ MACs)**: ở đây không có `DSResBlock` che lấp, nên `micro_quanv` chạy End-to-End **nhỉnh hơn `micro_ctrl` (`46.18 µs / 21,656.7 FPS` vs `47.59 µs / 21,014.2 FPS`, nhanh hơn ~`3.0%`)** và chống nhiễu đốm vượt trội rõ rệt trên thực địa (`+13.69%` OCTMNIST $\sigma=0.10$ với $p=0.0005$; `+11.54%` trên seed 42 Rust PneumoniaMNIST $\sigma=0.20$: `79.49%` vs `67.95%`).
+3. **Hướng phát triển tiếp theo cho luận văn**:
+   - Đo benchmark thực tế trên **Jetson Nano (ARM Cortex-A57, NEON)** bằng chính `medquanv-cli --suite-v3` (dự kiến chênh lệch băng thông bộ nhớ/cache trên ARM-A57 sẽ khác với AVX2 desktop).
+   - Nghiên cứu **Stage-2 Noise Regularization / Multi-scale Sigma Training** khi huấn luyện QAT để khắc phục độ nhạy tại vùng chuyển tiếp $\sigma=0.10$ trên OCTMNIST của `quanv_v3_int8`, kết hợp **INT8 Weight/Activation quantization** cho `DSResBlock` nhằm kéo trọn vẹn luồng tính toán về miền số nguyên.
