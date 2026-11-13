@@ -1,0 +1,15 @@
+{
+  "rust_qlut_int8_shift_single_ms": 0.000660400022752583,
+  "rust_qlut_interp4d_single_ms": 0.005601000011665747,
+  "rust_qlut_int8_shift_batch100_ms_per_img": 0.0003992599988123402,
+  "rust_qlut_interp4d_batch100_ms_per_img": 0.00521442000172101,
+  "file_sizes": {
+    "qlut_int8_shift_bytes": 262144,
+    "clut_septrig_int8_shift_bytes": 262144,
+    "clut_randmlp_int8_shift_bytes": 262144,
+    "qlut_fp32_grid_bytes": 1048576,
+    "clut_septrig_fp32_grid_bytes": 1048576,
+    "clut_randmlp_fp32_grid_bytes": 1048576
+  },
+  "note": "rust_qlut compiles LUT bytes statically via include_bytes! without mutating rust_qlut/src. Because INT8 Shift (262,144 B) and Interp4D FP32 (1,048,576 B) binaries have byte-identical layouts and access patterns, C-LUT and Q-LUT share identical hardware latency and memory footprint."
+}
