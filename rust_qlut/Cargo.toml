@@ -2,6 +2,7 @@
 name = "rust_qlut"
 version = "0.2.0"
 edition = "2021"
+autobins = false
 description = "Native SIMD Quantum Lookup Table (Q-LUT) Inference Engine for Edge Medical Devices (x86_64 AVX2/FMA & ARM64 Cortex-A57 NEON)"
 
 [lib]

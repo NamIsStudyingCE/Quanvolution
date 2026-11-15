@@ -1,118 +1,59 @@
-# Quanvolutional Neural Networks for Medical Image Classification
+# Quanvolutional Neural Networks for Edge Medical Imaging (`MedMNIST`)
 
-> **Đề tài Luận văn Tốt nghiệp:** Nghiên cứu và ứng dụng lớp tích chập lượng tử (Quanvolutional Layer) trong bài toán phân loại ảnh y tế (MedMNIST), so sánh công bằng với các kiến trúc cổ điển (Classical CNN).  
-> **Bài báo hội nghị (đã nộp SOICT 2026, EasyChair):** *"Symmetrical Empirical Evaluation of Trainable versus Fixed Quanvolutional Filters in Medical Image Classification: A Rigorous, Reproducible Benchmark on MedMNIST"* — phiên bản nộp được đóng băng tại git tag `soict-submission-v4`.
-
----
-
-## 📌 1. Giới thiệu Đề tài & Bối cảnh Nghiên cứu
-
-Dự án tập trung nghiên cứu kiến trúc **Quanvolutional Neural Network (Quanvolution)** dựa trên nền tảng của *Henderson et al. (2019)*. Mạng sử dụng các mạch lượng tử 4-qubit hoạt động như các bộ lọc không gian (Kernel Filter $2 \times 2$) trượt qua ảnh để trích xuất các bản đồ đặc trưng phi tuyến trong không gian trạng thái Hilbert (*Quantum Feature Maps*), kết hợp với mạng phân loại cổ điển (Classifier Head).
-
-### Các nguyên tắc nghiên cứu cốt lõi:
-1. **Tính tái lập tuyệt đối (Strict Reproducibility):** Cố định hệ thống hạt giống ngẫu nhiên (10 seeds độc lập), lưu trữ toàn bộ dữ liệu thô định dạng JSON và biểu đồ 300 DPI.
-2. **So sánh công bằng (Fair Benchmark):** Kiến trúc cổ điển đối chứng (*Symmetrical Minimum CNN*) được thiết kế đối xứng $1:1$ với tầng trích xuất lượng tử; phần Classifier Head (`Linear 784 → classes`) được giữ **giống nhau 100%** giữa hai phía.
-3. **Đánh giá đa chiều & Kiểm định Thống kê Kép:** Đánh giá trên dữ liệu mất cân bằng y tế qua 6 metrics (*Accuracy, Balanced Accuracy, F1-Score, MCC, ROC-AUC, PR-AUC*) kết hợp kiểm định thống kê kép *Paired t-test* và *Wilcoxon signed-rank test*.
+Nghiên cứu, đánh giá thực nghiệm và tối ưu hóa triển khai biên (**Edge Inference**) cho mạng **Quanvolutional Neural Network** trên bộ dữ liệu ảnh y tế **MedMNIST** (`PneumoniaMNIST`, `BreastMNIST`, `OCTMNIST`).
 
 ---
 
-## 📊 2. Lộ trình Thực hiện & Báo cáo Nghiệm thu (13 Tuần)
+## 1. Tổng quan & Trạng thái Hiện tại (Honest Engineering Summary)
 
-Dự án được triển khai và đóng gói độc lập theo từng mốc (milestone) trong kế hoạch 3 tháng của GVHD:
-
-| Mốc | Giai đoạn & Chủ đề | Sản phẩm & Điểm cốt lõi | Báo cáo chi tiết | Trạng thái |
-| :---: | :--- | :--- | :---: | :---: |
-| **M1** (24/08) | **GĐ0: Nền tảng, Môi trường & Demo** | Tóm tắt lý thuyết, cài đặt PennyLane/PyTorch, Demo MNIST | [`GD0/BAO_CAO_GIAI_DOAN_0.md`](GD0/BAO_CAO_GIAI_DOAN_0.md) | ✅ **100%** |
-| **M2** (07/09) | **GĐ1: Pipeline MedMNIST & Baseline** | Pipeline MedMNIST, Symmetrical CNN, 10 seeds benchmark | [`GD1/BAO_CAO_GIAI_DOAN_1.md`](GD1/BAO_CAO_GIAI_DOAN_1.md) | ✅ **100%** |
-| **M3** (28/09) | **GĐ2: Khảo sát Mạch Lượng tử Tĩnh** | Circuit Ablation 6 cấu hình, Quán quân `basic_L2` & `random_L1` | [`GD2/BAO_CAO_GIAI_DOAN_2.md`](GD2/BAO_CAO_GIAI_DOAN_2.md) | ✅ **100%** |
-| **M4** (19/10) | **GĐ3: Tích chập Lượng tử Tự học** | Ma trận 3 Tầng, QNN khả vi (`backprop`), Đo chi phí phần cứng | [`GD3/BAO_CAO_GIAI_DOAN_3.md`](GD3/BAO_CAO_GIAI_DOAN_3.md) | ✅ **100%** |
-| **M5** (09/11) | **GĐ4: Luận văn & Bảo vệ** | Soạn thảo Luận văn, Slide thuyết trình & Nghiệm thu | [`GD4/BAO_CAO_GIAI_DOAN_4.md`](GD4/BAO_CAO_GIAI_DOAN_4.md) | ⏳ Chuẩn bị |
-
----
-
-## 🔬 3. Bảng Kết quả Thực nghiệm Tổng hợp (10 Seeds Độc lập)
-
-### A. BreastMNIST (780 mẫu, Nhị phân, Lệch lớp nặng, $L=2$)
-* **Quán quân ROC-AUC:** `Fixed Basic L2` đạt **$0.8521 \pm 0.0095$** (vượt Classical CNN $0.8336 \pm 0.0259$, $p_{\text{ttest}} = 0.0298$, $p_{\text{wilcoxon}} = 0.0254$).
-* **Quán quân PR-AUC:** `Fixed Strongly L2` đạt **$0.9182 \pm 0.0071$** (chứng minh *Quantum Inductive Bias* của mạch tĩnh).
-* **Độ ổn định:** Độ lệch chuẩn (std) của Lượng tử nhỏ hơn Cổ điển gấp **~2.5x – 3x**.
-
-### B. OCTMNIST (5.000 mẫu, 4 lớp bệnh lý, Dữ liệu lớn, $L=1$)
-* **Quán quân:** `Classical CNN` dẫn đầu áp đảo (**ROC-AUC $0.7505 \pm 0.0240$** vs QNN $\sim 0.69$).
-* **Ranh giới ứng dụng (Quantum Boundary):** Mạch lượng tử 4-qubit bộc lộ giới hạn dung lượng tham số trên bài toán dữ liệu lớn, khẳng định ưu thế cổ điển ở quy mô lớn.
-
-### C. Hiệu quả Tham số & Độ trễ Suy luận (CPU)
-* **Tầng trích xuất đặc trưng (Kernel):** Mạch tĩnh dùng **0 tham số học** (tiết kiệm 20 tham số conv).
-* **Độ trễ suy luận:** Classical CNN = $0.310\text{ ms/ảnh}$; Quanvolution = $220.22\text{ ms/ảnh}$ (chậm hơn $\sim 710\text{x}$ trên mô phỏng CPU).
+Dự án đi qua 3 giai đoạn chính:
+1. **Giai đoạn 1 (SOICT v4 / GD0–GD3 Baseline):** Đánh giá mô hình Quanvolution chuẩn (PennyLane CPU simulator) trên `BreastMNIST`, `PneumoniaMNIST`, `OCTMNIST`. Kết quả cho thấy mô phỏng mạch lượng tử trên CPU có độ trễ lớn (`~220.22 ms/ảnh` trên `OCTMNIST`), chưa chứng minh được ưu thế vượt trội so với Classical CNN thuần.
+2. **Giai đoạn 2 (`Q-LUT` + `rust_qlut` Edge Engine & `WideGRQuanvNet` v2/v3):**
+   - Giải quyết triệt để nút thắt cổ chai $O(4^n)$ của mạch lượng tử 4-qubit cố định bằng **Quantum Look-Up Table (`Q-LUT`)** kết hợp lõi suy luận **Rust (`rust_qlut`)** tối ưu bộ nhớ đệm L2 và **SIMD**.
+   - Độ trễ tầng lượng tử giảm từ mức hàng trăm `ms` xuống **`0.0007 ms/ảnh`** (`INT8 Shift-LUT`, 256 KiB) và **`0.0056 ms/ảnh`** (`Interp4D`, 1,024 KiB) trong `hardware_sanity.json`, với tổng dung lượng mô hình + bảng tra `INT8 Shift-LUT` đạt **`833.26 KiB`** (`40.7%` của 2 MB L2 Cache).
+   - Binary `medquanv-cli` đạt độ chính xác khớp PyTorch (`max_logit_diff < 5e-6`): `89.42%` (`INT8 Shift`) và `90.22%` (`Interp4D`) trên 624 ảnh test `PneumoniaMNIST`, tốc độ end-to-end `~335–338 FPS` trên CPU x86_64.
+   - Hỗ trợ nén mô hình `v3` (`quanv_v3_int8`: `39,250` params vs `ctrl_v3_light`: `39,470` params; `micro_quanv`: `2,002` params vs `micro_ctrl`: `2,078` params).
+3. **Giai đoạn 3 (Bóc tách nhân quả `C-LUT vs Q-LUT`):**
+   - Thực hiện thí nghiệm đối chứng cô lập (5 seeds trên `PneumoniaMNIST` & `BreastMNIST`, xem [`results/ablation_clut/ablation_summary.md`](results/ablation_clut/ablation_summary.md)) giữa `Q-LUT`, `CLUT-SepTrig`, `CLUT-RandMLP`, và `Ctrl Conv2d` ở cả hai chế độ `Raw Stem` và `Stabilized Stem Symmetric`.
+   - **Kết luận trung thực:** `Q-LUT` cố định 4-qubit giải quyết bài toán **tốc độ & bộ nhớ biên** khi đóng gói thành LUT, nhưng **không vượt trội về độ chính xác** so với `C-LUT` đã hiệu chuẩn phương sai hoặc `Ctrl Conv2d` được ổn định đối xứng.
 
 ---
 
-## 📂 4. Cấu trúc Thư mục Dự án
+## 2. Kết quả Thực nghiệm Đã Khóa (Locked Benchmarks)
 
-```text
-├── docs/                        # Tài liệu tổng quan lý thuyết QNN
-├── notebooks/                   # Jupyter Notebook demo trực quan hóa
-├── src/                         # Mã nguồn mô hình & pipeline
-│   ├── data/                    # Nạp MedMNIST & Tiền tính toán đặc trưng
-│   ├── models/                  # Quantum Circuits & Classical CNN
-│   ├── utils/                   # Hàm seed, 6 metrics y tế, kiểm định thống kê
-│   ├── experiments/              # Master runner thực nghiệm 3 tầng
-│   └── visual/                  # Trực quan hóa feature maps & loss curves
-├── GD0/                         # Gói nghiệm thu độc lập Giai đoạn 0 (Mốc M1)
-├── GD1/                         # Gói nghiệm thu độc lập Giai đoạn 1 (Mốc M2)
-├── GD2/                         # Gói nghiệm thu độc lập Giai đoạn 2 (Mốc M3)
-├── GD3/                         # Gói nghiệm thu độc lập Giai đoạn 3 (Mốc M4)
-├── results/                     # Kết quả JSON thô & Biểu đồ 300 DPI
-├── measure_params_cost.py       # Script tự đo số tham số & độ trễ suy luận
-├── run_all.py                   # Runner tự động Giai đoạn 1
-├── run_ablation.py              # Runner tự động Giai đoạn 2
-├── run_gd3.py                   # Runner tự động Giai đoạn 3 (Ma trận 3 tầng)
-├── requirements.txt             # Danh sách thư viện phụ thuộc
-└── README.md                    # Hướng dẫn tổng quan dự án
-```
+### A. Hiệu năng Vi kiến trúc & Parity (`medquanv-cli` / `rust_qlut`)
+Nguồn: [`reports/medquanv_cli_verification_a3.json`](reports/medquanv_cli_verification_a3.json) và [`results/ablation_clut/hardware_sanity.json`](results/ablation_clut/hardware_sanity.json).
+
+| Thành phần / Chế độ | Độ trễ LUT (`µs`) | End-to-End (`ms/ảnh`) | Throughput (`FPS`) | Accuracy (`PneumoniaMNIST`) | Max Logit Diff vs PyTorch |
+|---|---:|---:|---:|---:|---:|
+| `rust_qlut` (`INT8 Shift-LUT`, 256 KiB) | `1.139 µs` (`0.66 µs` single) | `2.961 ms` | `337.71` | `89.4231%` | `3.81e-6` |
+| `rust_qlut` (`Interp4D`, 1,024 KiB) | `5.503 µs` (`5.60 µs` single) | `2.980 ms` | `335.61` | `90.2244%` | `4.29e-6` |
+
+- Tổng bộ nhớ tĩnh `INT8 Shift-LUT` + `WideResidualHead`: **`833.26 KiB`** (`40.7%` dung lượng L2 Cache 2 MB).
+
+### B. Đối chứng Cô lập `C-LUT vs Q-LUT` (5 Seeds)
+Nguồn: [`results/ablation_clut/ablation_summary.md`](results/ablation_clut/ablation_summary.md).
+- Trên `PneumoniaMNIST` và `BreastMNIST`, khi tách biệt hoàn toàn yếu tố lượng tử hóa 4-bit bị chặn $[-1, 1]$ và bộ lọc ổn định pha (`Stabilized Stem`), `Q-LUT` không tạo ra khác biệt có ý nghĩa thống kê vượt trội so với `CLUT-SepTrig`, `CLUT-RandMLP`, hoặc `Ctrl Conv2d`.
 
 ---
 
-## 🚀 5. Hướng dẫn Cài đặt & Tái hiện Thực nghiệm
+## 3. Cấu trúc Thư mục Chính
 
+- `rust_qlut/`: Thư viện Rust (`Q-LUT` + `WideResidualHead`) và CLI `medquanv-cli` hỗ trợ `--benchmark`.
+- `experiments/`: Script huấn luyện và đánh giá (`train_ablation_clut.py`, `eval_ablation_clut.py`, `ablation_clut_vs_qlut.py`, ...).
+- `scripts/`:
+  - `generate_clut.py`: Sinh bảng tra cổ điển đối chứng (`CLUT-SepTrig`, `CLUT-RandMLP`).
+  - `build_jetson_release.sh`: Script biên dịch chéo cho `aarch64-unknown-linux-gnu` (Cortex-A57).
+- `results/ablation_clut/`: Toàn bộ số liệu và báo cáo bóc tách `C-LUT vs Q-LUT` đã khóa.
+- `reports/`: Kết quả kiểm thử parity `medquanv_cli_verification_a3.json`, `pillar3_v3_results.json`, v.v.
+- `deploy/jetson_nano/` & `dist/jetson_nano/`: Bộ khung triển khai cho NVIDIA Jetson Nano (`run_on_board_bench.sh`, `README_JETSON.md`, `rust_qlut.h`). *(Lưu ý: Đây là bộ script/header chuẩn bị sẵn cho cross-build; chưa biên dịch và đo trực tiếp trên bo mạch Jetson Nano thật).*
+
+---
+
+## 4. Kiểm thử & Biên dịch Nhanh
+
+Chạy unit test cho `rust_qlut` (không cần feature phụ thuộc Python):
 ```bash
-# 1. Tạo và kích hoạt môi trường ảo
-python -m venv .venv
-.\.venv\Scripts\activate   # Trên Windows
-
-# 2. Cài đặt các thư viện phụ thuộc
-pip install -r requirements.txt
-
-# 3. Đo đạc tham số & chi phí phần cứng (Script của GVHD)
-python measure_params_cost.py
-
-# 4. Tái hiện toàn bộ thực nghiệm Giai đoạn 3 (Ma trận 3 tầng 10 seeds)
-python run_gd3.py
-
-# 5. Tái tạo toàn bộ biểu đồ của bài báo từ JSON ground truth
-python PAPER/scripts/regenerate_all_figures.py
-python PAPER/scripts/regenerate_figs_bigfont.py   # phiên bản font lớn dùng trong bản nộp
+cd rust_qlut
+cargo test --no-default-features
 ```
-
-## ✅ 6. Kiểm định Số liệu (QA Scripts)
-
-Mọi số liệu của bài báo và luận văn phải reconcile với nguồn chân lý
-`results/full_trainable_breastmnist.json` + `results/full_trainable_octmnist.json`
-(10 seeds × 20 epochs). Số chuẩn hoá (mean, sample std ddof=1, CI 95%, p-value,
-Cohen's d) được tính lại độc lập bởi:
-
-```bash
-# 1. Tính lại toàn bộ thống kê từ raw per-seed JSON -> results/reconciliation_canonical.json
-python PAPER/scripts/reconcile_verify.py
-
-# 2. Đối chiếu từng cặp mean±std/CI trong một file PDF bất kỳ với canonical
-python PAPER/scripts/final_gate_audit.py <duong_dan_den_file.pdf>
-```
-
-> ⚠️ `results/archive/final_ground_truth_SUPERSEDED.json` là bản composite **cũ,
-> không dùng cho bài báo/luận văn** (entry classical/fixed_basic lấy từ run cũ).
-> Nguồn chân lý duy nhất là 2 file `full_trainable_*.json` ở trên.
-
----
-
-*Tác giả: NamIsStudyingCE | Trường Đại học Công nghệ Thông tin (UIT) — ĐHQG-HCM*

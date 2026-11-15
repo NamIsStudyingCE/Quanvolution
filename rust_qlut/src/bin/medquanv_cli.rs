@@ -368,7 +368,39 @@ impl WideGRQuanvNetV2 {
         out: &mut [f32],
         c_out: usize,
     ) {
-        for oc in 0..c_out {
+        let mut oc = 0usize;
+        while oc + 4 <= c_out {
+            let b0 = b[oc];
+            let b1 = b[oc + 1];
+            let b2 = b[oc + 2];
+            let b3 = b[oc + 3];
+            let ob0 = oc * spatial;
+            let ob1 = (oc + 1) * spatial;
+            let ob2 = (oc + 2) * spatial;
+            let ob3 = (oc + 3) * spatial;
+            for i in 0..spatial {
+                out[ob0 + i] = b0;
+                out[ob1 + i] = b1;
+                out[ob2 + i] = b2;
+                out[ob3 + i] = b3;
+            }
+            for ic in 0..c_in {
+                let w0 = w[oc * c_in + ic];
+                let w1 = w[(oc + 1) * c_in + ic];
+                let w2 = w[(oc + 2) * c_in + ic];
+                let w3 = w[(oc + 3) * c_in + ic];
+                let in_slice = &inp[ic * spatial..(ic + 1) * spatial];
+                for i in 0..spatial {
+                    let x = in_slice[i];
+                    out[ob0 + i] += x * w0;
+                    out[ob1 + i] += x * w1;
+                    out[ob2 + i] += x * w2;
+                    out[ob3 + i] += x * w3;
+                }
+            }
+            oc += 4;
+        }
+        while oc < c_out {
             let bias = b[oc];
             let out_base = oc * spatial;
             for i in 0..spatial {
@@ -383,6 +415,7 @@ impl WideGRQuanvNetV2 {
                     out_slice[i] += in_slice[i] * wt;
                 }
             }
+            oc += 1;
         }
     }
 
@@ -407,7 +440,56 @@ impl WideGRQuanvNetV2 {
                 out[ob + i] = bias;
             }
         }
-        for oc in 0..c_out {
+        // Cache- & SIMD-friendly channel-blocked order: oc_blk(4) -> ic -> kr -> kc -> r -> col
+        let mut oc = 0usize;
+        while oc + 4 <= c_out {
+            let ob0 = oc * spatial;
+            let ob1 = (oc + 1) * spatial;
+            let ob2 = (oc + 2) * spatial;
+            let ob3 = (oc + 3) * spatial;
+            for ic in 0..c_in {
+                let ib = ic * spatial;
+                let inp_ch = &inp[ib..ib + spatial];
+                let kb0 = (oc * c_in + ic) * 9;
+                let kb1 = ((oc + 1) * c_in + ic) * 9;
+                let kb2 = ((oc + 2) * c_in + ic) * 9;
+                let kb3 = ((oc + 3) * c_in + ic) * 9;
+                for kr in 0..3 {
+                    let off_r = (kr * dil) as isize - pad as isize;
+                    let r_start = (-off_r).max(0).min(h as isize) as usize;
+                    let r_end = ((h as isize) - off_r).max(0).min(h as isize) as usize;
+                    for kc in 0..3 {
+                        let k_off = kr * 3 + kc;
+                        let k0 = wt[kb0 + k_off];
+                        let k1 = wt[kb1 + k_off];
+                        let k2 = wt[kb2 + k_off];
+                        let k3 = wt[kb3 + k_off];
+                        let off_c = (kc * dil) as isize - pad as isize;
+                        let c_start = (-off_c).max(0).min(w_dim as isize) as usize;
+                        let c_end = ((w_dim as isize) - off_c).max(0).min(w_dim as isize) as usize;
+                        let len = c_end.saturating_sub(c_start);
+                        if len == 0 {
+                            continue;
+                        }
+                        let ic_start = (c_start as isize + off_c) as usize;
+                        for r in r_start..r_end {
+                            let ir = (r as isize + off_r) as usize;
+                            let src = &inp_ch[ir * w_dim + ic_start..ir * w_dim + ic_start + len];
+                            let row_off = r * w_dim + c_start;
+                            for i in 0..len {
+                                let x = src[i];
+                                out[ob0 + row_off + i] += x * k0;
+                                out[ob1 + row_off + i] += x * k1;
+                                out[ob2 + row_off + i] += x * k2;
+                                out[ob3 + row_off + i] += x * k3;
+                            }
+                        }
+                    }
+                }
+            }
+            oc += 4;
+        }
+        while oc < c_out {
             let ob = oc * spatial;
             let out_ch = &mut out[ob..ob + spatial];
             for ic in 0..c_in {
@@ -442,6 +524,7 @@ impl WideGRQuanvNetV2 {
                     }
                 }
             }
+            oc += 1;
         }
     }
 
@@ -969,6 +1052,66 @@ fn verify_and_benchmark_mode(
     (acc_rust, acc_torch, max_diff, qlut_4scale_us, e2e_us, e2e_fps)
 }
 
+fn run_detailed_benchmark(net: &WideGRQuanvNetV2, bundle: &TestVerifyBundle) {
+    const WARMUP: usize = 50;
+    const N_ITERS: usize = 1000;
+    let sample = &bundle.imgs[0];
+    let mut q_buf = [0.0f32; 16 * NUM_PATCHES];
+
+    // 1. Measure phase_damping_u8 latency alone
+    for _ in 0..WARMUP {
+        let d = phase_damping_u8(black_box(sample), 18.0, 0.024);
+        black_box(d);
+    }
+    let t_pd = Instant::now();
+    for _ in 0..N_ITERS {
+        let d = phase_damping_u8(black_box(sample), 18.0, 0.024);
+        black_box(d);
+    }
+    let pd_us = t_pd.elapsed().as_secs_f64() * 1e6 / (N_ITERS as f64);
+
+    // 2. Measure rust_qlut (INT8 Shift-LUT 256 KiB vs Interp4D 1,024 KiB) + Full E2E
+    let mut bench_mode = |mode: QLutMode| -> (f64, f64, f64) {
+        for _ in 0..WARMUP {
+            extract_multiscale_qlut(black_box(sample), mode, false, black_box(&mut q_buf));
+            let res = net.forward_single(black_box(sample), black_box(&q_buf), false);
+            black_box(res);
+        }
+        let t_lut = Instant::now();
+        for _ in 0..N_ITERS {
+            extract_multiscale_qlut(black_box(sample), mode, false, black_box(&mut q_buf));
+        }
+        let lut_us = t_lut.elapsed().as_secs_f64() * 1e6 / (N_ITERS as f64);
+
+        let t_e2e = Instant::now();
+        for _ in 0..N_ITERS {
+            extract_multiscale_qlut(black_box(sample), mode, false, black_box(&mut q_buf));
+            let res = net.forward_single(black_box(sample), black_box(&q_buf), false);
+            black_box(res);
+        }
+        let e2e_ms = t_e2e.elapsed().as_secs_f64() * 1e3 / (N_ITERS as f64);
+        let fps = 1000.0 / e2e_ms;
+        (lut_us, e2e_ms, fps)
+    };
+
+    let (int8_lut_us, int8_e2e_ms, int8_fps) = bench_mode(QLutMode::Int8Shift);
+    let (f32_lut_us, f32_e2e_ms, f32_fps) = bench_mode(QLutMode::Interp4d);
+
+    let weights_kib = (net.total_floats * 4) as f64 / 1024.0;
+    let int8_total_kib = (qlut_table_int8_bytes() as f64) / 1024.0 + weights_kib;
+    let f32_total_kib = (qlut_table_fp32_bytes() as f64) / 1024.0 + weights_kib;
+
+    println!();
+    println!("========================================================================================================================");
+    println!("  DETAILED HARDWARE BENCHMARK (--benchmark | Warmup={}, N={})", WARMUP, N_ITERS);
+    println!("  Pre-LUT phase_damping_u8         : {:7.2} us/img", pd_us);
+    println!("  INT8 Shift-LUT (256 KiB)         : Q-LUT = {:6.2} us | E2E = {:6.3} ms/img ({:7.1} FPS) | Mem = {:6.2} KiB ({:.1}% of 2MB L2)",
+             int8_lut_us, int8_e2e_ms, int8_fps, int8_total_kib, int8_total_kib * 100.0 / 2048.0);
+    println!("  Interp4D FP32 (1,024 KiB)        : Q-LUT = {:6.2} us | E2E = {:6.3} ms/img ({:7.1} FPS) | Mem = {:6.2} KiB ({:.1}% of 2MB L2)",
+             f32_lut_us, f32_e2e_ms, f32_fps, f32_total_kib, f32_total_kib * 100.0 / 2048.0);
+    println!("========================================================================================================================");
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.iter().any(|a| a == "--suite-v3") {
@@ -978,6 +1121,7 @@ fn main() {
     let mut weights_path = "weights/wide_v2_pneumoniamnist_s42_rust.bin".to_string();
     let mut verify_path = "data/processed/pneumoniamnist_test_rust_verify.bin".to_string();
     let mut bench_highres = false;
+    let mut bench_detailed = false;
     let mut json_out: Option<String> = None;
 
     let mut i = 1;
@@ -997,6 +1141,9 @@ fn main() {
             }
             "--bench-resolutions" => {
                 bench_highres = true;
+            }
+            "--benchmark" => {
+                bench_detailed = true;
             }
             "--json-out" => {
                 if i + 1 < args.len() {
@@ -1057,6 +1204,10 @@ fn main() {
         );
         fs::write(&jpath, json_str).expect("Failed writing verification JSON");
         println!("[Saved Verification JSON] {}", jpath);
+    }
+
+    if bench_detailed {
+        run_detailed_benchmark(&net, &bundle);
     }
 
     if bench_highres {
