@@ -1,0 +1,3 @@
+exit_code=0
+peak_vmhwm_kib=4112
+peak_vmrss_kib=4112

@@ -1,0 +1,37 @@
+{
+  "arch": "ARM64 (aarch64 NEON - Cortex-A57 Target)",
+  "n_samples": 624,
+  "stage1_qlut_int8_us": 25.7538,
+  "models": {
+    "quanv_v3_int8": {
+      "rust_acc_clean": 87.9808, "pytorch_acc_clean": 87.9808, "max_logit_diff_clean": 6.198883e-6,
+      "rust_acc_s20": 82.5321, "pytorch_acc_s20": 82.5321, "max_logit_diff_s20": 1.210260e-2,
+      "prediction_agreement_pct": 100.00, "e2e_us": 8234.989, "e2e_fps": 121.43,
+      "qlut_stage1_us": 25.7538, "weight_kib": 150.90, "lut_kib": 256.00, "total_kib": 406.90, "l2_cache_pct": 19.87
+    },
+    "ctrl_v3_light": {
+      "rust_acc_clean": 86.5385, "pytorch_acc_clean": 86.5385, "max_logit_diff_clean": 5.245209e-6,
+      "rust_acc_s20": 83.4936, "pytorch_acc_s20": 83.4936, "max_logit_diff_s20": 4.768372e-6,
+      "prediction_agreement_pct": 100.00, "e2e_us": 8281.221, "e2e_fps": 120.76,
+      "qlut_stage1_us": 0.0000, "weight_kib": 151.79, "lut_kib": 0.00, "total_kib": 151.79, "l2_cache_pct": 7.41
+    },
+    "ctrl_v2_full": {
+      "rust_acc_clean": 90.7051, "pytorch_acc_clean": 90.7051, "max_logit_diff_clean": 4.768372e-6,
+      "rust_acc_s20": 85.2564, "pytorch_acc_s20": 85.2564, "max_logit_diff_s20": 5.483627e-6,
+      "prediction_agreement_pct": 100.00, "e2e_us": 99220.795, "e2e_fps": 10.08,
+      "qlut_stage1_us": 0.0000, "weight_kib": 577.65, "lut_kib": 0.00, "total_kib": 577.65, "l2_cache_pct": 28.21
+    },
+    "micro_quanv": {
+      "rust_acc_clean": 87.3397, "pytorch_acc_clean": 87.3397, "max_logit_diff_clean": 1.907349e-6,
+      "rust_acc_s20": 79.4872, "pytorch_acc_s20": 79.4872, "max_logit_diff_s20": 1.192093e-6,
+      "prediction_agreement_pct": 100.00, "e2e_us": 517.651, "e2e_fps": 1931.80,
+      "qlut_stage1_us": 25.7538, "weight_kib": 7.29, "lut_kib": 256.00, "total_kib": 263.29, "l2_cache_pct": 12.86
+    },
+    "micro_ctrl": {
+      "rust_acc_clean": 90.0641, "pytorch_acc_clean": 90.0641, "max_logit_diff_clean": 3.814697e-6,
+      "rust_acc_s20": 67.9487, "pytorch_acc_s20": 67.9487, "max_logit_diff_s20": 4.827976e-6,
+      "prediction_agreement_pct": 100.00, "e2e_us": 542.927, "e2e_fps": 1841.87,
+      "qlut_stage1_us": 0.0000, "weight_kib": 7.68, "lut_kib": 0.00, "total_kib": 7.68, "l2_cache_pct": 0.37
+    }
+  }
+}

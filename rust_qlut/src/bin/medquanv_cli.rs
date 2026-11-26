@@ -358,7 +358,6 @@ impl WideGRQuanvNetV2 {
         }
     }
 
-    #[inline(always)]
     fn conv1x1_nchw(
         inp: &[f32],
         c_in: usize,
@@ -419,7 +418,6 @@ impl WideGRQuanvNetV2 {
         }
     }
 
-    #[inline(always)]
     fn conv3x3_nchw(
         inp: &[f32],
         c_in: usize,
